@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lyrics Cutter — Mark & Slice (MP3)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+  :root{
+    --bg:#fafafa; --surface:#ffffff; --card:#ffffff; --border:#e5e7eb;
+    --accent:#d946ef; --accent2:#f59e0b; --accent3:#0ea5e9;
+    --text:#111827; --muted:#6b7280;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+  .app{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:40px 24px 80px}
+  header{margin-bottom:48px}
+  .logo{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.25em;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
+  h1{font-family:'Syne',sans-serif;font-size:clamp(32px,6vw,56px);font-weight:800;line-height:1;letter-spacing:-.02em;margin-bottom:10px}
+  h1 span{color:var(--accent)}
+  .subtitle{color:var(--muted);font-size:13px;line-height:1.6}
+  .step-row{display:flex;gap:8px;margin-bottom:32px}
+  .step-pill{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;padding:5px 12px;border-radius:100px;border:1px solid var(--border);color:var(--muted);transition:all .3s;background:#fff}
+  .step-pill.active{border-color:var(--accent);color:var(--accent);background:rgba(217,70,239,.08)}
+  .step-pill.done{color:#9ca3af;text-decoration:line-through}
+  .upload-zone{border:2px dashed var(--border);border-radius:16px;padding:56px 32px;text-align:center;cursor:pointer;transition:all .3s;background:var(--surface)}
+  .upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:rgba(217,70,239,.04)}
+  .upload-icon{font-size:48px;margin-bottom:16px;display:block}
+  .upload-zone h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px}
+  .upload-zone p{color:var(--muted);font-size:12px}
+  .upload-zone input{display:none}
+  .player-section{display:none;flex-direction:column;gap:20px}
+  .player-section.visible{display:flex}
+  .file-info{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .file-name{font-size:12px;color:var(--accent);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .file-size{font-size:11px;color:var(--muted)}
+  .btn-reset{background:none;border:1px solid #ef4444;color:#ef4444;border-radius:8px;padding:6px 12px;font-family:'Space Mono',monospace;font-size:11px;cursor:pointer}
+  .btn-reset:hover{background:rgba(239,68,68,.08)}
+  .video-wrapper{background:#000;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+  video{width:100%;display:block;max-height:340px;object-fit:contain;background:#000}
+  .timeline-wrapper{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+  .timeline-label{font-size:10px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px}
+  .timeline-bar{height:8px;background:#f3f4f6;border-radius:4px;position:relative;cursor:pointer}
+  .timeline-progress{height:100%;background:linear-gradient(90deg,var(--accent3),var(--accent));border-radius:4px;width:0%;transition:width .1s linear}
+  .timeline-mark{position:absolute;top:-6px;width:3px;height:20px;background:var(--accent);border-radius:2px;transform:translateX(-50%);cursor:pointer}
+  .timeline-mark::after{content:attr(data-index);position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--accent);font-family:'Space Mono',monospace;white-space:nowrap}
+  .time-display{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--muted)}
+  .current-time-big{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--accent);letter-spacing:-.02em;margin-top:4px}
+  .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .btn{font-family:'Space Mono',monospace;border:none;border-radius:10px;padding:12px 20px;font-size:12px;cursor:pointer;font-weight:700;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn-play{background:var(--text);color:#fff;min-width:110px;justify-content:center}
+  .btn-play:hover:not(:disabled){background:var(--accent)}
+  .btn-mark{background:var(--accent);color:#fff;flex:1;justify-content:center;font-size:13px;letter-spacing:.05em}
+  .btn-mark:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 4px 20px rgba(217,70,239,.3)}
+  .btn-mark.flash{background:var(--accent2);color:#fff}
+  .btn-undo{background:#fff;color:var(--text);border:1px solid var(--border)}
+  .btn-undo:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+  kbd{background:#f3f4f6;border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:10px;color:var(--text)}
+  .spacebar-hint{font-size:10px;color:var(--muted);letter-spacing:.1em}
+  .marks-section,.process-section{display:none}
+  .marks-section.visible,.process-section.visible{display:block}
+  .marks-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .marks-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700}
+  .marks-count{background:var(--accent);color:#fff;border-radius:100px;padding:3px 10px;font-size:11px;font-weight:700}
+  .btn-clear-all{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:5px 12px;font-family:'Space Mono',monospace;font-size:10px;cursor:pointer}
+  .btn-clear-all:hover{border-color:#ef4444;color:#ef4444}
+  .marks-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;padding-right:4px}
+  .mark-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+  .mark-index{font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:var(--accent);min-width:24px}
+  .mark-time{font-size:13px;font-weight:700;color:var(--accent);min-width:72px;cursor:pointer}
+  .mark-time:hover{text-decoration:underline}
+  .mark-label{flex:1;background:#fff;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:'Space Mono',monospace;font-size:11px;color:var(--text);outline:none}
+  .mark-label:focus{border-color:var(--accent)}
+  .mark-duration{font-size:10px;color:var(--muted);min-width:48px;text-align:right}
+  .btn-delete-mark{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px;line-height:1}
+  .btn-delete-mark:hover{color:#ef4444}
+  .process-card{background:var(--card);border:1px solid var(--accent);border-radius:16px;padding:28px 24px}
+  .process-card h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px}
+  .process-card p{font-size:11px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+  .process-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .btn-process{background:var(--accent);color:#fff;font-size:13px;padding:14px 24px}
+  .btn-process:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 4px 24px rgba(217,70,239,.3)}
+  .btn-download-all{background:var(--accent2);color:#fff;font-size:12px;padding:14px 20px}
+  .btn-download-all:hover:not(:disabled){filter:brightness(1.1)}
+  .progress-bar-wrap{background:#f3f4f6;border-radius:8px;height:8px;margin:16px 0 8px;overflow:hidden;display:none}
+  .progress-bar-wrap.visible{display:block}
+  .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent3),var(--accent));border-radius:8px;transition:width .3s;width:0%}
+  .progress-label{font-size:11px;color:var(--muted)}
+  .output-list{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+  .output-item{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .output-item.ready{border-color:rgba(217,70,239,.4)}
+  .output-name{font-size:11px;color:var(--text);flex:1}
+  .output-time{font-size:10px;color:var(--muted);min-width:80px}
+  .btn-dl{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;cursor:pointer}
+  .btn-dl:hover{filter:brightness(1.1)}
+  .status-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:12px 24px;font-size:11px;color:var(--muted);z-index:100;display:flex;align-items:center;gap:8px}
+  .status-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+  .status-dot.active{background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 1.5s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .divider{height:1px;background:var(--border);margin:8px 0}
+  .toast{position:fixed;bottom:56px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#fff;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;padding:10px 20px;border-radius:100px;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:200}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">♪ Lyrics Cutter</div>
+    <h1>Mark & <span>Slice</span></h1>
+    <p class="subtitle">Upload your song video → Play it → Press MARK at each 2-line lyric boundary → Export MP3 clips</p>
+  </header>
+  <div class="step-row">
+    <div class="step-pill active" id="step1">01 Upload</div>
+    <div class="step-pill" id="step2">02 Mark</div>
+    <div class="step-pill" id="step3">03 Export</div>
+  </div>
+  <div class="upload-zone" id="uploadZone">
+    <span class="upload-icon">🎬</span>
+    <h2>Drop your video here</h2>
+    <p>MP4, MKV, AVI, WebM, MOV — any video file works</p>
+    <p style="margin-top:8px;color:var(--accent)">Click to browse</p>
+    <input type="file" id="fileInput" accept="video/*,audio/*">
+  </div>
+  <div class="player-section" id="playerSection">
+    <div class="file-info">
+      <div><div class="file-name" id="fileName">—</div><div class="file-size" id="fileSize">—</div></div>
+      <button class="btn-reset" id="btnReset">✕ Reset</button>
+    </div>
+    <div class="video-wrapper"><video id="videoEl" controls></video></div>
+    <div class="timeline-wrapper">
+      <div class="timeline-label">Timeline — click to seek</div>
+      <div class="timeline-bar" id="timelineBar"><div class="timeline-progress" id="timelineProgress"></div></div>
+      <div class="time-display"><span id="currentTimeStr">0:00.000</span><span id="totalTimeStr">0:00</span></div>
+      <div class="current-time-big" id="currentTimeBig">0:00.000</div>
+    </div>
+    <div class="controls">
+      <button class="btn btn-play" id="btnPlay">▶ Play</button>
+      <button class="btn btn-mark" id="btnMark">⬥ MARK HERE</button>
+      <button class="btn btn-undo" id="btnUndo" disabled title="Undo (Ctrl/Cmd+Z)">↶ Undo</button>
+    </div>
+    <div class="spacebar-hint">Tip: <kbd>Space</kbd> play/pause, <kbd>M</kbd> mark, <kbd>Ctrl+Z</kbd> undo</div>
+  </div>
+  <div class="marks-section" id="marksSection">
+    <div class="divider" style="margin:24px 0 20px"></div>
+    <div class="marks-header">
+      <div style="display:flex;align-items:center;gap:12px"><span class="marks-title">Marked Clips</span><span class="marks-count" id="marksCount">0</span></div>
+      <button class="btn-clear-all" id="btnClearAll">Clear all</button>
+    </div>
+    <div class="marks-list" id="marksList"></div>
+  </div>
+  <div class="process-section" id="processSection">
+    <div class="divider" style="margin:24px 0 20px"></div>
+    <div class="process-card">
+      <h3>Export MP3 Clips</h3>
+      <p>Each clip runs from one mark to the next. The last clip ends at the video's end.<br>Label each clip above before exporting. Output: MP3 (192 kbps).</p>
+      <div class="process-actions">
+        <button class="btn btn-process" id="btnProcess">⚡ Process All Clips</button>
+        <button class="btn btn-download-all" id="btnDownloadAll" disabled>⬇ Download All (ZIP)</button>
+      </div>
+      <div class="progress-bar-wrap" id="progressWrap"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel"></div>
+      <div class="output-list" id="outputList"></div>
+    </div>
+  </div>
+</div>
+<div class="status-bar"><div class="status-dot" id="statusDot"></div><span id="statusText">Ready — upload a video to begin</span></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@breezystack/lamejs@1.2.7/lame.all.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+let marks=[],blobs=[],duration=0,mediaFile=null,history=[];
+const $=id=>document.getElementById(id);
+const uploadZone=$('uploadZone'),fileInput=$('fileInput'),playerSection=$('playerSection'),videoEl=$('videoEl'),timelineBar=$('timelineBar'),timelineProgress=$('timelineProgress'),currentTimeStr=$('currentTimeStr'),currentTimeBig=$('currentTimeBig'),totalTimeStr=$('totalTimeStr'),btnPlay=$('btnPlay'),btnMark=$('btnMark'),btnUndo=$('btnUndo'),btnReset=$('btnReset'),marksSection=$('marksSection'),marksList=$('marksList'),marksCount=$('marksCount'),btnClearAll=$('btnClearAll'),processSection=$('processSection'),btnProcess=$('btnProcess'),btnDownloadAll=$('btnDownloadAll'),progressWrap=$('progressWrap'),progressFill=$('progressFill'),progressLabel=$('progressLabel'),outputList=$('outputList'),statusDot=$('statusDot'),statusText=$('statusText'),toast=$('toast'),fileName=$('fileName'),fileSize=$('fileSize');
+
+function fmtTime(s,ms=true){const m=Math.floor(s/60),sec=Math.floor(s%60),msec=Math.round((s%1)*1000);return ms?`${m}:${String(sec).padStart(2,'0')}.${String(msec).padStart(3,'0')}`:`${m}:${String(sec).padStart(2,'0')}`}
+function fmtSize(b){return b>1e6?(b/1e6).toFixed(1)+' MB':(b/1e3).toFixed(0)+' KB'}
+function setStatus(m,a=false){statusText.textContent=m;statusDot.className='status-dot'+(a?' active':'')}
+function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2000)}
+function setStep(n){for(let i=1;i<=3;i++){$('step'+i).className='step-pill'+(i===n?' active':i<n?' done':'')}}
+function pushHistory(){history.push(JSON.parse(JSON.stringify(marks)));if(history.length>50)history.shift();btnUndo.disabled=false}
+function undo(){if(!history.length)return;marks=history.pop();btnUndo.disabled=!history.length;renderMarks();showToast('↶ Undo');setStatus(`Undone — ${marks.length} mark(s)`)}
+btnUndo.addEventListener('click',undo);
+
+uploadZone.addEventListener('click',()=>fileInput.click());
+uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('drag-over')});
+uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)loadFile(f)});
+fileInput.addEventListener('change',()=>{if(fileInput.files[0])loadFile(fileInput.files[0])});
+function loadFile(file){mediaFile=file;videoEl.src=URL.createObjectURL(file);videoEl.load();fileName.textContent=file.name;fileSize.textContent=fmtSize(file.size);uploadZone.style.display='none';playerSection.classList.add('visible');setStep(2);setStatus('Video loaded — play and press M or MARK HERE to add markers',true)}
+videoEl.addEventListener('loadedmetadata',()=>{duration=videoEl.duration;totalTimeStr.textContent=fmtTime(duration,false)});
+btnReset.addEventListener('click',()=>{marks=[];blobs=[];history=[];btnUndo.disabled=true;videoEl.src='';mediaFile=null;fileInput.value='';uploadZone.style.display='';playerSection.classList.remove('visible');marksSection.classList.remove('visible');processSection.classList.remove('visible');marksList.innerHTML='';outputList.innerHTML='';marksCount.textContent='0';timelineProgress.style.width='0%';btnDownloadAll.disabled=true;setStep(1);setStatus('Ready — upload a video to begin')});
+btnPlay.addEventListener('click',togglePlay);
+function togglePlay(){if(videoEl.paused){videoEl.play();btnPlay.textContent='⏸ Pause'}else{videoEl.pause();btnPlay.textContent='▶ Play'}}
+videoEl.addEventListener('timeupdate',()=>{const t=videoEl.currentTime,pct=duration?(t/duration)*100:0;timelineProgress.style.width=pct+'%';currentTimeStr.textContent=fmtTime(t);currentTimeBig.textContent=fmtTime(t)});
+videoEl.addEventListener('play',()=>{btnPlay.textContent='⏸ Pause';statusDot.classList.add('active')});
+videoEl.addEventListener('pause',()=>{btnPlay.textContent='▶ Play';statusDot.classList.remove('active')});
+videoEl.addEventListener('ended',()=>{btnPlay.textContent='▶ Play'});
+timelineBar.addEventListener('click',e=>{const r=timelineBar.getBoundingClientRect();videoEl.currentTime=((e.clientX-r.left)/r.width)*duration});
+btnMark.addEventListener('click',addMark);
+function addMark(){if(!mediaFile)return;const t=videoEl.currentTime;pushHistory();btnMark.classList.add('flash');setTimeout(()=>btnMark.classList.remove('flash'),200);marks.push({time:t,label:''});marks.sort((a,b)=>a.time-b.time);renderMarks();showToast(`⬥ Mark at ${fmtTime(t)}`);setStatus(`${marks.length} mark(s) set — keep marking or go to Export`)}
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(e.target.tagName))return;if(e.code==='Space'){e.preventDefault();togglePlay()}if(e.code==='KeyM')addMark();if((e.ctrlKey||e.metaKey)&&e.code==='KeyZ'){e.preventDefault();undo()}});
+function renderMarks(){marksList.innerHTML='';document.querySelectorAll('.timeline-mark').forEach(el=>el.remove());marks.forEach((m,i)=>{const tm=document.createElement('div');tm.className='timeline-mark';tm.style.left=duration?((m.time/duration)*100)+'%':'0%';tm.dataset.index=i+1;tm.title=fmtTime(m.time);timelineBar.appendChild(tm);const next=marks[i+1],segDur=next?next.time-m.time:(duration-m.time);const item=document.createElement('div');item.className='mark-item';item.innerHTML=`<span class="mark-index">#${i+1}</span><span class="mark-time" title="Click to seek">${fmtTime(m.time)}</span><input class="mark-label" type="text" placeholder="Lyric label (optional)" value="${m.label.replace(/"/g,'&quot;')}"><span class="mark-duration">${fmtTime(segDur,false)}</span><button class="btn-delete-mark" title="Remove">✕</button>`;item.querySelector('.mark-time').addEventListener('click',()=>videoEl.currentTime=m.time);item.querySelector('.mark-label').addEventListener('input',e=>marks[i].label=e.target.value);item.querySelector('.btn-delete-mark').addEventListener('click',()=>{pushHistory();marks.splice(i,1);renderMarks()});marksList.appendChild(item)});marksCount.textContent=marks.length;marksSection.classList.toggle('visible',marks.length>0);processSection.classList.toggle('visible',marks.length>0);if(marks.length>0)setStep(3)}
+btnClearAll.addEventListener('click',()=>{if(marks.length)pushHistory();marks=[];renderMarks();outputList.innerHTML='';blobs=[];btnDownloadAll.disabled=true;setStep(2);setStatus('Marks cleared')});
+
+function floatToInt16(input){const out=new Int16Array(input.length);for(let i=0;i<input.length;i++){const s=Math.max(-1,Math.min(1,input[i]));out[i]=s<0?s*0x8000:s*0x7FFF}return out}
+function encodeMp3(buffer,kbps=192){const ch=Math.min(buffer.numberOfChannels,2),sr=buffer.sampleRate,enc=new lamejs.Mp3Encoder(ch,sr,kbps);const L=floatToInt16(buffer.getChannelData(0));const R=ch>1?floatToInt16(buffer.getChannelData(1)):null;const block=1152,chunks=[];for(let i=0;i<L.length;i+=block){const l=L.subarray(i,i+block);const buf=R?enc.encodeBuffer(l,R.subarray(i,i+block)):enc.encodeBuffer(l);if(buf.length>0)chunks.push(buf)}const tail=enc.flush();if(tail.length>0)chunks.push(tail);return new Blob(chunks,{type:'audio/mpeg'})}
+
+btnProcess.addEventListener('click',processClips);
+async function processClips(){if(!mediaFile||marks.length===0)return;btnProcess.disabled=true;btnDownloadAll.disabled=true;outputList.innerHTML='';blobs=[];progressWrap.classList.add('visible');setStatus('Processing clips…',true);try{progressLabel.textContent='Decoding audio…';progressFill.style.width='5%';const ab=await mediaFile.arrayBuffer();const ctx=new (window.AudioContext||window.webkitAudioContext)();const audioBuffer=await ctx.decodeAudioData(ab);const sr=audioBuffer.sampleRate,nc=audioBuffer.numberOfChannels,total=audioBuffer.length;const segments=marks.map((m,i)=>({start:m.time,end:marks[i+1]?marks[i+1].time:audioBuffer.duration,label:m.label.trim()||`clip_${String(i+1).padStart(2,'0')}`}));for(let i=0;i<segments.length;i++){const seg=segments[i];progressFill.style.width=(10+(i/segments.length)*85)+'%';progressLabel.textContent=`Exporting clip ${i+1} of ${segments.length}: "${seg.label}"…`;const sS=Math.floor(seg.start*sr),eS=Math.min(Math.floor(seg.end*sr),total),len=eS-sS;if(len<=0)continue;const segBuf=ctx.createBuffer(nc,len,sr);for(let c=0;c<nc;c++)segBuf.copyToChannel(audioBuffer.getChannelData(c).subarray(sS,eS),c);const mp3=encodeMp3(segBuf,192);const url=URL.createObjectURL(mp3);const safe=seg.label.replace(/[^a-z0-9_\-\s]/gi,'').replace(/\s+/g,'_')||`clip_${i+1}`;const filename=`${String(i+1).padStart(2,'0')}_${safe}.mp3`;blobs.push({name:filename,blob:mp3,url});const item=document.createElement('div');item.className='output-item ready';item.innerHTML=`<div><div class="output-name">📄 ${filename}</div><div class="output-time">${fmtTime(seg.start,false)} → ${fmtTime(seg.end,false)}</div></div><button class="btn-dl">⬇ Download</button>`;item.querySelector('.btn-dl').addEventListener('click',()=>triggerDownload(url,filename));outputList.appendChild(item);await new Promise(r=>setTimeout(r,10))}progressFill.style.width='100%';progressLabel.textContent=`✓ ${segments.length} MP3 clips ready!`;btnDownloadAll.disabled=false;setStatus(`✓ Done! ${segments.length} clips processed.`);showToast(`✓ ${segments.length} MP3 clips ready!`)}catch(err){progressLabel.textContent='✗ Error: '+err.message;setStatus('Error: '+err.message);console.error(err)}btnProcess.disabled=false}
+function triggerDownload(url,name){const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a)}
+btnDownloadAll.addEventListener('click',async()=>{if(!blobs.length)return;btnDownloadAll.disabled=true;btnDownloadAll.innerHTML='<span class="spinner"></span> Building ZIP…';try{const zip=new JSZip();for(const b of blobs)zip.file(b.name,b.blob);const content=await zip.generateAsync({type:'blob'});triggerDownload(URL.createObjectURL(content),'lyrics_clips.zip');showToast('ZIP downloaded!')}catch(e){console.error(e);showToast('ZIP failed')}btnDownloadAll.disabled=false;btnDownloadAll.innerHTML='⬇ Download All (ZIP)'});
+</script>
+</body>
+</html>
