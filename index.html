@@ -151,13 +151,14 @@
   .progress-bar-wrap.visible { display:block; }
   .progress-bar-fill { height:100%; background:linear-gradient(90deg,var(--accent3),var(--accent)); border-radius:8px; transition:width .3s; width:0%; }
   .progress-label { font-size:11px; color:var(--muted); min-height:18px; }
-  .output-list { display:flex; flex-direction:column; gap:8px; margin-top:16px; }
-  .output-item { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:12px; animation:slideIn .2s ease; }
-  .output-item.ready { border-color:rgba(232,255,71,.3); }
-  .output-name { font-size:11px; color:var(--text); flex:1; word-break:break-all; }
-  .output-time { font-size:10px; color:var(--muted); white-space:nowrap; }
-  .btn-dl { background:var(--accent); color:var(--bg); border:none; border-radius:8px; padding:7px 14px; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; cursor:pointer; transition:all .2s; white-space:nowrap; }
-  .btn-dl:hover { background:#f5ff80; }
+  .output-list { display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+  .output-item { background:rgba(232,255,71,.06); border:2px solid rgba(232,255,71,.4); border-radius:12px; padding:16px 18px; display:flex; align-items:center; justify-content:space-between; gap:14px; animation:slideIn .2s ease; }
+  .output-item.ready { border-color:var(--accent); }
+  .output-name { font-size:13px; font-weight:700; color:var(--accent); flex:1; word-break:break-all; }
+  .output-time { font-size:11px; color:var(--muted); white-space:nowrap; }
+  .btn-dl { background:var(--accent); color:var(--bg); border:none; border-radius:10px; padding:13px 22px; font-family:'Space Mono',monospace; font-size:13px; font-weight:700; cursor:pointer; transition:all .2s; white-space:nowrap; box-shadow:0 0 18px rgba(232,255,71,.35); }
+  .btn-dl:hover { background:#f5ff80; transform:translateY(-1px); box-shadow:0 4px 24px rgba(232,255,71,.5); }
+  .output-ready-banner { background:rgba(232,255,71,.1); border:1px solid var(--accent); border-radius:10px; padding:12px 16px; font-size:12px; color:var(--accent); font-weight:700; text-align:center; margin-bottom:4px; }
 
   .divider { height:1px; background:var(--border); margin:24px 0 20px; }
   .status-bar { position:fixed; bottom:0; left:0; right:0; background:var(--surface); border-top:1px solid var(--border); padding:11px 24px; font-size:11px; color:var(--muted); z-index:100; display:flex; align-items:center; gap:8px; }
@@ -283,38 +284,6 @@
       <div class="current-time-big" id="currentTimeBig">0:00.000</div>
     </div>
 
-    <!-- PRE/POST CUT -->
-    <div class="cut-section" id="cutSection">
-      <div class="cut-header" id="cutToggle">
-        <div class="cut-header-left">
-          <span class="cut-title">✂ Pre-cut / Post-cut Window</span>
-          <span class="cut-badge" id="cutBadge">Full file</span>
-        </div>
-        <span class="cut-chevron" id="cutChevron">▼</span>
-      </div>
-      <div class="cut-body" id="cutBody">
-        <p class="cut-hint" style="margin-bottom:10px;">Decode only a slice of the file — prevents crashes on large files (100 MB+). Marks outside this window will be excluded.</p>
-        <div class="cut-visual" id="cutVisual">
-          <div class="cut-visual-pre" id="cutVisualPre" style="width:0%"></div>
-          <div class="cut-visual-post" id="cutVisualPost" style="width:0%"></div>
-          <div class="cut-visual-fill" id="cutVisualFill" style="left:0%;width:100%"></div>
-        </div>
-        <div class="cut-row">
-          <div class="cut-field">
-            <label>Start (pre-cut)</label>
-            <input class="cut-input" id="cutStart" type="text" placeholder="0:00" autocomplete="off">
-          </div>
-          <div class="cut-field">
-            <label>End (post-cut)</label>
-            <input class="cut-input" id="cutEnd" type="text" placeholder="e.g. 25:00" autocomplete="off">
-          </div>
-          <button class="btn-cut-apply" id="btnCutApply">Apply</button>
-          <button class="btn-cut-clear" id="btnCutClear">Clear</button>
-        </div>
-        <div class="cut-hint"><strong>Tip:</strong> Leave start blank for 0:00, leave end blank for full duration. Use <strong>M:SS</strong> or <strong>H:MM:SS</strong> format.</div>
-      </div>
-    </div>
-
     <div class="controls">
       <button class="btn btn-play" id="btnPlay">▶ Play</button>
       <button class="btn btn-mark" id="btnMark">⬥ MARK HERE</button>
@@ -347,6 +316,38 @@
     <div class="marks-export-row" style="margin-top:10px;">
       <button class="btn-export-sel btn" id="btnExportSelected">⚡ Export Selected Clips</button>
       <span style="font-size:10px;color:var(--muted)">or use the main Export button below for all</span>
+    </div>
+  </div>
+
+  <!-- PRE/POST CUT -->
+  <div class="cut-section" id="cutSection">
+    <div class="cut-header" id="cutToggle">
+      <div class="cut-header-left">
+        <span class="cut-title">✂ Pre-cut / Post-cut Window</span>
+        <span class="cut-badge" id="cutBadge">Full file</span>
+      </div>
+      <span class="cut-chevron" id="cutChevron">▼</span>
+    </div>
+    <div class="cut-body" id="cutBody">
+      <p class="cut-hint" style="margin-bottom:10px;">For large files (100 MB+): limit the decode range to avoid crashes. Only marks inside this window are exported.</p>
+      <div class="cut-visual" id="cutVisual">
+        <div class="cut-visual-pre" id="cutVisualPre" style="width:0%"></div>
+        <div class="cut-visual-post" id="cutVisualPost" style="width:0%"></div>
+        <div class="cut-visual-fill" id="cutVisualFill" style="left:0%;width:100%"></div>
+      </div>
+      <div class="cut-row">
+        <div class="cut-field">
+          <label>Start (pre-cut)</label>
+          <input class="cut-input" id="cutStart" type="text" placeholder="0:00" autocomplete="off">
+        </div>
+        <div class="cut-field">
+          <label>End (post-cut)</label>
+          <input class="cut-input" id="cutEnd" type="text" placeholder="e.g. 25:00" autocomplete="off">
+        </div>
+        <button class="btn-cut-apply" id="btnCutApply">Apply</button>
+        <button class="btn-cut-clear" id="btnCutClear">Clear</button>
+      </div>
+      <div class="cut-hint"><strong>Tip:</strong> Use <strong>M:SS</strong> or <strong>H:MM:SS</strong> format.</div>
     </div>
   </div>
 
@@ -974,7 +975,9 @@ async function processClips(selectedIdx){
     }
 
     progressFill.style.width='100%';
-    progressLabel.textContent=`✓ ${segs.length} MP3 clip(s) ready — click ⬇ buttons above to save!`;
+    progressLabel.textContent=`✓ ${segs.length} clip(s) ready!`;
+    // Auto-scroll to output
+    setTimeout(()=>outputList.scrollIntoView({behavior:"smooth",block:"start"}),100);
     btnDownloadAll.disabled=false;
 
     // Save session progress
