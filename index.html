@@ -8,420 +8,214 @@
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 
   :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --card: #1a1a26;
-    --border: #2a2a3d;
-    --accent: #e8ff47;
-    --accent2: #ff4778;
-    --accent3: #47c8ff;
-    --text: #f0f0f8;
-    --muted: #6b6b8a;
+    --bg: #0a0a0f; --surface: #12121a; --card: #1a1a26; --border: #2a2a3d;
+    --accent: #e8ff47; --accent2: #ff4778; --accent3: #47c8ff;
+    --text: #f0f0f8; --muted: #6b6b8a;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Space Mono', monospace;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .app {
-    position: relative;
-    z-index: 1;
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 40px 24px 80px;
-  }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Mono', monospace; min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(232,255,71,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(232,255,71,0.03) 1px,transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+  .app { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
 
   header { margin-bottom: 48px; }
-  .logo {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.25em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-  h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(32px, 6vw, 56px);
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    margin-bottom: 10px;
-  }
+  .logo { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; letter-spacing:.25em; color:var(--accent); text-transform:uppercase; margin-bottom:12px; }
+  h1 { font-family:'Syne',sans-serif; font-size:clamp(32px,6vw,56px); font-weight:800; line-height:1; letter-spacing:-.02em; margin-bottom:10px; }
   h1 span { color: var(--accent2); }
-  .subtitle { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .subtitle { color:var(--muted); font-size:13px; line-height:1.6; }
 
-  .step-row { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
-  .step-pill {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    padding: 5px 12px;
-    border-radius: 100px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    transition: all 0.3s;
-  }
-  .step-pill.active { border-color: var(--accent); color: var(--accent); background: rgba(232,255,71,0.08); }
-  .step-pill.done { border-color: var(--border); color: var(--border); text-decoration: line-through; }
+  .step-row { display:flex; gap:8px; margin-bottom:32px; flex-wrap:wrap; }
+  .step-pill { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; letter-spacing:.1em; padding:5px 12px; border-radius:100px; border:1px solid var(--border); color:var(--muted); transition:all .3s; }
+  .step-pill.active { border-color:var(--accent); color:var(--accent); background:rgba(232,255,71,.08); }
+  .step-pill.done { border-color:var(--border); color:var(--border); text-decoration:line-through; }
+
+  /* RESUME BANNER */
+  .resume-banner { display:none; background:rgba(71,200,255,.08); border:1px solid rgba(71,200,255,.35); border-radius:14px; padding:16px 20px; margin-bottom:24px; }
+  .resume-banner.visible { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .resume-info { flex:1; min-width:0; }
+  .resume-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--accent3); margin-bottom:4px; }
+  .resume-detail { font-size:11px; color:var(--muted); line-height:1.6; }
+  .resume-detail strong { color:var(--text); }
+  .btn-resume { background:var(--accent3); color:var(--bg); border:none; border-radius:8px; padding:9px 16px; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap; transition:all .2s; }
+  .btn-resume:hover { background:#80e0ff; }
+  .btn-resume-dismiss { background:none; border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:9px 12px; font-family:'Space Mono',monospace; font-size:11px; cursor:pointer; white-space:nowrap; transition:all .2s; }
+  .btn-resume-dismiss:hover { border-color:var(--accent2); color:var(--accent2); }
+
+  /* SESSION PROGRESS BAR on timeline */
+  .timeline-done { position:absolute; top:0; left:0; height:100%; background:rgba(255,71,120,.18); border-radius:4px; pointer-events:none; }
+  .timeline-done-label { position:absolute; top:-22px; font-size:9px; color:var(--accent2); font-family:'Space Mono',monospace; white-space:nowrap; transform:translateX(-50%); }
 
   /* UPLOAD */
-  .upload-zone {
-    border: 2px dashed var(--border);
-    border-radius: 16px;
-    padding: 56px 32px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    background: var(--surface);
-    position: relative;
-    overflow: hidden;
-  }
-  .upload-zone::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, rgba(232,255,71,0.04) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .upload-zone:hover, .upload-zone.drag-over { border-color: var(--accent); background: rgba(232,255,71,0.04); }
-  .upload-zone:hover::before, .upload-zone.drag-over::before { opacity: 1; }
-  .upload-icon { font-size: 48px; margin-bottom: 16px; display: block; }
-  .upload-zone h2 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-  .upload-zone p { color: var(--muted); font-size: 12px; }
-  .upload-zone input { display: none; }
+  .upload-zone { border:2px dashed var(--border); border-radius:16px; padding:56px 32px; text-align:center; cursor:pointer; transition:all .3s; background:var(--surface); position:relative; overflow:hidden; }
+  .upload-zone::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at center,rgba(232,255,71,.04) 0%,transparent 70%); opacity:0; transition:opacity .3s; }
+  .upload-zone:hover,.upload-zone.drag-over { border-color:var(--accent); background:rgba(232,255,71,.04); }
+  .upload-zone:hover::before,.upload-zone.drag-over::before { opacity:1; }
+  .upload-icon { font-size:48px; margin-bottom:16px; display:block; }
+  .upload-zone h2 { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; margin-bottom:8px; }
+  .upload-zone p { color:var(--muted); font-size:12px; }
+  .upload-zone input { display:none; }
 
   /* PLAYER */
-  .player-section { display: none; flex-direction: column; gap: 20px; }
-  .player-section.visible { display: flex; }
+  .player-section { display:none; flex-direction:column; gap:20px; }
+  .player-section.visible { display:flex; }
+  .file-info { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .file-name { font-size:12px; color:var(--accent); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .file-size { font-size:11px; color:var(--muted); }
+  .file-actions { display:flex; gap:8px; }
+  .btn-reset { background:none; border:1px solid var(--accent2); color:var(--accent2); border-radius:8px; padding:6px 12px; font-family:'Space Mono',monospace; font-size:11px; cursor:pointer; white-space:nowrap; transition:all .2s; }
+  .btn-reset:hover { background:rgba(255,71,120,.1); }
 
-  .file-info {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .file-name { font-size: 12px; color: var(--accent); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .file-size { font-size: 11px; color: var(--muted); }
-  .btn-reset {
-    background: none;
-    border: 1px solid var(--accent2);
-    color: var(--accent2);
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-  .btn-reset:hover { background: rgba(255,71,120,0.1); }
+  /* SESSION CHIP */
+  .session-chip { display:none; background:rgba(71,200,255,.1); border:1px solid rgba(71,200,255,.3); border-radius:8px; padding:6px 12px; font-size:10px; color:var(--accent3); white-space:nowrap; }
+  .session-chip.visible { display:block; }
 
-  .video-wrapper {
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-  video { width: 100%; display: block; max-height: 340px; object-fit: contain; background: #000; }
+  .video-wrapper { background:#000; border-radius:12px; overflow:hidden; border:1px solid var(--border); }
+  video { width:100%; display:block; max-height:340px; object-fit:contain; background:#000; }
 
   /* TIMELINE */
-  .timeline-wrapper {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 18px;
-  }
-  .timeline-label { font-size: 10px; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 10px; }
-  .timeline-bar {
-    height: 8px;
-    background: var(--surface);
-    border-radius: 4px;
-    position: relative;
-    cursor: pointer;
-    overflow: visible;
-  }
-  .timeline-progress {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent3), var(--accent));
-    border-radius: 4px;
-    width: 0%;
-    transition: width 0.1s linear;
-    pointer-events: none;
-  }
-  .timeline-mark {
-    position: absolute;
-    top: -6px;
-    width: 3px;
-    height: 20px;
-    background: var(--accent2);
-    border-radius: 2px;
-    transform: translateX(-50%);
-    pointer-events: none;
-  }
-  .timeline-mark::after {
-    content: attr(data-index);
-    position: absolute;
-    top: -18px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 9px;
-    color: var(--accent2);
-    font-family: 'Space Mono', monospace;
-  }
-  .time-display { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--muted); }
-  .current-time-big {
-    font-family: 'Syne', sans-serif;
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--accent);
-    letter-spacing: -0.02em;
-    margin-top: 4px;
-  }
+  .timeline-wrapper { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
+  .timeline-label { font-size:10px; color:var(--muted); letter-spacing:.15em; text-transform:uppercase; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
+  .timeline-remaining { color:var(--accent3); }
+  .timeline-bar { height:8px; background:var(--surface); border-radius:4px; position:relative; cursor:pointer; overflow:visible; }
+  .timeline-progress { height:100%; background:linear-gradient(90deg,var(--accent3),var(--accent)); border-radius:4px; width:0%; transition:width .1s linear; pointer-events:none; position:relative; z-index:2; }
+  .timeline-mark { position:absolute; top:-6px; width:3px; height:20px; background:var(--accent2); border-radius:2px; transform:translateX(-50%); pointer-events:none; z-index:3; }
+  .timeline-mark::after { content:attr(data-index); position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:9px; color:var(--accent2); font-family:'Space Mono',monospace; }
+  /* Greyed-out "already done" region on timeline */
+  .timeline-past { position:absolute; top:0; left:0; height:100%; background:rgba(255,71,120,.15); border-radius:4px 0 0 4px; pointer-events:none; z-index:1; }
+  .timeline-past-marker { position:absolute; top:-6px; width:2px; height:20px; background:var(--accent2); border-radius:2px; pointer-events:none; z-index:4; opacity:.6; }
+  .timeline-past-marker::before { content:'▶ resume'; position:absolute; top:-18px; left:6px; font-size:9px; color:var(--accent2); font-family:'Space Mono',monospace; white-space:nowrap; }
+  .time-display { display:flex; justify-content:space-between; margin-top:8px; font-size:11px; color:var(--muted); }
+  .current-time-big { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:var(--accent); letter-spacing:-.02em; margin-top:4px; }
 
   /* CONTROLS */
-  .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .btn {
-    font-family: 'Space Mono', monospace;
-    border: none;
-    border-radius: 10px;
-    padding: 12px 18px;
-    font-size: 12px;
-    cursor: pointer;
-    font-weight: 700;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    white-space: nowrap;
-  }
-  .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-
-  .btn-play { background: var(--text); color: var(--bg); min-width: 100px; justify-content: center; }
-  .btn-play:hover:not(:disabled) { background: var(--accent); }
-
-  .btn-mark {
-    background: var(--accent2);
-    color: #fff;
-    flex: 1;
-    justify-content: center;
-    font-size: 13px;
-    letter-spacing: 0.04em;
-    position: relative;
-  }
-  .btn-mark:hover:not(:disabled) { background: #ff6191; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255,71,120,0.4); }
-  .btn-mark:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
-  .btn-mark.flash { background: var(--accent); color: var(--bg); }
-
-  /* UNDO button */
-  .btn-undo {
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
-    padding: 12px 16px;
-    font-size: 13px;
-  }
-  .btn-undo:hover:not(:disabled) { border-color: var(--accent3); color: var(--accent3); background: rgba(71,200,255,0.07); }
-
-  .kbd-hints { font-size: 10px; color: var(--muted); letter-spacing: 0.08em; }
-  kbd { background: var(--border); border-radius: 4px; padding: 2px 6px; font-size: 10px; color: var(--text); }
+  .controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .btn { font-family:'Space Mono',monospace; border:none; border-radius:10px; padding:12px 18px; font-size:12px; cursor:pointer; font-weight:700; transition:all .2s; display:flex; align-items:center; gap:7px; white-space:nowrap; }
+  .btn:disabled { opacity:.35; cursor:not-allowed; transform:none!important; box-shadow:none!important; }
+  .btn-play { background:var(--text); color:var(--bg); min-width:100px; justify-content:center; }
+  .btn-play:hover:not(:disabled) { background:var(--accent); }
+  .btn-mark { background:var(--accent2); color:#fff; flex:1; justify-content:center; font-size:13px; letter-spacing:.04em; }
+  .btn-mark:hover:not(:disabled) { background:#ff6191; transform:translateY(-1px); box-shadow:0 4px 20px rgba(255,71,120,.4); }
+  .btn-mark:active:not(:disabled) { transform:translateY(0); box-shadow:none; }
+  .btn-mark.flash { background:var(--accent); color:var(--bg); }
+  .btn-undo { background:var(--surface); color:var(--text); border:1px solid var(--border); padding:12px 16px; font-size:13px; }
+  .btn-undo:hover:not(:disabled) { border-color:var(--accent3); color:var(--accent3); background:rgba(71,200,255,.07); }
+  .kbd-hints { font-size:10px; color:var(--muted); letter-spacing:.08em; }
+  kbd { background:var(--border); border-radius:4px; padding:2px 6px; font-size:10px; color:var(--text); }
 
   /* MARKS */
-  .marks-section { display: none; }
-  .marks-section.visible { display: block; }
-  .marks-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
-  .marks-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
-  .marks-count { background: var(--accent2); color: #fff; border-radius: 100px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
-  .btn-clear-all {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    border-radius: 8px;
-    padding: 5px 12px;
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-clear-all:hover { border-color: var(--accent2); color: var(--accent2); }
-
-  .marks-list { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; padding-right: 4px; }
-  .marks-list::-webkit-scrollbar { width: 4px; }
-  .marks-list::-webkit-scrollbar-track { background: var(--surface); }
-  .marks-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  .mark-item {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: slideIn 0.2s ease;
-  }
-  @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-  .mark-index { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 800; color: var(--accent2); min-width: 24px; }
-  .mark-time { font-size: 12px; font-weight: 700; color: var(--accent); min-width: 76px; cursor: pointer; }
-  .mark-time:hover { text-decoration: underline; }
-  .mark-label {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 7px 10px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s;
-    min-width: 0;
-  }
-  .mark-label:focus { border-color: var(--accent); }
-  .mark-label::placeholder { color: var(--muted); }
-  .mark-duration { font-size: 10px; color: var(--muted); min-width: 44px; text-align: right; }
-  .btn-delete-mark { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 2px 4px; transition: color 0.2s; line-height: 1; }
-  .btn-delete-mark:hover { color: var(--accent2); }
+  .marks-section { display:none; }
+  .marks-section.visible { display:block; }
+  .marks-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
+  .marks-title { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; }
+  .marks-count { background:var(--accent2); color:#fff; border-radius:100px; padding:3px 10px; font-size:11px; font-weight:700; }
+  .clips-preview { font-size:11px; color:var(--accent3); background:rgba(71,200,255,.07); border:1px solid rgba(71,200,255,.2); border-radius:8px; padding:8px 12px; margin-bottom:12px; }
+  .btn-clear-all { background:none; border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:5px 12px; font-family:'Space Mono',monospace; font-size:10px; cursor:pointer; transition:all .2s; }
+  .btn-clear-all:hover { border-color:var(--accent2); color:var(--accent2); }
+  .marks-list { display:flex; flex-direction:column; gap:8px; max-height:320px; overflow-y:auto; padding-right:4px; }
+  .marks-list::-webkit-scrollbar { width:4px; }
+  .marks-list::-webkit-scrollbar-track { background:var(--surface); }
+  .marks-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .mark-item { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 14px; display:flex; align-items:center; gap:10px; animation:slideIn .2s ease; }
+  @keyframes slideIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+  .mark-index { font-family:'Syne',sans-serif; font-size:11px; font-weight:800; color:var(--accent2); min-width:32px; }
+  .mark-range { font-size:10px; color:var(--muted); min-width:90px; line-height:1.5; }
+  .mark-range strong { color:var(--accent); font-size:11px; }
+  .mark-label { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:7px 10px; font-family:'Space Mono',monospace; font-size:11px; color:var(--text); outline:none; transition:border-color .2s; min-width:0; }
+  .mark-label:focus { border-color:var(--accent); }
+  .mark-label::placeholder { color:var(--muted); }
+  .mark-duration { font-size:10px; color:var(--muted); min-width:40px; text-align:right; }
+  .btn-delete-mark { background:none; border:none; color:var(--muted); cursor:pointer; font-size:15px; padding:2px 4px; transition:color .2s; line-height:1; }
+  .btn-delete-mark:hover { color:var(--accent2); }
+  .mark-check { width:16px; height:16px; accent-color:var(--accent2); cursor:pointer; flex-shrink:0; }
+  .mark-item.excluded { opacity:.45; }
+  .serial-toggle-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:11px; color:var(--muted); }
+  .serial-toggle-row label { cursor:pointer; display:flex; align-items:center; gap:6px; }
+  .serial-toggle-row input[type=checkbox] { accent-color:var(--accent); width:14px; height:14px; }
+  .marks-export-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .btn-export-sel { background:var(--accent2); color:#fff; border:none; border-radius:10px; padding:10px 16px; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:6px; }
+  .btn-export-sel:hover:not(:disabled) { background:#ff6191; }
+  .btn-export-sel:disabled { opacity:.35; cursor:not-allowed; }
 
   /* PROCESS */
-  .process-section { display: none; }
-  .process-section.visible { display: block; }
-  .process-card { background: var(--card); border: 1px solid var(--accent); border-radius: 16px; padding: 28px 24px; }
-  .process-card h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-  .process-card p { font-size: 11px; color: var(--muted); margin-bottom: 20px; line-height: 1.7; }
+  .process-section { display:none; }
+  .process-section.visible { display:block; }
+  .process-card { background:var(--card); border:1px solid var(--accent); border-radius:16px; padding:28px 24px; }
+  .process-card h3 { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin-bottom:6px; }
+  .process-card p { font-size:11px; color:var(--muted); margin-bottom:20px; line-height:1.7; }
+  .encoder-notice { background:rgba(71,200,255,.08); border:1px solid rgba(71,200,255,.25); border-radius:10px; padding:12px 14px; font-size:11px; color:var(--accent3); margin-bottom:18px; line-height:1.6; }
+  .process-actions { display:flex; gap:10px; flex-wrap:wrap; }
+  .btn-process { background:var(--accent); color:var(--bg); font-size:13px; padding:14px 24px; }
+  .btn-process:hover:not(:disabled) { background:#f5ff80; transform:translateY(-1px); box-shadow:0 4px 24px rgba(232,255,71,.3); }
+  .btn-download-all { background:var(--accent3); color:var(--bg); font-size:12px; padding:14px 20px; }
+  .btn-download-all:hover:not(:disabled) { background:#80e0ff; }
+  .progress-bar-wrap { background:var(--surface); border-radius:8px; height:8px; margin:16px 0 8px; overflow:hidden; display:none; }
+  .progress-bar-wrap.visible { display:block; }
+  .progress-bar-fill { height:100%; background:linear-gradient(90deg,var(--accent3),var(--accent)); border-radius:8px; transition:width .3s; width:0%; }
+  .progress-label { font-size:11px; color:var(--muted); min-height:18px; }
+  .output-list { display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+  .output-item { background:rgba(232,255,71,.06); border:2px solid rgba(232,255,71,.4); border-radius:12px; padding:16px 18px; display:flex; align-items:center; justify-content:space-between; gap:14px; animation:slideIn .2s ease; }
+  .output-item.ready { border-color:var(--accent); }
+  .output-name { font-size:13px; font-weight:700; color:var(--accent); flex:1; word-break:break-all; }
+  .output-time { font-size:11px; color:var(--muted); white-space:nowrap; }
+  .btn-dl { background:var(--accent); color:var(--bg); border:none; border-radius:10px; padding:13px 22px; font-family:'Space Mono',monospace; font-size:13px; font-weight:700; cursor:pointer; transition:all .2s; white-space:nowrap; box-shadow:0 0 18px rgba(232,255,71,.35); }
+  .btn-dl:hover { background:#f5ff80; transform:translateY(-1px); box-shadow:0 4px 24px rgba(232,255,71,.5); }
+  .output-ready-banner { background:rgba(232,255,71,.1); border:1px solid var(--accent); border-radius:10px; padding:12px 16px; font-size:12px; color:var(--accent); font-weight:700; text-align:center; margin-bottom:4px; }
 
-  /* FFmpeg notice */
-  .ffmpeg-notice {
-    background: rgba(71,200,255,0.08);
-    border: 1px solid rgba(71,200,255,0.25);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 11px;
-    color: var(--accent3);
-    margin-bottom: 18px;
-    line-height: 1.6;
-  }
-  .ffmpeg-notice strong { color: var(--accent3); }
+  .divider { height:1px; background:var(--border); margin:24px 0 20px; }
+  .status-bar { position:fixed; bottom:0; left:0; right:0; background:var(--surface); border-top:1px solid var(--border); padding:11px 24px; font-size:11px; color:var(--muted); z-index:100; display:flex; align-items:center; gap:8px; }
+  .status-dot { width:6px; height:6px; border-radius:50%; background:var(--muted); flex-shrink:0; }
+  .status-dot.active { background:var(--accent); box-shadow:0 0 8px var(--accent); animation:pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .toast { position:fixed; bottom:56px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--accent); color:var(--bg); font-family:'Space Mono',monospace; font-size:12px; font-weight:700; padding:10px 20px; border-radius:100px; opacity:0; transition:all .3s; pointer-events:none; white-space:nowrap; z-index:200; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.undo { background:var(--accent3); }
+  .spinner { display:inline-block; width:13px; height:13px; border:2px solid rgba(10,10,15,.3); border-top-color:var(--bg); border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; }
+  @keyframes spin { to{transform:rotate(360deg)} }
 
-  .process-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-  .btn-process { background: var(--accent); color: var(--bg); font-size: 13px; padding: 14px 24px; }
-  .btn-process:hover:not(:disabled) { background: #f5ff80; transform: translateY(-1px); box-shadow: 0 4px 24px rgba(232,255,71,0.3); }
-  .btn-download-all { background: var(--accent3); color: var(--bg); font-size: 12px; padding: 14px 20px; }
-  .btn-download-all:hover:not(:disabled) { background: #80e0ff; }
+  /* PRE/POST CUT */
+  .cut-section { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; margin-top:12px; }
+  .cut-header { display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; }
+  .cut-header-left { display:flex; align-items:center; gap:10px; }
+  .cut-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--accent3); }
+  .cut-badge { font-size:10px; color:var(--muted); }
+  .cut-chevron { color:var(--muted); font-size:12px; transition:transform .2s; }
+  .cut-chevron.open { transform:rotate(180deg); }
+  .cut-body { margin-top:14px; display:none; }
+  .cut-body.visible { display:block; }
+  .cut-row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin-bottom:10px; }
+  .cut-field { display:flex; flex-direction:column; gap:5px; flex:1; min-width:120px; }
+  .cut-field label { font-size:10px; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; }
+  .cut-input { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:9px 12px; font-family:'Space Mono',monospace; font-size:12px; color:var(--text); outline:none; transition:border-color .2s; width:100%; }
+  .cut-input:focus { border-color:var(--accent3); }
+  .cut-input.error { border-color:var(--accent2); }
+  .cut-visual { position:relative; height:28px; background:var(--surface); border-radius:6px; margin-bottom:10px; overflow:hidden; border:1px solid var(--border); }
+  .cut-visual-fill { position:absolute; top:0; height:100%; background:rgba(71,200,255,.18); border-left:2px solid var(--accent3); border-right:2px solid var(--accent3); transition:left .1s, width .1s; }
+  .cut-visual-pre { position:absolute; top:0; left:0; height:100%; background:rgba(255,71,120,.1); }
+  .cut-visual-post { position:absolute; top:0; right:0; height:100%; background:rgba(255,71,120,.1); }
+  .cut-hint { font-size:10px; color:var(--muted); line-height:1.6; }
+  .cut-hint strong { color:var(--accent3); }
+  .btn-cut-apply { background:var(--accent3); color:var(--bg); border:none; border-radius:8px; padding:8px 16px; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap; transition:all .2s; }
+  .btn-cut-apply:hover { background:#80e0ff; }
+  .btn-cut-clear { background:none; border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:8px 12px; font-family:'Space Mono',monospace; font-size:11px; cursor:pointer; transition:all .2s; }
+  .btn-cut-clear:hover { border-color:var(--accent2); color:var(--accent2); }
 
-  .progress-bar-wrap { background: var(--surface); border-radius: 8px; height: 8px; margin: 16px 0 8px; overflow: hidden; display: none; }
-  .progress-bar-wrap.visible { display: block; }
-  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent3), var(--accent)); border-radius: 8px; transition: width 0.4s; width: 0%; }
-  .progress-label { font-size: 11px; color: var(--muted); min-height: 18px; }
-
-  .output-list { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
-  .output-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    animation: slideIn 0.2s ease;
-  }
-  .output-item.ready { border-color: rgba(232,255,71,0.3); }
-  .output-name { font-size: 11px; color: var(--text); flex: 1; word-break: break-all; }
-  .output-time { font-size: 10px; color: var(--muted); white-space: nowrap; }
-  .btn-dl {
-    background: var(--accent);
-    color: var(--bg);
-    border: none;
-    border-radius: 8px;
-    padding: 7px 14px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-  .btn-dl:hover { background: #f5ff80; }
-
-  .divider { height: 1px; background: var(--border); margin: 24px 0 20px; }
-
-  /* STATUS BAR */
-  .status-bar {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    padding: 11px 24px;
-    font-size: 11px;
-    color: var(--muted);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
-  .status-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 56px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--accent);
-    color: var(--bg);
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 10px 20px;
-    border-radius: 100px;
-    opacity: 0;
-    transition: all 0.3s;
-    pointer-events: none;
-    white-space: nowrap;
-    z-index: 200;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast.undo-toast { background: var(--accent3); color: var(--bg); }
-
-  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(10,10,15,0.3); border-top-color: var(--bg); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  /* SAVED SESSIONS PANEL */
+  .sessions-panel { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 20px; margin-bottom:28px; display:none; }
+  .sessions-panel.visible { display:block; }
+  .sessions-panel-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--accent3); margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }
+  .session-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+  .session-row:last-child { border-bottom:none; padding-bottom:0; }
+  .session-fname { font-size:11px; color:var(--text); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .session-meta { font-size:10px; color:var(--muted); white-space:nowrap; }
+  .btn-session-del { background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px; padding:2px 4px; transition:color .2s; }
+  .btn-session-del:hover { color:var(--accent2); }
 </style>
 </head>
 <body>
-
 <div class="app">
   <header>
     <div class="logo">♪ Lyrics Cutter</div>
     <h1>Mark & <span>Slice</span></h1>
-    <p class="subtitle">Upload your song video → Play it → Press <kbd>M</kbd> to mark each 2-line lyric → Export as MP3</p>
+    <p class="subtitle">Upload video → Mark clips → Export → <strong style="color:var(--accent3)">Progress saved automatically</strong> — resume next session from where you stopped</p>
   </header>
 
   <div class="step-row">
@@ -430,23 +224,43 @@
     <div class="step-pill" id="step3">03 Export</div>
   </div>
 
-  <!-- UPLOAD -->
+  <!-- SAVED SESSIONS -->
+  <div class="sessions-panel" id="sessionsPanel">
+    <div class="sessions-panel-title">
+      <span>📂 Saved Sessions</span>
+      <span style="font-size:10px;color:var(--muted);font-weight:400">Upload the same video to resume</span>
+    </div>
+    <div id="sessionsList"></div>
+  </div>
+
+  <!-- RESUME BANNER (shown after upload if session found) -->
+  <div class="resume-banner" id="resumeBanner">
+    <div class="resume-info">
+      <div class="resume-title">⏱ Previous session found!</div>
+      <div class="resume-detail" id="resumeDetail">—</div>
+    </div>
+    <button class="btn-resume" id="btnResume">▶ Resume from here</button>
+    <button class="btn-resume-dismiss" id="btnResumeDismiss">Start fresh</button>
+  </div>
+
   <div class="upload-zone" id="uploadZone">
     <span class="upload-icon">🎬</span>
     <h2>Drop your video here</h2>
     <p>MP4, MKV, AVI, WebM, MOV — any video or audio file</p>
-    <p style="margin-top:8px; color: var(--accent);">Click to browse</p>
+    <p style="margin-top:8px;color:var(--accent)">Click to browse</p>
     <input type="file" id="fileInput" accept="video/*,audio/*">
   </div>
 
-  <!-- PLAYER -->
   <div class="player-section" id="playerSection">
     <div class="file-info">
-      <div>
+      <div style="min-width:0;flex:1">
         <div class="file-name" id="fileName">—</div>
         <div class="file-size" id="fileSize">—</div>
       </div>
-      <button class="btn-reset" id="btnReset">✕ Reset</button>
+      <div class="file-actions">
+        <div class="session-chip" id="sessionChip">▶ Resumed</div>
+        <button class="btn-reset" id="btnReset">✕ Reset</button>
+      </div>
     </div>
 
     <div class="video-wrapper">
@@ -454,8 +268,13 @@
     </div>
 
     <div class="timeline-wrapper">
-      <div class="timeline-label">Timeline — click to seek</div>
+      <div class="timeline-label">
+        <span>Timeline — click to seek</span>
+        <span class="timeline-remaining" id="timelineRemaining"></span>
+      </div>
       <div class="timeline-bar" id="timelineBar">
+        <div class="timeline-past" id="timelinePast" style="width:0%"></div>
+        <div class="timeline-past-marker" id="timelinePastMarker" style="display:none"></div>
         <div class="timeline-progress" id="timelineProgress"></div>
       </div>
       <div class="time-display">
@@ -468,10 +287,12 @@
     <div class="controls">
       <button class="btn btn-play" id="btnPlay">▶ Play</button>
       <button class="btn btn-mark" id="btnMark">⬥ MARK HERE</button>
-      <button class="btn btn-undo" id="btnUndo" disabled title="Undo last mark (Ctrl+Z)">↩ Undo</button>
+      <button class="btn btn-undo" id="btnUndo" disabled>↩ Undo</button>
     </div>
     <div class="kbd-hints">
-      <kbd>Space</kbd> Play/Pause &nbsp; <kbd>M</kbd> Mark &nbsp; <kbd>Ctrl</kbd>+<kbd>Z</kbd> Undo last mark
+      <kbd>Space</kbd> Play/Pause &nbsp;
+      <kbd>M</kbd> Mark &nbsp;
+      <kbd>Ctrl</kbd>+<kbd>Z</kbd> Undo
     </div>
   </div>
 
@@ -485,7 +306,49 @@
       </div>
       <button class="btn-clear-all" id="btnClearAll">Clear all</button>
     </div>
+    <div class="serial-toggle-row">
+      <label><input type="checkbox" id="chkSerial" checked> Auto-serial names from clip #1</label>
+      <span style="flex:1"></span>
+      <span style="font-size:10px;color:var(--muted)" id="selCountLabel">All selected</span>
+    </div>
+    <div class="clips-preview" id="clipsPreview"></div>
     <div class="marks-list" id="marksList"></div>
+    <div class="marks-export-row" style="margin-top:10px;">
+      <button class="btn-export-sel btn" id="btnExportSelected">⚡ Export Selected Clips</button>
+      <span style="font-size:10px;color:var(--muted)">or use the main Export button below for all</span>
+    </div>
+  </div>
+
+  <!-- PRE/POST CUT -->
+  <div class="cut-section" id="cutSection">
+    <div class="cut-header" id="cutToggle">
+      <div class="cut-header-left">
+        <span class="cut-title">✂ Pre-cut / Post-cut Window</span>
+        <span class="cut-badge" id="cutBadge">Full file</span>
+      </div>
+      <span class="cut-chevron" id="cutChevron">▼</span>
+    </div>
+    <div class="cut-body" id="cutBody">
+      <p class="cut-hint" style="margin-bottom:10px;">For large files (100 MB+): limit the decode range to avoid crashes. Only marks inside this window are exported.</p>
+      <div class="cut-visual" id="cutVisual">
+        <div class="cut-visual-pre" id="cutVisualPre" style="width:0%"></div>
+        <div class="cut-visual-post" id="cutVisualPost" style="width:0%"></div>
+        <div class="cut-visual-fill" id="cutVisualFill" style="left:0%;width:100%"></div>
+      </div>
+      <div class="cut-row">
+        <div class="cut-field">
+          <label>Start (pre-cut)</label>
+          <input class="cut-input" id="cutStart" type="text" placeholder="0:00" autocomplete="off">
+        </div>
+        <div class="cut-field">
+          <label>End (post-cut)</label>
+          <input class="cut-input" id="cutEnd" type="text" placeholder="e.g. 25:00" autocomplete="off">
+        </div>
+        <button class="btn-cut-apply" id="btnCutApply">Apply</button>
+        <button class="btn-cut-clear" id="btnCutClear">Clear</button>
+      </div>
+      <div class="cut-hint"><strong>Tip:</strong> Use <strong>M:SS</strong> or <strong>H:MM:SS</strong> format.</div>
+    </div>
   </div>
 
   <!-- PROCESS -->
@@ -493,22 +356,19 @@
     <div class="divider"></div>
     <div class="process-card">
       <h3>Export MP3 Clips</h3>
-      <p>Each clip = one mark to the next. Last clip ends at video's end. Label your clips above before exporting.</p>
-
-      <div class="ffmpeg-notice" id="ffmpegNotice">
-        ⚙️ <strong>First run:</strong> FFmpeg.wasm (~32 MB) will be downloaded from CDN — this happens once per browser session. Subsequent exports are instant.
+      <p id="exportDesc">Ready to export.</p>
+      <div class="encoder-notice">
+        🎵 Uses <strong>pure JS MP3 encoder</strong> (lamejs) — works from any origin, no server needed.
+        💾 Progress is <strong>auto-saved</strong> after each export — next session continues from clip #<span id="nextClipNum">1</span>.
       </div>
-
       <div class="process-actions">
         <button class="btn btn-process" id="btnProcess">⚡ Export as MP3</button>
         <button class="btn btn-download-all" id="btnDownloadAll" disabled>⬇ Download All (ZIP)</button>
       </div>
-
       <div class="progress-bar-wrap" id="progressWrap">
         <div class="progress-bar-fill" id="progressFill"></div>
       </div>
       <div class="progress-label" id="progressLabel"></div>
-
       <div class="output-list" id="outputList"></div>
     </div>
   </div>
@@ -518,421 +378,659 @@
   <div class="status-dot" id="statusDot"></div>
   <span id="statusText">Ready — upload a video to begin</span>
 </div>
-
 <div class="toast" id="toast"></div>
-
-<!-- FFmpeg.wasm v0.12 (stable, no SharedArrayBuffer needed) -->
-<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.6/dist/umd/ffmpeg.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
 
 <script>
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let marks      = [];   // [{time, label}]
-let undoStack  = [];   // stack of removed mark objects for undo
-let blobs      = [];   // [{name, blob, url}]
+// marks[i] = { time, name }   — sorted by time, name may be ''
+// Segments are computed on demand: segment i = marks[i-1].time → marks[i].time
+// Segment 0 = windowStart → marks[0].time, last = marks[last].time → windowEnd
+let marks      = [];   // { time, name }
+let undoStack  = [];
+let blobs      = [];
 let duration   = 0;
 let mediaFile  = null;
-let ffmpegInst = null;
-let ffmpegReady = false;
+
+// Pre/Post cut (seconds). null = not set
+let cutStartSec = null;
+let cutEndSec   = null;
+
+// Session/resume
+let sessionResumeTime = 0;
+let sessionClipOffset = 0;
+let sessionKey        = null;
+
+// ─── STORAGE ──────────────────────────────────────────────────────────────────
+const LS_PREFIX = 'lyricscutter_v1_';
+function makeKey(f){ return LS_PREFIX + f.name.replace(/[^a-z0-9]/gi,'_') + '_' + Math.round(f.size/10000); }
+function saveSession(k,d){ try{localStorage.setItem(k,JSON.stringify(d));}catch(e){} }
+function loadSession(k){ try{const d=localStorage.getItem(k);return d?JSON.parse(d):null;}catch(e){return null;} }
+function deleteSession(k){ try{localStorage.removeItem(k);}catch(e){} }
+function getAllSessions(){
+  const out=[];
+  try{ for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(LS_PREFIX)){const d=loadSession(k);if(d)out.push({key:k,...d});}}}catch(e){}
+  return out.sort((a,b)=>(b.savedAt||0)-(a.savedAt||0));
+}
 
 // ─── ELEMENTS ─────────────────────────────────────────────────────────────────
-const uploadZone      = document.getElementById('uploadZone');
-const fileInput       = document.getElementById('fileInput');
-const playerSection   = document.getElementById('playerSection');
-const videoEl         = document.getElementById('videoEl');
-const timelineBar     = document.getElementById('timelineBar');
-const timelineProgress= document.getElementById('timelineProgress');
-const currentTimeStr  = document.getElementById('currentTimeStr');
-const currentTimeBig  = document.getElementById('currentTimeBig');
-const totalTimeStr    = document.getElementById('totalTimeStr');
-const btnPlay         = document.getElementById('btnPlay');
-const btnMark         = document.getElementById('btnMark');
-const btnUndo         = document.getElementById('btnUndo');
-const btnReset        = document.getElementById('btnReset');
-const marksSection    = document.getElementById('marksSection');
-const marksList       = document.getElementById('marksList');
-const marksCount      = document.getElementById('marksCount');
-const btnClearAll     = document.getElementById('btnClearAll');
-const processSection  = document.getElementById('processSection');
-const btnProcess      = document.getElementById('btnProcess');
-const btnDownloadAll  = document.getElementById('btnDownloadAll');
-const progressWrap    = document.getElementById('progressWrap');
-const progressFill    = document.getElementById('progressFill');
-const progressLabel   = document.getElementById('progressLabel');
-const outputList      = document.getElementById('outputList');
-const statusDot       = document.getElementById('statusDot');
-const statusText      = document.getElementById('statusText');
-const toast           = document.getElementById('toast');
-const fileName        = document.getElementById('fileName');
-const fileSize        = document.getElementById('fileSize');
-const ffmpegNotice    = document.getElementById('ffmpegNotice');
+const $ = id => document.getElementById(id);
+const uploadZone       = $('uploadZone');
+const fileInput        = $('fileInput');
+const playerSection    = $('playerSection');
+const videoEl          = $('videoEl');
+const timelineBar      = $('timelineBar');
+const timelineProgress = $('timelineProgress');
+const timelinePast     = $('timelinePast');
+const timelinePastMarker=$('timelinePastMarker');
+const timelineRemaining= $('timelineRemaining');
+const currentTimeStr   = $('currentTimeStr');
+const currentTimeBig   = $('currentTimeBig');
+const totalTimeStr     = $('totalTimeStr');
+const btnPlay          = $('btnPlay');
+const btnMark          = $('btnMark');
+const btnUndo          = $('btnUndo');
+const btnReset         = $('btnReset');
+const marksSection     = $('marksSection');
+const marksList        = $('marksList');
+const marksCount       = $('marksCount');
+const clipsPreview     = $('clipsPreview');
+const btnClearAll      = $('btnClearAll');
+const processSection   = $('processSection');
+const btnProcess       = $('btnProcess');
+const btnDownloadAll   = $('btnDownloadAll');
+const progressWrap     = $('progressWrap');
+const progressFill     = $('progressFill');
+const progressLabel    = $('progressLabel');
+const outputList       = $('outputList');
+const statusDot        = $('statusDot');
+const statusText       = $('statusText');
+const toast            = $('toast');
+const exportDesc       = $('exportDesc');
+const resumeBanner     = $('resumeBanner');
+const resumeDetail     = $('resumeDetail');
+const btnResume        = $('btnResume');
+const btnResumeDismiss = $('btnResumeDismiss');
+const sessionChip      = $('sessionChip');
+const sessionsPanel    = $('sessionsPanel');
+const sessionsList     = $('sessionsList');
+const nextClipNum      = $('nextClipNum');
+const cutToggle        = $('cutToggle');
+const cutChevron       = $('cutChevron');
+const cutBody          = $('cutBody');
+const cutBadge         = $('cutBadge');
+const cutStart         = $('cutStart');
+const cutEnd           = $('cutEnd');
+const btnCutApply      = $('btnCutApply');
+const btnCutClear      = $('btnCutClear');
+const cutVisualPre     = $('cutVisualPre');
+const cutVisualPost    = $('cutVisualPost');
+const cutVisualFill    = $('cutVisualFill');
+const selCountLabel    = $('selCountLabel');
+const btnExportSelected= $('btnExportSelected');
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
-function fmtTime(s, ms = true) {
-  const m = Math.floor(s / 60);
-  const sec = Math.floor(s % 60);
-  const msec = Math.round((s % 1) * 1000);
-  if (ms) return `${m}:${String(sec).padStart(2,'0')}.${String(msec).padStart(3,'0')}`;
-  return `${m}:${String(sec).padStart(2,'0')}`;
+function fmtTime(s, ms=true){
+  const m=Math.floor(s/60), sec=Math.floor(s%60), msec=Math.round((s%1)*1000);
+  return ms ? `${m}:${String(sec).padStart(2,'0')}.${String(msec).padStart(3,'0')}` : `${m}:${String(sec).padStart(2,'0')}`;
 }
-function fmtSize(b) { return b > 1e6 ? (b/1e6).toFixed(1)+' MB' : (b/1e3).toFixed(0)+' KB'; }
-function setStatus(msg, active = false) {
-  statusText.textContent = msg;
-  statusDot.className = 'status-dot' + (active ? ' active' : '');
+function fmtSize(b){ return b>1e6?(b/1e6).toFixed(1)+' MB':(b/1e3).toFixed(0)+' KB'; }
+function setStatus(msg,active=false){ statusText.textContent=msg; statusDot.className='status-dot'+(active?' active':''); }
+let _tt;
+function showToast(msg,type=''){
+  clearTimeout(_tt); toast.textContent=msg; toast.className='toast show'+(type?' '+type:'');
+  _tt=setTimeout(()=>{toast.className='toast';},2400);
 }
-let toastTimer;
-function showToast(msg, cls = '') {
-  clearTimeout(toastTimer);
-  toast.textContent = msg;
-  toast.className = 'toast show' + (cls ? ' '+cls : '');
-  toastTimer = setTimeout(() => { toast.className = 'toast'; }, 2200);
+function setStep(n){ for(let i=1;i<=3;i++) $('step'+i).className='step-pill'+(i===n?' active':i<n?' done':''); }
+
+// ─── WINDOW START/END ─────────────────────────────────────────────────────────
+function winStart(){ return cutStartSec !== null ? cutStartSec : sessionResumeTime; }
+function winEnd()  { return cutEndSec   !== null ? cutEndSec   : duration; }
+
+// ─── BUILD SEGMENTS ───────────────────────────────────────────────────────────
+// Returns array of { start, end, name, selected }
+// name is taken from mark.name if set, else auto-serial
+function buildSegments(){
+  const ws = winStart(), we = winEnd();
+  const inside = marks.filter(m => m.time > ws + 0.05 && m.time < we - 0.05);
+  inside.sort((a,b)=>a.time-b.time);
+  const cuts = [ws, ...inside.map(m=>m.time), we];
+  return cuts.slice(0,-1).map((start,i)=>{
+    const globalNum = sessionClipOffset + i + 1;
+    // name: if mark[i] (the mark after this segment start) has a name, use it for the PRECEDING segment
+    // Simpler model: segment i's name is stored on inside[i] (the mark that ends it), except last segment uses inside[inside.length-1]
+    // Actually: each segment's name is editable independently. We store it on inside[i] for segments 0..n-1,
+    // and for the last segment we use inside[inside.length-1]... this gets complex.
+    // SIMPLEST: just store name on inside[i] for segment i. Last segment = extra slot.
+    // We use a parallel segNames array stored on the cuts.
+    const name = inside[i] ? (inside[i].name || `clip_${String(globalNum).padStart(2,'0')}`) : `clip_${String(globalNum).padStart(2,'0')}`;
+    return { start, end: cuts[i+1], name, selected: true };
+  });
 }
-function setStep(n) {
-  for (let i = 1; i <= 3; i++) {
-    document.getElementById('step'+i).className = 'step-pill' + (i===n?' active':i<n?' done':'');
+
+// ─── SESSIONS PANEL ───────────────────────────────────────────────────────────
+function renderSessionsPanel(){
+  const sessions=getAllSessions();
+  if(!sessions.length){ sessionsPanel.classList.remove('visible'); return; }
+  sessionsPanel.classList.add('visible');
+  sessionsList.innerHTML='';
+  sessions.forEach(s=>{
+    const row=document.createElement('div'); row.className='session-row';
+    const date=s.savedAt?new Date(s.savedAt).toLocaleDateString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+    row.innerHTML=`<span class="session-fname" title="${s.fileName}">${s.fileName}</span><span class="session-meta">clip #${s.nextClipOffset+1} · ${fmtTime(s.resumeTime,false)} · ${date}</span><button class="btn-session-del" title="Delete session" data-key="${s.key}">🗑</button>`;
+    row.querySelector('.btn-session-del').addEventListener('click',e=>{ deleteSession(e.currentTarget.dataset.key); renderSessionsPanel(); });
+    sessionsList.appendChild(row);
+  });
+}
+renderSessionsPanel();
+
+// ─── UPLOAD ───────────────────────────────────────────────────────────────────
+uploadZone.addEventListener('click',()=>fileInput.click());
+uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('drag-over');});
+uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop',e=>{ e.preventDefault();uploadZone.classList.remove('drag-over');if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change',()=>{ if(fileInput.files[0])loadFile(fileInput.files[0]); });
+
+function loadFile(file){
+  mediaFile=file; sessionKey=makeKey(file);
+  videoEl.src=URL.createObjectURL(file); videoEl.load();
+  $('fileName').textContent=file.name; $('fileSize').textContent=fmtSize(file.size);
+  uploadZone.style.display='none'; playerSection.classList.add('visible'); setStep(2);
+  const saved=loadSession(sessionKey);
+  if(saved&&saved.resumeTime>0){
+    resumeDetail.innerHTML=`File: <strong>${saved.fileName}</strong><br>Last stopped at <strong>${fmtTime(saved.resumeTime,false)}</strong> · Next clip <strong>#${saved.nextClipOffset+1}</strong>`;
+    resumeBanner.classList.add('visible');
+    resumeBanner.dataset.resumeTime=saved.resumeTime;
+    resumeBanner.dataset.clipOffset=saved.nextClipOffset;
+    setStatus('Previous session found — resume or start fresh',true);
+  } else {
+    resumeBanner.classList.remove('visible');
+    applyResume(0,0);
+    setStatus('Loaded — play and press M to mark',true);
   }
 }
 
-// ─── UPLOAD ───────────────────────────────────────────────────────────────────
-uploadZone.addEventListener('click', () => fileInput.click());
-uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
-uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
-uploadZone.addEventListener('drop', e => {
-  e.preventDefault(); uploadZone.classList.remove('drag-over');
-  if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+videoEl.addEventListener('loadedmetadata',()=>{
+  duration=videoEl.duration;
+  totalTimeStr.textContent=fmtTime(duration,false);
+  updateTimelineUI();
+  if(resumeBanner.classList.contains('visible')){
+    const rt=parseFloat(resumeBanner.dataset.resumeTime||0);
+    const co=parseInt(resumeBanner.dataset.clipOffset||0);
+    resumeDetail.innerHTML=`File: <strong>${mediaFile.name}</strong><br>Stopped at <strong>${fmtTime(rt,false)}</strong> · Next clip <strong>#${co+1}</strong> · Remaining: <strong>${fmtTime(duration-rt,false)}</strong>`;
+  }
+  updateCutVisual();
 });
-fileInput.addEventListener('change', () => { if (fileInput.files[0]) loadFile(fileInput.files[0]); });
 
-function loadFile(file) {
-  mediaFile = file;
-  videoEl.src = URL.createObjectURL(file);
-  videoEl.load();
-  fileName.textContent = file.name;
-  fileSize.textContent = fmtSize(file.size);
-  uploadZone.style.display = 'none';
-  playerSection.classList.add('visible');
-  setStep(2);
-  setStatus('Loaded — play and press M or MARK HERE', true);
+btnResume.addEventListener('click',()=>{
+  const rt=parseFloat(resumeBanner.dataset.resumeTime||0);
+  const co=parseInt(resumeBanner.dataset.clipOffset||0);
+  applyResume(rt,co);
+  resumeBanner.classList.remove('visible');
+  sessionChip.textContent=`▶ Resumed from ${fmtTime(rt,false)}`; sessionChip.classList.add('visible');
+  videoEl.currentTime=rt;
+  setStatus(`Resumed — clip #${co+1} onwards`,true); showToast(`▶ Resumed from ${fmtTime(rt,false)}`);
+});
+btnResumeDismiss.addEventListener('click',()=>{ resumeBanner.classList.remove('visible'); applyResume(0,0); setStatus('Starting fresh',true); });
+
+function applyResume(resumeTime,clipOffset){
+  sessionResumeTime=resumeTime; sessionClipOffset=clipOffset;
+  marks=[]; undoStack=[];
+  updateTimelineUI(); updateNextClipNum();
 }
 
-videoEl.addEventListener('loadedmetadata', () => {
-  duration = videoEl.duration;
-  totalTimeStr.textContent = fmtTime(duration, false);
-});
+function updateNextClipNum(){ nextClipNum.textContent=sessionClipOffset+marks.length+1; }
+
+function updateTimelineUI(){
+  if(!duration)return;
+  const pct=(sessionResumeTime/duration)*100;
+  timelinePast.style.width=pct+'%';
+  if(sessionResumeTime>0){ timelinePastMarker.style.display='block'; timelinePastMarker.style.left=pct+'%'; timelineRemaining.textContent=`${fmtTime(duration-sessionResumeTime,false)} remaining`; }
+  else{ timelinePastMarker.style.display='none'; timelineRemaining.textContent=''; }
+}
 
 // ─── RESET ────────────────────────────────────────────────────────────────────
-btnReset.addEventListener('click', () => {
-  marks = []; undoStack = []; blobs = [];
-  videoEl.src = ''; mediaFile = null; fileInput.value = '';
-  uploadZone.style.display = '';
+btnReset.addEventListener('click',()=>{
+  marks=[];undoStack=[];blobs=[];
+  sessionResumeTime=0;sessionClipOffset=0;sessionKey=null;
+  cutStartSec=null;cutEndSec=null;
+  cutStart.value='';cutEnd.value='';
+  cutBadge.textContent='Full file';cutBadge.style.color='';
+  videoEl.src='';mediaFile=null;fileInput.value='';
+  uploadZone.style.display='';
   playerSection.classList.remove('visible');
   marksSection.classList.remove('visible');
   processSection.classList.remove('visible');
-  marksList.innerHTML = ''; outputList.innerHTML = '';
-  marksCount.textContent = '0';
-  timelineProgress.style.width = '0%';
-  btnDownloadAll.disabled = true; btnUndo.disabled = true;
-  progressWrap.classList.remove('visible');
-  progressLabel.textContent = '';
-  setStep(1); setStatus('Ready — upload a video to begin');
+  resumeBanner.classList.remove('visible');
+  sessionChip.classList.remove('visible');
+  marksList.innerHTML='';outputList.innerHTML='';
+  marksCount.textContent='0';
+  timelineProgress.style.width='0%';timelinePast.style.width='0%';
+  timelinePastMarker.style.display='none';timelineRemaining.textContent='';
+  btnDownloadAll.disabled=true;btnUndo.disabled=true;
+  progressWrap.classList.remove('visible');progressLabel.textContent='';
+  setStep(1);setStatus('Ready — upload a video to begin');
+  renderSessionsPanel();
 });
 
 // ─── PLAYBACK ─────────────────────────────────────────────────────────────────
-btnPlay.addEventListener('click', togglePlay);
-function togglePlay() {
-  if (videoEl.paused) { videoEl.play(); btnPlay.textContent = '⏸ Pause'; }
-  else { videoEl.pause(); btnPlay.textContent = '▶ Play'; }
+btnPlay.addEventListener('click',togglePlay);
+function togglePlay(){
+  if(videoEl.paused){videoEl.play();btnPlay.textContent='⏸ Pause';}
+  else{videoEl.pause();btnPlay.textContent='▶ Play';}
 }
-videoEl.addEventListener('timeupdate', () => {
-  const t = videoEl.currentTime;
-  const pct = duration ? (t/duration)*100 : 0;
-  timelineProgress.style.width = pct + '%';
-  currentTimeStr.textContent = fmtTime(t);
-  currentTimeBig.textContent = fmtTime(t);
+videoEl.addEventListener('timeupdate',()=>{
+  const t=videoEl.currentTime, pct=duration?(t/duration)*100:0;
+  timelineProgress.style.width=pct+'%';
+  currentTimeStr.textContent=fmtTime(t); currentTimeBig.textContent=fmtTime(t);
 });
-videoEl.addEventListener('play',  () => { btnPlay.textContent = '⏸ Pause'; statusDot.classList.add('active'); });
-videoEl.addEventListener('pause', () => { btnPlay.textContent = '▶ Play';  statusDot.classList.remove('active'); });
-videoEl.addEventListener('ended', () => { btnPlay.textContent = '▶ Play'; });
-
-timelineBar.addEventListener('click', e => {
-  const rect = timelineBar.getBoundingClientRect();
-  videoEl.currentTime = ((e.clientX - rect.left) / rect.width) * duration;
+videoEl.addEventListener('play',()=>{btnPlay.textContent='⏸ Pause';statusDot.classList.add('active');});
+videoEl.addEventListener('pause',()=>{btnPlay.textContent='▶ Play';statusDot.classList.remove('active');});
+videoEl.addEventListener('ended',()=>{btnPlay.textContent='▶ Play';});
+timelineBar.addEventListener('click',e=>{
+  const rect=timelineBar.getBoundingClientRect();
+  videoEl.currentTime=((e.clientX-rect.left)/rect.width)*duration;
 });
 
 // ─── MARK ─────────────────────────────────────────────────────────────────────
-btnMark.addEventListener('click', addMark);
-
-function addMark() {
-  if (!mediaFile) return;
-  const t = videoEl.currentTime;
-  btnMark.classList.add('flash');
-  setTimeout(() => btnMark.classList.remove('flash'), 200);
-  const newMark = { time: t, label: '' };
-  marks.push(newMark);
-  marks.sort((a,b) => a.time - b.time);
-  undoStack.push(newMark);      // remember for undo
-  btnUndo.disabled = false;
-  renderMarks();
-  showToast(`⬥ Mark at ${fmtTime(t)}`);
-  setStatus(`${marks.length} mark(s) — keep marking or Export`);
+btnMark.addEventListener('click',addMark);
+function addMark(){
+  if(!mediaFile)return;
+  const t=videoEl.currentTime;
+  if(t<=winStart()+0.05){showToast('Cannot mark before window start!');return;}
+  if(marks.some(m=>Math.abs(m.time-t)<0.05)){showToast('Already marked here!');return;}
+  btnMark.classList.add('flash'); setTimeout(()=>btnMark.classList.remove('flash'),200);
+  const m={time:t, name:''};
+  marks.push(m); marks.sort((a,b)=>a.time-b.time);
+  undoStack.push(m); btnUndo.disabled=false;
+  renderMarks(); updateNextClipNum();
+  showToast(`⬥ Mark #${marks.length} at ${fmtTime(t)}`);
+  setStatus(`${marks.length} mark(s) → ${marks.length+1} clips`);
 }
 
 // ─── UNDO ─────────────────────────────────────────────────────────────────────
-btnUndo.addEventListener('click', undoLastMark);
-
-function undoLastMark() {
-  if (undoStack.length === 0) return;
-  const last = undoStack.pop();
-  // Remove by reference time
-  const idx = marks.findIndex(m => m === last);
-  if (idx !== -1) marks.splice(idx, 1);
-  btnUndo.disabled = undoStack.length === 0;
-  renderMarks();
-  showToast(`↩ Undone mark at ${fmtTime(last.time)}`, 'undo-toast');
-  setStatus(marks.length > 0 ? `${marks.length} mark(s) remaining` : 'All marks cleared by undo');
+btnUndo.addEventListener('click',undoMark);
+function undoMark(){
+  if(!undoStack.length)return;
+  const last=undoStack.pop();
+  const idx=marks.indexOf(last); if(idx!==-1)marks.splice(idx,1);
+  btnUndo.disabled=undoStack.length===0;
+  renderMarks(); updateNextClipNum();
+  showToast(`↩ Undone mark at ${fmtTime(last.time)}`,'undo');
+  setStatus(marks.length>0?`${marks.length} mark(s) → ${marks.length+1} clips`:'No marks');
 }
 
 // ─── KEYBOARD ─────────────────────────────────────────────────────────────────
-document.addEventListener('keydown', e => {
-  if (['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
-  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
-  if (e.code === 'KeyM' && !e.ctrlKey && !e.metaKey) addMark();
-  if (e.code === 'KeyZ' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); undoLastMark(); }
+document.addEventListener('keydown',e=>{
+  if(['INPUT','TEXTAREA'].includes(e.target.tagName))return;
+  if(e.code==='Space'){e.preventDefault();togglePlay();}
+  if(e.code==='KeyM'&&!e.ctrlKey&&!e.metaKey)addMark();
+  if(e.code==='KeyZ'&&(e.ctrlKey||e.metaKey)){e.preventDefault();undoMark();}
 });
 
 // ─── RENDER MARKS ─────────────────────────────────────────────────────────────
-function renderMarks() {
-  marksList.innerHTML = '';
-  document.querySelectorAll('.timeline-mark').forEach(el => el.remove());
+// KEY DESIGN: each mark item has a stable DOM input. We render once per structural
+// change (add/delete mark). Input events update mark.name in-place — NO re-render.
+function renderMarks(){
+  // Remove timeline pins
+  document.querySelectorAll('.timeline-mark').forEach(el=>el.remove());
 
-  marks.forEach((m, i) => {
-    // Timeline pin
-    const tm = document.createElement('div');
-    tm.className = 'timeline-mark';
-    tm.style.left = duration ? ((m.time/duration)*100)+'%' : '0%';
-    tm.dataset.index = i+1;
-    tm.title = fmtTime(m.time);
+  const ws=winStart(), we=winEnd();
+  const inside=marks.filter(m=>m.time>ws+0.05&&m.time<we-0.05);
+  inside.sort((a,b)=>a.time-b.time);
+
+  // Segments: cuts = [ws, inside[0].time, ..., inside[n-1].time, we]
+  // segment i goes from cuts[i] to cuts[i+1]
+  // segment i's name is stored on inside[i] (the mark that ENDS segment i)
+  // EXCEPT last segment: its name is stored on a synthetic slot — we use a lastSegName global
+  const numSegs = inside.length + 1;
+
+  // Draw timeline marks
+  marks.forEach((m,i)=>{
+    const tm=document.createElement('div'); tm.className='timeline-mark';
+    tm.style.left=duration?((m.time/duration)*100)+'%':'0%';
+    tm.dataset.index=sessionClipOffset+i+1; tm.title=fmtTime(m.time);
     timelineBar.appendChild(tm);
+  });
 
-    // List item — segment goes from previous boundary to this mark
-    const prevTime = i === 0 ? 0 : marks[i-1].time;
-    const segDur   = m.time - prevTime;
-    const item = document.createElement('div');
-    item.className = 'mark-item';
-    item.innerHTML = `
-      <span class="mark-index">#${i+1}</span>
-      <span class="mark-time" title="Seek here">${fmtTime(m.time)}</span>
-      <input class="mark-label" type="text" placeholder="Lyric label…" value="${m.label}">
-      <span class="mark-duration" title="Segment: ${fmtTime(prevTime,false)} → ${fmtTime(m.time,false)}">${fmtTime(segDur,false)}</span>
-      <button class="btn-delete-mark" title="Delete this mark">✕</button>
-    `;
-    item.querySelector('.mark-time').addEventListener('click', () => { videoEl.currentTime = m.time; });
-    item.querySelector('.mark-label').addEventListener('input', e => { marks[i].label = e.target.value; });
-    item.querySelector('.btn-delete-mark').addEventListener('click', () => {
-      // Also remove from undoStack if present
-      const ui = undoStack.indexOf(m);
-      if (ui !== -1) undoStack.splice(ui, 1);
-      marks.splice(i, 1);
-      btnUndo.disabled = undoStack.length === 0;
-      renderMarks();
+  // Ensure lastSegName exists on window
+  if(window._lastSegName===undefined) window._lastSegName='';
+
+  // Build segment list
+  const cuts=[ws,...inside.map(m=>m.time),we];
+
+  // Update preview text
+  clipsPreview.textContent=`${numSegs} clip(s) · global #${sessionClipOffset+1} → #${sessionClipOffset+numSegs}`;
+  exportDesc.textContent=`${marks.length} mark(s) → ${numSegs} clip(s). From #${sessionClipOffset+1}.`;
+
+  marksList.innerHTML='';
+
+  for(let i=0;i<numSegs;i++){
+    const start=cuts[i], end=cuts[i+1];
+    const globalNum=sessionClipOffset+i+1;
+    const isLast=(i===numSegs-1);
+
+    // Name: inside[i] holds the name for segment i (except last)
+    const nameVal = isLast ? (window._lastSegName||'') : (inside[i]?inside[i].name||'':'');
+    const placeholder=`clip_${String(globalNum).padStart(2,'0')}`;
+
+    const item=document.createElement('div');
+    item.className='mark-item';
+    if(isLast) item.style.borderColor='rgba(232,255,71,0.2)';
+
+    // Checkbox
+    const chk=document.createElement('input');
+    chk.type='checkbox'; chk.className='mark-check'; chk.checked=true;
+    chk.title='Include in export';
+    chk.addEventListener('change',()=>{ item.classList.toggle('excluded',!chk.checked); updateSelLabel(); });
+
+    // Index
+    const idx=document.createElement('span');
+    idx.className='mark-index'; idx.style.color=isLast?'var(--accent)':'var(--accent2)';
+    idx.textContent=`#${globalNum}`;
+
+    // Range
+    const rng=document.createElement('div'); rng.className='mark-range';
+    rng.innerHTML=`<div><strong>${fmtTime(start,false)}</strong> → <strong>${fmtTime(end,false)}</strong></div><div style="font-size:9px;margin-top:2px">${fmtTime(end-start,false)}</div>`;
+    rng.style.cursor='pointer';
+    rng.addEventListener('click',()=>{ videoEl.currentTime=start; });
+
+    // Name input — ALWAYS editable, NEVER disabled
+    const inp=document.createElement('input');
+    inp.className='mark-label'; inp.type='text'; inp.autocomplete='off';
+    inp.value=nameVal; inp.placeholder=placeholder;
+    inp.style.borderColor=i===0?'var(--accent)':'';
+    // Store which segment this is so we can update data without re-render
+    inp.dataset.segIdx=String(i);
+    inp.dataset.isLast=isLast?'1':'0';
+    inp.addEventListener('input',e=>{
+      const si=parseInt(e.target.dataset.segIdx);
+      const il=e.target.dataset.isLast==='1';
+      if(il){
+        window._lastSegName=e.target.value;
+      } else {
+        if(inside[si]) inside[si].name=e.target.value;
+      }
     });
+
+    // Duration
+    const dur=document.createElement('span');
+    dur.className='mark-duration'; dur.textContent=fmtTime(end-start,false);
+
+    // Delete (delete the mark that ENDS this segment, which is inside[i]; not applicable for last)
+    const del=document.createElement('button');
+    del.className='btn-delete-mark';
+    if(!isLast && inside[i]){
+      del.title='Delete mark'; del.textContent='✕';
+      const m=inside[i];
+      del.addEventListener('click',()=>{
+        const ui=undoStack.indexOf(m);if(ui!==-1)undoStack.splice(ui,1);
+        const mi=marks.indexOf(m);if(mi!==-1)marks.splice(mi,1);
+        btnUndo.disabled=undoStack.length===0;
+        renderMarks(); updateNextClipNum();
+      });
+    } else {
+      del.style.visibility='hidden';
+    }
+
+    item.appendChild(chk);
+    item.appendChild(idx);
+    item.appendChild(rng);
+    item.appendChild(inp);
+    item.appendChild(dur);
+    item.appendChild(del);
     marksList.appendChild(item);
-  });
+  }
 
-  marksCount.textContent = marks.length;
-  marksSection.classList.toggle('visible', marks.length > 0);
-  processSection.classList.toggle('visible', marks.length > 0);
-  if (marks.length > 0) setStep(3);
-  else setStep(2);
+  marksCount.textContent=numSegs;
+  marksSection.classList.toggle('visible',marks.length>0);
+  processSection.classList.toggle('visible',marks.length>0);
+  setStep(marks.length>0?3:2);
+  updateSelLabel();
 }
 
-btnClearAll.addEventListener('click', () => {
-  marks = []; undoStack = [];
-  btnUndo.disabled = true;
+function updateSelLabel(){
+  const all=marksList.querySelectorAll('.mark-check');
+  const sel=Array.from(all).filter(c=>c.checked).length;
+  if(!all.length){selCountLabel.textContent='';btnExportSelected.disabled=true;return;}
+  selCountLabel.textContent=sel===all.length?'All selected':`${sel}/${all.length} selected`;
+  btnExportSelected.disabled=sel===0;
+}
+
+btnClearAll.addEventListener('click',()=>{
+  marks=[];undoStack=[];window._lastSegName='';
+  btnUndo.disabled=true;
   renderMarks();
-  outputList.innerHTML = ''; blobs = [];
-  btnDownloadAll.disabled = true;
-  setStep(2); setStatus('All marks cleared');
+  outputList.innerHTML='';blobs=[];
+  btnDownloadAll.disabled=true;
+  updateNextClipNum();
+  setStep(2);setStatus('All marks cleared');
 });
 
-// ─── FFMPEG INIT ──────────────────────────────────────────────────────────────
-async function getFFmpeg() {
-  if (ffmpegInst && ffmpegReady) return ffmpegInst;
-  const { FFmpeg } = FFmpegWASM;
-  const { fetchFile, toBlobURL } = FFmpegUtil;
-
-  setStatus('Loading FFmpeg.wasm… (first time only, ~32 MB)', true);
-  progressWrap.classList.add('visible');
-  progressFill.style.width = '0%';
-  progressLabel.textContent = 'Downloading FFmpeg core…';
-
-  const ff = new FFmpeg();
-  ff.on('log', ({ message }) => {
-    // parse time= from ffmpeg logs for progress
-    const m = message.match(/time=(\d+):(\d+):([\d.]+)/);
-    if (m) {
-      const secs = parseInt(m[1])*3600 + parseInt(m[2])*60 + parseFloat(m[3]);
-      // we'll handle per-clip progress externally
-    }
-  });
-
-  const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd';
-  await ff.load({
-    coreURL:   await toBlobURL(`${baseURL}/ffmpeg-core.js`,   'text/javascript'),
-    wasmURL:   await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-  });
-
-  ffmpegInst  = ff;
-  ffmpegReady = true;
-  ffmpegNotice.textContent = '✓ FFmpeg ready — exports will be fast from now on.';
-  ffmpegNotice.style.borderColor = 'rgba(232,255,71,0.3)';
-  ffmpegNotice.style.color = 'var(--accent)';
-  ffmpegNotice.style.background = 'rgba(232,255,71,0.05)';
-  setStatus('FFmpeg loaded ✓');
-  return ff;
-}
-
-// ─── PROCESS ──────────────────────────────────────────────────────────────────
-btnProcess.addEventListener('click', processClips);
-
-async function processClips() {
-  if (!mediaFile || marks.length === 0) return;
-  btnProcess.disabled = true;
-  btnDownloadAll.disabled = true;
-  outputList.innerHTML = '';
-  blobs = [];
-  progressWrap.classList.add('visible');
-  progressFill.style.width = '0%';
-  progressLabel.textContent = 'Starting…';
-  setStatus('Preparing export…', true);
-
-  try {
-    const ff = await getFFmpeg();
-    const { fetchFile } = FFmpegUtil;
-
-    // Write input file into FFmpeg virtual FS
-    progressLabel.textContent = 'Loading file into FFmpeg…';
-    progressFill.style.width = '8%';
-    const ext = mediaFile.name.split('.').pop().toLowerCase() || 'mp4';
-    const inputName = `input.${ext}`;
-    ff.writeFile(inputName, await fetchFile(mediaFile));
-
-    progressFill.style.width = '12%';
-
-    // Build boundary list: always start from 0:00, then each mark, then end
-    const boundaries = [
-      { time: 0, label: '' },
-      ...marks,
-    ];
-    const segments = boundaries.map((b, i) => ({
-      start: b.time,
-      end:   boundaries[i+1] ? boundaries[i+1].time : duration,
-      label: b.label.trim() || `clip_${String(i+1).padStart(2,'0')}`,
-    }));
-
-    for (let i = 0; i < segments.length; i++) {
-      const seg = segments[i];
-      const pct = 12 + ((i / segments.length) * 83);
-      progressFill.style.width = pct + '%';
-      progressLabel.textContent = `Encoding clip ${i+1} / ${segments.length}: "${seg.label}"…`;
-
-      const safeName = seg.label.replace(/[^a-z0-9_\-\s]/gi,'').replace(/\s+/g,'_') || `clip_${i+1}`;
-      const outName  = `${String(i+1).padStart(2,'0')}_${safeName}.mp3`;
-
-      const startSec = seg.start.toFixed(3);
-      const durSec   = (seg.end - seg.start).toFixed(3);
-
-      // -ss before -i = fast seek; -t = duration; -q:a 2 = high quality VBR MP3
-      await ff.exec([
-        '-ss', startSec,
-        '-i',  inputName,
-        '-t',  durSec,
-        '-vn',                  // no video
-        '-acodec', 'libmp3lame',
-        '-q:a', '2',            // VBR quality 0–9, 2 ≈ 190 kbps
-        '-y',                   // overwrite
-        outName
-      ]);
-
-      const data = await ff.readFile(outName);
-      const blob = new Blob([data.buffer], { type: 'audio/mpeg' });
-      const url  = URL.createObjectURL(blob);
-      blobs.push({ name: outName, blob, url });
-
-      // Clean up output file
-      try { await ff.deleteFile(outName); } catch(e) {}
-
-      // Output row
-      const item = document.createElement('div');
-      item.className = 'output-item ready';
-      item.innerHTML = `
-        <div style="min-width:0">
-          <div class="output-name">🎵 ${outName}</div>
-          <div class="output-time">${fmtTime(seg.start,false)} → ${fmtTime(seg.end,false)}</div>
-        </div>
-        <button class="btn-dl">⬇ MP3</button>
-      `;
-      item.querySelector('.btn-dl').addEventListener('click', () => triggerDownload(url, outName));
-      outputList.appendChild(item);
-
-      await new Promise(r => setTimeout(r, 5));
-    }
-
-    // Clean up input
-    try { await ff.deleteFile(inputName); } catch(e) {}
-
-    progressFill.style.width = '100%';
-    progressLabel.textContent = `✓ ${segments.length} MP3 clips ready!`;
-    btnDownloadAll.disabled = false;
-    setStatus(`✓ Done! ${segments.length} MP3 clips ready.`);
-    showToast(`✓ ${segments.length} clips exported!`);
-
-  } catch (err) {
-    progressLabel.textContent = '✗ Error: ' + err.message;
-    progressFill.style.width = '0%';
-    setStatus('Export error: ' + err.message);
-    console.error(err);
-  }
-
-  btnProcess.disabled = false;
-}
-
-// ─── DOWNLOAD ─────────────────────────────────────────────────────────────────
-function triggerDownload(url, name) {
-  const a = document.createElement('a');
-  a.href = url; a.download = name;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
-}
-
-btnDownloadAll.addEventListener('click', async () => {
-  if (!blobs.length) return;
-  btnDownloadAll.disabled = true;
-  btnDownloadAll.innerHTML = '<span class="spinner"></span> Building ZIP…';
-
-  try {
-    if (typeof JSZip === 'undefined') await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
-    const zip = new JSZip();
-    blobs.forEach(b => zip.file(b.name, b.blob));
-    const content = await zip.generateAsync({ type: 'blob' });
-    triggerDownload(URL.createObjectURL(content), 'lyrics_clips_mp3.zip');
-    showToast('📦 ZIP downloaded!');
-  } catch (e) {
-    showToast('ZIP failed — use individual downloads');
-    console.error(e);
-  }
-
-  btnDownloadAll.disabled = false;
-  btnDownloadAll.innerHTML = '⬇ Download All (ZIP)';
+// ─── PRE/POST CUT ─────────────────────────────────────────────────────────────
+cutToggle.addEventListener('click',()=>{
+  const open=cutBody.classList.toggle('visible');
+  cutChevron.classList.toggle('open',open);
 });
 
-function loadScript(src) {
-  return new Promise((res, rej) => {
-    const s = document.createElement('script');
-    s.src = src; s.onload = res; s.onerror = rej;
+function parseCutTime(str){
+  if(!str||!str.trim())return null;
+  const parts=str.trim().split(':').map(Number);
+  if(parts.some(isNaN))return null;
+  if(parts.length===3)return parts[0]*3600+parts[1]*60+parts[2];
+  if(parts.length===2)return parts[0]*60+parts[1];
+  if(parts.length===1)return parts[0];
+  return null;
+}
+
+function updateCutVisual(){
+  if(!duration)return;
+  const s=cutStartSec!==null?cutStartSec:0;
+  const e=cutEndSec!==null?cutEndSec:duration;
+  cutVisualPre.style.width=(s/duration*100)+'%';
+  cutVisualPost.style.width=((duration-e)/duration*100)+'%';
+  cutVisualFill.style.left=(s/duration*100)+'%';
+  cutVisualFill.style.width=((e-s)/duration*100)+'%';
+}
+
+btnCutApply.addEventListener('click',()=>{
+  const s=parseCutTime(cutStart.value);
+  const e=parseCutTime(cutEnd.value);
+  cutStart.classList.remove('error'); cutEnd.classList.remove('error');
+  let ok=true;
+  if(cutStart.value.trim()&&s===null){cutStart.classList.add('error');ok=false;}
+  if(cutEnd.value.trim()&&e===null){cutEnd.classList.add('error');ok=false;}
+  if(!ok){showToast('Bad time — use M:SS or H:MM:SS');return;}
+  if(s!==null&&e!==null&&s>=e){cutStart.classList.add('error');cutEnd.classList.add('error');showToast('Start must be before end!');return;}
+  cutStartSec=s; cutEndSec=e;
+  const sl=s!==null?fmtTime(s,false):'0:00';
+  const el=e!==null?fmtTime(e,false):(duration?fmtTime(duration,false):'end');
+  cutBadge.textContent=`${sl} → ${el}`; cutBadge.style.color='var(--accent3)';
+  updateCutVisual(); renderMarks();
+  showToast(`✂ Window: ${sl} → ${el}`);
+  setStatus(`Export window: ${sl} → ${el}`);
+});
+
+btnCutClear.addEventListener('click',()=>{
+  cutStartSec=null;cutEndSec=null;
+  cutStart.value='';cutEnd.value='';
+  cutStart.classList.remove('error');cutEnd.classList.remove('error');
+  cutBadge.textContent='Full file';cutBadge.style.color='';
+  updateCutVisual();renderMarks();showToast('✂ Cut window cleared');
+});
+
+// ─── EXPORT SELECTED ──────────────────────────────────────────────────────────
+btnExportSelected.addEventListener('click',()=>{
+  const checks=Array.from(marksList.querySelectorAll('.mark-check'));
+  const selectedIdx=checks.map((c,i)=>c.checked?i:-1).filter(i=>i>=0);
+  processClips(selectedIdx);
+});
+
+// ─── LAME MP3 ENCODER ─────────────────────────────────────────────────────────
+let lameLoaded=false;
+function loadLame(){
+  return new Promise((res,rej)=>{
+    if(lameLoaded){res();return;}
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js';
+    s.onload=()=>{lameLoaded=true;res();}; s.onerror=()=>rej(new Error('Failed to load MP3 encoder.'));
     document.head.appendChild(s);
   });
 }
+
+function encodeToMp3(audioBuffer){
+  const numCh=audioBuffer.numberOfChannels, sr=audioBuffer.sampleRate, samples=audioBuffer.length;
+  const mp3enc=new lamejs.Mp3Encoder(numCh,sr,192);
+  const block=1152, mp3Data=[];
+  const l32=audioBuffer.getChannelData(0);
+  const r32=numCh>1?audioBuffer.getChannelData(1):l32;
+  function toI16(f32){const a=new Int16Array(f32.length);for(let i=0;i<f32.length;i++){const s=Math.max(-1,Math.min(1,f32[i]));a[i]=s<0?s*0x8000:s*0x7FFF;}return a;}
+  const l16=toI16(l32),r16=toI16(r32);
+  for(let i=0;i<samples;i+=block){
+    const lc=l16.subarray(i,i+block),rc=r16.subarray(i,i+block);
+    const enc=numCh===1?mp3enc.encodeBuffer(lc):mp3enc.encodeBuffer(lc,rc);
+    if(enc.length>0)mp3Data.push(new Int8Array(enc));
+  }
+  const fl=mp3enc.flush(); if(fl.length>0)mp3Data.push(new Int8Array(fl));
+  return new Blob(mp3Data,{type:'audio/mpeg'});
+}
+
+// ─── PROCESS ──────────────────────────────────────────────────────────────────
+btnProcess.addEventListener('click',()=>processClips(null));
+
+async function processClips(selectedIdx){
+  if(!mediaFile||marks.length===0)return;
+  btnProcess.disabled=true; btnExportSelected.disabled=true; btnDownloadAll.disabled=true;
+  outputList.innerHTML=''; blobs=[];
+  progressWrap.classList.add('visible');
+  progressFill.style.width='0%';
+  progressLabel.textContent='Loading encoder…';
+  setStatus('Preparing…',true);
+
+  try{
+    await loadLame();
+
+    // ── Read ONLY the cut window from the file ─────────────────────────────
+    // We decode the full ArrayBuffer (browser limitation — can't seek inside),
+    // but we only slice the decoded PCM to the window, saving memory for encoding.
+    progressLabel.textContent='Reading & decoding audio…';
+    progressFill.style.width='8%';
+
+    const arrayBuffer=await mediaFile.arrayBuffer();
+    const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const fullBuffer=await audioCtx.decodeAudioData(arrayBuffer);
+
+    const sr=fullBuffer.sampleRate, nc=fullBuffer.numberOfChannels, total=fullBuffer.length;
+
+    // Build segment list from current UI (reads names from inputs, not from marks array)
+    // because user may have typed in inputs without re-render
+    const allInputs=Array.from(marksList.querySelectorAll('.mark-label'));
+    const allChecks=Array.from(marksList.querySelectorAll('.mark-check'));
+    
+    const ws=winStart(), we=winEnd();
+    const inside=marks.filter(m=>m.time>ws+0.05&&m.time<we-0.05);
+    inside.sort((a,b)=>a.time-b.time);
+    const cuts=[ws,...inside.map(m=>m.time),we];
+    
+    let allSegs=cuts.slice(0,-1).map((start,i)=>{
+      const globalNum=sessionClipOffset+i+1;
+      const inp=allInputs[i];
+      const chk=allChecks[i];
+      const typedName=inp?inp.value.trim():'';
+      const name=typedName||`clip_${String(globalNum).padStart(2,'0')}`;
+      const selected=chk?chk.checked:true;
+      return {start, end:cuts[i+1], name, selected};
+    });
+
+    // Filter to selected
+    let segs = selectedIdx ? allSegs.filter((_,i)=>selectedIdx.includes(i)) : allSegs.filter(s=>s.selected);
+    if(!segs.length){ progressLabel.textContent='✗ No clips selected.'; btnProcess.disabled=false; btnExportSelected.disabled=false; return; }
+
+    for(let i=0;i<segs.length;i++){
+      const seg=segs[i];
+      progressFill.style.width=(10+(i/segs.length)*85)+'%';
+      progressLabel.textContent=`Encoding ${i+1}/${segs.length}: "${seg.name}"…`;
+
+      const s0=Math.max(0,Math.floor(seg.start*sr));
+      const s1=Math.min(Math.floor(seg.end*sr),total);
+      const len=s1-s0;
+      if(len<=0)continue;
+
+      const offCtx=new OfflineAudioContext(nc,len,sr);
+      const buf=offCtx.createBuffer(nc,len,sr);
+      for(let ch=0;ch<nc;ch++) buf.getChannelData(ch).set(fullBuffer.getChannelData(ch).subarray(s0,s1));
+      const src=offCtx.createBufferSource(); src.buffer=buf; src.connect(offCtx.destination); src.start();
+      const rendered=await offCtx.startRendering();
+
+      const mp3Blob=encodeToMp3(rendered);
+      const url=URL.createObjectURL(mp3Blob);
+      const safeName=seg.name.replace(/[^a-z0-9_\-\s]/gi,'').replace(/\s+/g,'_')||`clip_${i+1}`;
+      const filename=safeName+'.mp3';
+      blobs.push({name:filename,blob:mp3Blob,url});
+
+      const item=document.createElement('div'); item.className='output-item ready';
+      item.innerHTML=`<div style="min-width:0"><div class="output-name">🎵 ${filename}</div><div class="output-time">${fmtTime(seg.start,false)} → ${fmtTime(seg.end,false)}</div></div><button class="btn-dl">⬇ Download MP3</button>`;
+      item.querySelector('.btn-dl').addEventListener('click',()=>triggerDownload(url,filename));
+      outputList.appendChild(item);
+      await new Promise(r=>setTimeout(r,5));
+    }
+
+    progressFill.style.width='100%';
+    progressLabel.textContent=`✓ ${segs.length} clip(s) ready!`;
+    // Auto-scroll to output
+    setTimeout(()=>outputList.scrollIntoView({behavior:"smooth",block:"start"}),100);
+    btnDownloadAll.disabled=false;
+
+    // Save session progress
+    const lastEnd=segs[segs.length-1].end;
+    const newResume=lastEnd<duration?lastEnd:duration;
+    const newOffset=sessionClipOffset+segs.length;
+    if(sessionKey){
+      saveSession(sessionKey,{fileName:mediaFile.name,resumeTime:newResume,nextClipOffset:newOffset,savedAt:Date.now()});
+    }
+    sessionResumeTime=newResume; sessionClipOffset=newOffset;
+    marks=[]; undoStack=[]; window._lastSegName='';
+    updateTimelineUI(); updateNextClipNum(); renderMarks();
+    sessionChip.textContent=`✓ Saved · next clip #${newOffset+1}`; sessionChip.classList.add('visible');
+    renderSessionsPanel();
+    setStatus(`✓ ${segs.length} clips done — use ⬇ buttons to save each file.`);
+    showToast(`✓ ${segs.length} clips ready!`);
+
+  }catch(err){
+    progressLabel.textContent='✗ '+err.message;
+    progressFill.style.width='0%';
+    setStatus('Error: '+err.message);
+    console.error(err);
+  }
+  btnProcess.disabled=false; btnExportSelected.disabled=false;
+}
+
+// ─── DOWNLOAD ─────────────────────────────────────────────────────────────────
+function triggerDownload(url,name){
+  const a=document.createElement('a'); a.href=url; a.download=name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+btnDownloadAll.addEventListener('click',async()=>{
+  if(!blobs.length)return;
+  btnDownloadAll.disabled=true;
+  btnDownloadAll.innerHTML='<span class="spinner"></span> Building ZIP…';
+  try{
+    if(typeof JSZip==='undefined'){
+      await new Promise((res,rej)=>{
+        const s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        s.onload=res;s.onerror=rej;document.head.appendChild(s);
+      });
+    }
+    const zip=new JSZip();
+    blobs.forEach(b=>zip.file(b.name,b.blob));
+    const content=await zip.generateAsync({type:'blob'});
+    triggerDownload(URL.createObjectURL(content),'lyrics_clips_mp3.zip');
+    showToast('📦 ZIP downloaded!');
+  }catch(e){showToast('ZIP failed — use individual ⬇ buttons');}
+  btnDownloadAll.disabled=false;
+  btnDownloadAll.innerHTML='⬇ Download All (ZIP)';
+});
 </script>
 </body>
 </html>
