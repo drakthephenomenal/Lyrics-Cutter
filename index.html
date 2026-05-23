@@ -125,6 +125,15 @@
   .mark-duration { font-size:10px; color:var(--muted); min-width:40px; text-align:right; }
   .btn-delete-mark { background:none; border:none; color:var(--muted); cursor:pointer; font-size:15px; padding:2px 4px; transition:color .2s; line-height:1; }
   .btn-delete-mark:hover { color:var(--accent2); }
+  .mark-check { width:16px; height:16px; accent-color:var(--accent2); cursor:pointer; flex-shrink:0; }
+  .mark-item.excluded { opacity:.45; }
+  .serial-toggle-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:11px; color:var(--muted); }
+  .serial-toggle-row label { cursor:pointer; display:flex; align-items:center; gap:6px; }
+  .serial-toggle-row input[type=checkbox] { accent-color:var(--accent); width:14px; height:14px; }
+  .marks-export-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .btn-export-sel { background:var(--accent2); color:#fff; border:none; border-radius:10px; padding:10px 16px; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:6px; }
+  .btn-export-sel:hover:not(:disabled) { background:#ff6191; }
+  .btn-export-sel:disabled { opacity:.35; cursor:not-allowed; }
 
   /* PROCESS */
   .process-section { display:none; }
@@ -160,6 +169,33 @@
   .toast.undo { background:var(--accent3); }
   .spinner { display:inline-block; width:13px; height:13px; border:2px solid rgba(10,10,15,.3); border-top-color:var(--bg); border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; }
   @keyframes spin { to{transform:rotate(360deg)} }
+
+  /* PRE/POST CUT */
+  .cut-section { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; margin-top:12px; }
+  .cut-header { display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; }
+  .cut-header-left { display:flex; align-items:center; gap:10px; }
+  .cut-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--accent3); }
+  .cut-badge { font-size:10px; color:var(--muted); }
+  .cut-chevron { color:var(--muted); font-size:12px; transition:transform .2s; }
+  .cut-chevron.open { transform:rotate(180deg); }
+  .cut-body { margin-top:14px; display:none; }
+  .cut-body.visible { display:block; }
+  .cut-row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin-bottom:10px; }
+  .cut-field { display:flex; flex-direction:column; gap:5px; flex:1; min-width:120px; }
+  .cut-field label { font-size:10px; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; }
+  .cut-input { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:9px 12px; font-family:'Space Mono',monospace; font-size:12px; color:var(--text); outline:none; transition:border-color .2s; width:100%; }
+  .cut-input:focus { border-color:var(--accent3); }
+  .cut-input.error { border-color:var(--accent2); }
+  .cut-visual { position:relative; height:28px; background:var(--surface); border-radius:6px; margin-bottom:10px; overflow:hidden; border:1px solid var(--border); }
+  .cut-visual-fill { position:absolute; top:0; height:100%; background:rgba(71,200,255,.18); border-left:2px solid var(--accent3); border-right:2px solid var(--accent3); transition:left .1s, width .1s; }
+  .cut-visual-pre { position:absolute; top:0; left:0; height:100%; background:rgba(255,71,120,.1); }
+  .cut-visual-post { position:absolute; top:0; right:0; height:100%; background:rgba(255,71,120,.1); }
+  .cut-hint { font-size:10px; color:var(--muted); line-height:1.6; }
+  .cut-hint strong { color:var(--accent3); }
+  .btn-cut-apply { background:var(--accent3); color:var(--bg); border:none; border-radius:8px; padding:8px 16px; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap; transition:all .2s; }
+  .btn-cut-apply:hover { background:#80e0ff; }
+  .btn-cut-clear { background:none; border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:8px 12px; font-family:'Space Mono',monospace; font-size:11px; cursor:pointer; transition:all .2s; }
+  .btn-cut-clear:hover { border-color:var(--accent2); color:var(--accent2); }
 
   /* SAVED SESSIONS PANEL */
   .sessions-panel { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 20px; margin-bottom:28px; display:none; }
@@ -247,6 +283,38 @@
       <div class="current-time-big" id="currentTimeBig">0:00.000</div>
     </div>
 
+    <!-- PRE/POST CUT -->
+    <div class="cut-section" id="cutSection">
+      <div class="cut-header" id="cutToggle">
+        <div class="cut-header-left">
+          <span class="cut-title">✂ Pre-cut / Post-cut Window</span>
+          <span class="cut-badge" id="cutBadge">Full file</span>
+        </div>
+        <span class="cut-chevron" id="cutChevron">▼</span>
+      </div>
+      <div class="cut-body" id="cutBody">
+        <p class="cut-hint" style="margin-bottom:10px;">Decode only a slice of the file — prevents crashes on large files (100 MB+). Marks outside this window will be excluded.</p>
+        <div class="cut-visual" id="cutVisual">
+          <div class="cut-visual-pre" id="cutVisualPre" style="width:0%"></div>
+          <div class="cut-visual-post" id="cutVisualPost" style="width:0%"></div>
+          <div class="cut-visual-fill" id="cutVisualFill" style="left:0%;width:100%"></div>
+        </div>
+        <div class="cut-row">
+          <div class="cut-field">
+            <label>Start (pre-cut)</label>
+            <input class="cut-input" id="cutStart" type="text" placeholder="0:00" autocomplete="off">
+          </div>
+          <div class="cut-field">
+            <label>End (post-cut)</label>
+            <input class="cut-input" id="cutEnd" type="text" placeholder="e.g. 25:00" autocomplete="off">
+          </div>
+          <button class="btn-cut-apply" id="btnCutApply">Apply</button>
+          <button class="btn-cut-clear" id="btnCutClear">Clear</button>
+        </div>
+        <div class="cut-hint"><strong>Tip:</strong> Leave start blank for 0:00, leave end blank for full duration. Use <strong>M:SS</strong> or <strong>H:MM:SS</strong> format.</div>
+      </div>
+    </div>
+
     <div class="controls">
       <button class="btn btn-play" id="btnPlay">▶ Play</button>
       <button class="btn btn-mark" id="btnMark">⬥ MARK HERE</button>
@@ -269,8 +337,17 @@
       </div>
       <button class="btn-clear-all" id="btnClearAll">Clear all</button>
     </div>
+    <div class="serial-toggle-row">
+      <label><input type="checkbox" id="chkSerial" checked> Auto-serial names from clip #1</label>
+      <span style="flex:1"></span>
+      <span style="font-size:10px;color:var(--muted)" id="selCountLabel">All selected</span>
+    </div>
     <div class="clips-preview" id="clipsPreview"></div>
     <div class="marks-list" id="marksList"></div>
+    <div class="marks-export-row" style="margin-top:10px;">
+      <button class="btn-export-sel btn" id="btnExportSelected">⚡ Export Selected Clips</button>
+      <span style="font-size:10px;color:var(--muted)">or use the main Export button below for all</span>
+    </div>
   </div>
 
   <!-- PROCESS -->
@@ -309,6 +386,10 @@ let undoStack  = [];
 let blobs      = [];
 let duration   = 0;
 let mediaFile  = null;
+
+// Pre/Post cut window
+let cutStartSec = null;  // null = use session resume or 0
+let cutEndSec   = null;  // null = use full duration
 
 // Session state — loaded from localStorage
 let sessionResumeTime = 0;   // seconds: where previous session ended
@@ -358,12 +439,34 @@ function parsePrefix(label) {
   return trimmed ? { prefix: trimmed, startNum: 1 } : null;
 }
 
-function getClipName(sessionIndex) {
+function getClipName(sessionIndex, filteredMarks) {
   // sessionIndex = 0-based index WITHIN THIS SESSION
-  // globalIndex  = sessionClipOffset + sessionIndex
   const globalIndex = sessionClipOffset + sessionIndex;
+  const useSerial = chkSerial ? chkSerial.checked : true;
+
+  // If this clip has a custom label set directly on it, use that
+  const seg_marks = filteredMarks || marks;
+  // marks[sessionIndex] is the mark BEFORE this segment (index i means after mark i-1)
+  // The label for a segment is stored on its leading mark (marks[sessionIndex-1]) or on marks[0] for clip 0
+  // We store per-clip labels in marks[i].segLabel
+  if (!useSerial) {
+    // Each mark stores its own segLabel for the following segment
+    // segLabel[i] is stored on marks[i] for segment i+1, and segLabel[-1] (first seg) on a special firstSegLabel
+    // Actually simpler: store segLabel[i] on marks[i] for the segment starting at marks[i]
+    // Segment 0: from wStart to marks[0] — label stored in window.firstSegLabel
+    // Segment i (i>0): from marks[i-1] to marks[i] — label stored in marks[i-1].segLabel
+    // Last segment: from marks[last] to wEnd — label stored in marks[last].segLabel
+    if (sessionIndex === 0) {
+      if (window._firstSegLabel && window._firstSegLabel.trim()) return window._firstSegLabel.trim();
+    } else {
+      const prevMark = seg_marks[sessionIndex - 1];
+      if (prevMark && prevMark.segLabel && prevMark.segLabel.trim()) return prevMark.segLabel.trim();
+    }
+  }
+
+  // Serial mode: derive from first mark label
   const firstMark = marks[0];
-  if (firstMark && firstMark.label.trim()) {
+  if (firstMark && firstMark.label && firstMark.label.trim()) {
     const parsed = parsePrefix(firstMark.label);
     if (parsed) return `${parsed.prefix}_${parsed.startNum + globalIndex}`;
   }
@@ -412,6 +515,20 @@ const sessionChip     = $('sessionChip');
 const sessionsPanel   = $('sessionsPanel');
 const sessionsList    = $('sessionsList');
 const nextClipNum     = $('nextClipNum');
+const cutToggle       = $('cutToggle');
+const cutChevron      = $('cutChevron');
+const cutBody         = $('cutBody');
+const cutBadge        = $('cutBadge');
+const cutStart        = $('cutStart');
+const cutEnd          = $('cutEnd');
+const btnCutApply     = $('btnCutApply');
+const btnCutClear     = $('btnCutClear');
+const cutVisualPre    = $('cutVisualPre');
+const cutVisualPost   = $('cutVisualPost');
+const cutVisualFill   = $('cutVisualFill');
+const chkSerial       = $('chkSerial');
+const selCountLabel   = $('selCountLabel');
+const btnExportSelected = $('btnExportSelected');
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function fmtTime(s, ms = true) {
@@ -440,13 +557,27 @@ function setStep(n) {
 }
 
 // ─── BUILD SEGMENTS ───────────────────────────────────────────────────────────
+function getWindowStart() {
+  if (cutStartSec !== null) return cutStartSec;
+  return sessionResumeTime;
+}
+function getWindowEnd() {
+  if (cutEndSec !== null) return cutEndSec;
+  return duration;
+}
+
 function buildSegments() {
-  const start0 = sessionResumeTime; // this session starts from resume point
-  const cuts = [start0, ...marks.map(m=>m.time), duration];
+  const wStart = getWindowStart();
+  const wEnd   = getWindowEnd();
+  // Only marks within the window
+  const filteredMarks = marks.filter(m => m.time > wStart && m.time < wEnd);
+  filteredMarks.sort((a,b) => a.time - b.time);
+  const cuts = [wStart, ...filteredMarks.map(m => m.time), wEnd];
   return cuts.slice(0,-1).map((start, i) => ({
     start,
     end:   cuts[i+1],
-    label: getClipName(i),
+    label: getClipName(i, filteredMarks),
+    included: true,
   }));
 }
 
@@ -678,80 +809,190 @@ document.addEventListener('keydown', e=>{
 
 // ─── RENDER MARKS ─────────────────────────────────────────────────────────────
 function renderMarks() {
-  marksList.innerHTML='';
+  // Save focus state before re-render
+  const focused = document.activeElement;
+  const focusedId = focused && focused.dataset ? focused.dataset.markInputId : null;
+  const focusedSel = focused ? { start: focused.selectionStart, end: focused.selectionEnd } : null;
+
+  marksList.innerHTML = '';
   document.querySelectorAll('.timeline-mark').forEach(el=>el.remove());
 
+  const wStart = getWindowStart();
+  const wEnd   = getWindowEnd();
+  const filteredMarks = marks.filter(m => m.time > wStart && m.time < wEnd);
+  filteredMarks.sort((a,b) => a.time - b.time);
   const segs = buildSegments();
+  const useSerial = chkSerial.checked;
 
   clipsPreview.textContent = `${segs.length} clip(s) this session · global clip #${sessionClipOffset+1} → #${sessionClipOffset+segs.length}`;
   exportDesc.textContent   = `${marks.length} mark(s) → ${segs.length} clip(s). Global numbering continues from #${sessionClipOffset+1}.`;
 
-  marks.forEach((m,i)=>{
+  // Draw timeline marks
+  marks.forEach((m,i) => {
     const tm = document.createElement('div');
     tm.className = 'timeline-mark';
-    tm.style.left = duration?((m.time/duration)*100)+'%':'0%';
+    tm.style.left = duration ? ((m.time/duration)*100)+'%' : '0%';
     tm.dataset.index = sessionClipOffset + i + 1;
     tm.title = fmtTime(m.time);
     timelineBar.appendChild(tm);
   });
 
+  // Track selected state (use seg.selected if present, default true)
   segs.forEach((seg, i) => {
-    const isLast  = i === segs.length - 1;
-    const isFirst = i === 0;
+    if (seg._selKey === undefined) {
+      // first render or new seg — default selected
+    }
+  });
+
+  segs.forEach((seg, i) => {
+    const isLast   = i === segs.length - 1;
     const globalNum = sessionClipOffset + i + 1;
     const item = document.createElement('div');
     item.className = 'mark-item';
+    if (seg._excluded) item.classList.add('excluded');
     if (isLast) item.style.borderColor = 'rgba(232,255,71,0.2)';
 
-    const inputHtml = isFirst
-      ? `<input class="mark-label" type="text" placeholder="e.g. hcj_${globalNum}" value="${marks[0] ? marks[0].label : ''}" title="Set name for clip #${globalNum} — rest auto-number" style="border-color:var(--accent);">`
-      : `<input class="mark-label" type="text" value="${seg.label}" style="opacity:.55;" disabled title="Auto-named">`;
+    // Determine input value
+    let inputVal = seg.label;
+    const inputId = `seg-label-${i}`;
 
-    const deleteBtn = (!isLast && marks[i])
-      ? `<button class="btn-delete-mark" title="Delete mark">✕</button>`
-      : `<span style="min-width:24px"></span>`;
+    // Checkbox for include/exclude
+    const chkEl = document.createElement('input');
+    chkEl.type = 'checkbox';
+    chkEl.className = 'mark-check';
+    chkEl.checked = !seg._excluded;
+    chkEl.title = 'Include in export';
+    chkEl.addEventListener('change', () => {
+      segs[i]._excluded = !chkEl.checked;
+      // Persist excluded state into our marks-based storage
+      if (i === 0) { window._seg0excluded = !chkEl.checked; }
+      else { const pm = filteredMarks[i-1]; if (pm) pm._segExcluded = !chkEl.checked; }
+      item.classList.toggle('excluded', !chkEl.checked);
+      updateSelLabel();
+    });
 
-    item.innerHTML = `
-      <span class="mark-index" style="${isLast?'color:var(--accent)':''}">#${globalNum}${isFirst?' <span style="font-size:9px;color:var(--accent);vertical-align:middle">✎</span>':''}</span>
-      <div class="mark-range">
-        <div><strong>${fmtTime(seg.start,false)}</strong> → <strong>${fmtTime(seg.end,false)}</strong></div>
-        <div style="font-size:9px;margin-top:2px">${isLast?'last clip (to end)':`clip ${i+1} of ${segs.length} this session`}</div>
-      </div>
-      ${inputHtml}
-      <span class="mark-duration">${fmtTime(seg.end-seg.start,false)}</span>
-      ${deleteBtn}
-    `;
+    // Name input
+    const inputEl = document.createElement('input');
+    inputEl.className = 'mark-label';
+    inputEl.type = 'text';
+    inputEl.autocomplete = 'off';
+    inputEl.dataset.markInputId = inputId;
 
-    item.querySelector('.mark-range').addEventListener('click', ()=>{ videoEl.currentTime = seg.start; });
+    if (useSerial && i > 0) {
+      inputEl.value = seg.label;
+      inputEl.style.opacity = '.55';
+      inputEl.disabled = true;
+      inputEl.title = 'Auto-named (serial from #1)';
+    } else {
+      // Editable
+      if (i === 0) {
+        inputEl.value = marks[0] ? (marks[0].label || '') : '';
+        inputEl.placeholder = `e.g. hcj_${globalNum}`;
+        inputEl.style.borderColor = 'var(--accent)';
+        inputEl.title = 'Name for this clip (serial names derived from this)';
+      } else {
+        // Custom per-clip label
+        const prevMark = filteredMarks[i-1];
+        inputEl.value = (prevMark && prevMark.segLabel) ? prevMark.segLabel : seg.label;
+        inputEl.placeholder = seg.label;
+        inputEl.title = `Name for clip #${globalNum}`;
+      }
 
-    if (isFirst) {
-      item.querySelector('.mark-label').addEventListener('input', e => {
-        if (marks[0]) marks[0].label = e.target.value;
-        renderMarks();
+      // KEY FIX: update data without re-rendering
+      inputEl.addEventListener('input', e => {
+        if (i === 0) {
+          if (marks[0]) marks[0].label = e.target.value;
+          // If serial, update display labels but NOT the inputs
+          if (useSerial) {
+            updateSerialLabels();
+          }
+        } else {
+          const prevMark = filteredMarks[i-1];
+          if (prevMark) prevMark.segLabel = e.target.value;
+        }
+        // Update preview only
+        const rebuilt = buildSegments();
+        clipsPreview.textContent = `${rebuilt.length} clip(s) this session · global clip #${sessionClipOffset+1} → #${sessionClipOffset+rebuilt.length}`;
       });
     }
 
-    if (!isLast && marks[i]) {
-      const m = marks[i];
-      const delBtn = item.querySelector('.btn-delete-mark');
-      if (delBtn) {
-        delBtn.addEventListener('click', ()=>{
-          const ui = undoStack.indexOf(m); if(ui!==-1) undoStack.splice(ui,1);
-          marks.splice(i,1);
-          btnUndo.disabled = undoStack.length===0;
-          renderMarks();
-          updateNextClipNum();
-        });
-      }
+    // Delete button (not for last segment)
+    const delBtn = document.createElement('button');
+    delBtn.className = 'btn-delete-mark';
+    if (!isLast && filteredMarks[i]) {
+      delBtn.title = 'Delete mark';
+      delBtn.textContent = '✕';
+      const m = filteredMarks[i];
+      delBtn.addEventListener('click', () => {
+        const ui = undoStack.indexOf(m); if(ui!==-1) undoStack.splice(ui,1);
+        const mi = marks.indexOf(m); if(mi!==-1) marks.splice(mi,1);
+        btnUndo.disabled = undoStack.length===0;
+        renderMarks();
+        updateNextClipNum();
+      });
+    } else {
+      delBtn.style.minWidth = '24px';
+      delBtn.style.visibility = 'hidden';
     }
+
+    // Seek on range click
+    const rangeDiv = document.createElement('div');
+    rangeDiv.className = 'mark-range';
+    rangeDiv.innerHTML = `<div><strong>${fmtTime(seg.start,false)}</strong> → <strong>${fmtTime(seg.end,false)}</strong></div><div style="font-size:9px;margin-top:2px">${isLast?'last clip (to end)':`clip ${i+1} of ${segs.length}`}</div>`;
+    rangeDiv.addEventListener('click', () => { videoEl.currentTime = seg.start; });
+
+    const idxSpan = document.createElement('span');
+    idxSpan.className = 'mark-index';
+    idxSpan.style.cssText = isLast ? 'color:var(--accent)' : '';
+    idxSpan.textContent = `#${globalNum}`;
+
+    const durSpan = document.createElement('span');
+    durSpan.className = 'mark-duration';
+    durSpan.textContent = fmtTime(seg.end - seg.start, false);
+
+    item.appendChild(chkEl);
+    item.appendChild(idxSpan);
+    item.appendChild(rangeDiv);
+    item.appendChild(inputEl);
+    item.appendChild(durSpan);
+    item.appendChild(delBtn);
 
     marksList.appendChild(item);
   });
+
+  // Restore focus if it was in an input
+  if (focusedId) {
+    const el = marksList.querySelector(`[data-mark-input-id="${focusedId}"]`);
+    if (el && !el.disabled) {
+      el.focus();
+      try { el.setSelectionRange(focusedSel.start, focusedSel.end); } catch(e){}
+    }
+  }
 
   marksCount.textContent = segs.length;
   marksSection.classList.toggle('visible', marks.length > 0);
   processSection.classList.toggle('visible', marks.length > 0);
   setStep(marks.length > 0 ? 3 : 2);
+  updateSelLabel();
+}
+
+function updateSelLabel() {
+  const items = marksList.querySelectorAll('.mark-check');
+  const total = items.length;
+  const sel = Array.from(items).filter(c=>c.checked).length;
+  if (total === 0) { selCountLabel.textContent = ''; return; }
+  selCountLabel.textContent = sel === total ? 'All selected' : `${sel}/${total} selected`;
+  btnExportSelected.disabled = sel === 0;
+}
+
+function updateSerialLabels() {
+  // Update only the disabled inputs with new serial names without full re-render
+  const segs = buildSegments();
+  marksList.querySelectorAll('.mark-label[disabled]').forEach((inp, i) => {
+    // disabled inputs are index 1..n in serial mode
+    const actualIndex = i + 1;
+    if (segs[actualIndex]) inp.value = segs[actualIndex].label;
+  });
 }
 
 btnClearAll.addEventListener('click', ()=>{
@@ -762,6 +1003,82 @@ btnClearAll.addEventListener('click', ()=>{
   btnDownloadAll.disabled=true;
   updateNextClipNum();
   setStep(2); setStatus('All marks cleared');
+});
+
+// ─── SERIAL TOGGLE ────────────────────────────────────────────────────────────
+chkSerial.addEventListener('change', () => { renderMarks(); });
+
+// ─── EXPORT SELECTED ──────────────────────────────────────────────────────────
+btnExportSelected.addEventListener('click', () => {
+  const checks = Array.from(marksList.querySelectorAll('.mark-check'));
+  const selectedIndices = checks.map((c,i) => c.checked ? i : -1).filter(i => i >= 0);
+  processClips(selectedIndices);
+});
+
+// ─── PRE/POST CUT ─────────────────────────────────────────────────────────────
+cutToggle.addEventListener('click', () => {
+  const open = cutBody.classList.toggle('visible');
+  cutChevron.classList.toggle('open', open);
+});
+
+function parseCutTime(str) {
+  if (!str || !str.trim()) return null;
+  const parts = str.trim().split(':').map(Number);
+  if (parts.some(isNaN)) return null;
+  if (parts.length === 2) return parts[0]*60 + parts[1];
+  if (parts.length === 3) return parts[0]*3600 + parts[1]*60 + parts[2];
+  if (parts.length === 1) return parts[0];
+  return null;
+}
+
+function updateCutVisual() {
+  if (!duration) return;
+  const s = cutStartSec !== null ? cutStartSec : 0;
+  const e = cutEndSec   !== null ? cutEndSec   : duration;
+  const prePct  = (s / duration) * 100;
+  const postPct = ((duration - e) / duration) * 100;
+  const fillPct = ((e - s) / duration) * 100;
+  cutVisualPre.style.width  = prePct + '%';
+  cutVisualPost.style.width = postPct + '%';
+  cutVisualFill.style.left  = prePct + '%';
+  cutVisualFill.style.width = fillPct + '%';
+}
+
+btnCutApply.addEventListener('click', () => {
+  const s = parseCutTime(cutStart.value);
+  const e = parseCutTime(cutEnd.value);
+  cutStart.classList.remove('error');
+  cutEnd.classList.remove('error');
+
+  let ok = true;
+  if (cutStart.value.trim() && s === null) { cutStart.classList.add('error'); ok = false; }
+  if (cutEnd.value.trim() && e === null)   { cutEnd.classList.add('error'); ok = false; }
+  if (!ok) { showToast('Invalid time format — use M:SS'); return; }
+  if (s !== null && e !== null && s >= e) { cutStart.classList.add('error'); cutEnd.classList.add('error'); showToast('Start must be before end!'); return; }
+
+  cutStartSec = s;
+  cutEndSec   = e;
+
+  const sLabel = s !== null ? fmtTime(s, false) : '0:00';
+  const eLabel = e !== null ? fmtTime(e, false) : (duration ? fmtTime(duration, false) : 'end');
+  cutBadge.textContent = `${sLabel} → ${eLabel}`;
+  cutBadge.style.color = 'var(--accent3)';
+
+  updateCutVisual();
+  renderMarks();
+  showToast(`✂ Window set: ${sLabel} → ${eLabel}`);
+  setStatus(`Export window: ${sLabel} → ${eLabel}`);
+});
+
+btnCutClear.addEventListener('click', () => {
+  cutStartSec = null; cutEndSec = null;
+  cutStart.value = ''; cutEnd.value = '';
+  cutStart.classList.remove('error'); cutEnd.classList.remove('error');
+  cutBadge.textContent = 'Full file';
+  cutBadge.style.color = '';
+  updateCutVisual();
+  renderMarks();
+  showToast('✂ Cut window cleared');
 });
 
 // ─── LAME MP3 ENCODER ─────────────────────────────────────────────────────────
@@ -807,11 +1124,12 @@ function encodeToMp3(audioBuffer) {
 }
 
 // ─── PROCESS ──────────────────────────────────────────────────────────────────
-btnProcess.addEventListener('click', processClips);
+btnProcess.addEventListener('click', ()=>processClips(null));
 
-async function processClips() {
+async function processClips(selectedIndices) {
   if(!mediaFile || marks.length===0) return;
   btnProcess.disabled=true;
+  btnExportSelected.disabled=true;
   btnDownloadAll.disabled=true;
   outputList.innerHTML='';
   blobs=[];
@@ -822,7 +1140,7 @@ async function processClips() {
 
   try {
     await loadLame();
-    progressLabel.textContent='Decoding audio…';
+    progressLabel.textContent='Decoding audio… (large files may take a moment)';
     progressFill.style.width='8%';
 
     const arrayBuffer = await mediaFile.arrayBuffer();
@@ -831,16 +1149,27 @@ async function processClips() {
     const sampleRate  = fullBuffer.sampleRate;
     const numChannels = fullBuffer.numberOfChannels;
     const totalSamples= fullBuffer.length;
-    const segs = buildSegments();
+
+    let segs = buildSegments();
+    // Filter to selectedIndices if specific clips requested
+    if (selectedIndices && selectedIndices.length > 0) {
+      segs = segs.filter((_, i) => selectedIndices.includes(i));
+    }
+    if (segs.length === 0) {
+      progressLabel.textContent = '✗ No clips selected!';
+      btnProcess.disabled=false; btnExportSelected.disabled=false;
+      return;
+    }
 
     for(let i=0;i<segs.length;i++){
       const seg = segs[i];
       progressFill.style.width = (10 + (i/segs.length)*85) + '%';
-      progressLabel.textContent = `Encoding clip ${sessionClipOffset+i+1}: "${seg.label}"…`;
+      progressLabel.textContent = `Encoding clip ${i+1}/${segs.length}: "${seg.label}"…`;
 
       const startSample = Math.floor(seg.start * sampleRate);
       const endSample   = Math.min(Math.floor(seg.end * sampleRate), totalSamples);
       const length      = endSample - startSample;
+      if (length <= 0) continue;
 
       const offCtx   = new OfflineAudioContext(numChannels, length, sampleRate);
       const sliceBuf = offCtx.createBuffer(numChannels, length, sampleRate);
@@ -877,8 +1206,7 @@ async function processClips() {
     btnDownloadAll.disabled=false;
 
     // ── SAVE PROGRESS ──────────────────────────────────────────────────────
-    // The new resume point = end time of last exported segment
-    const lastSeg  = segs[segs.length - 1];
+    const lastSeg   = segs[segs.length - 1];
     const newResume = lastSeg.end < duration ? lastSeg.end : duration;
     const newOffset = sessionClipOffset + segs.length;
     const firstName = marks[0] ? marks[0].label : '';
@@ -893,7 +1221,6 @@ async function processClips() {
       });
     }
 
-    // Update live state so user can keep marking in same session
     sessionResumeTime = newResume;
     sessionClipOffset = newOffset;
     marks = [];
@@ -915,6 +1242,7 @@ async function processClips() {
     console.error(err);
   }
   btnProcess.disabled=false;
+  btnExportSelected.disabled=false;
 }
 
 // ─── DOWNLOAD ─────────────────────────────────────────────────────────────────
