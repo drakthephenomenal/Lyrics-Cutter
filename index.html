@@ -8,30 +8,13 @@
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 
   :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --card: #1a1a26;
-    --border: #2a2a3d;
-    --accent: #e8ff47;
-    --accent2: #ff4778;
-    --accent3: #47c8ff;
-    --text: #f0f0f8;
-    --muted: #6b6b8a;
+    --bg: #0a0a0f; --surface: #12121a; --card: #1a1a26; --border: #2a2a3d;
+    --accent: #e8ff47; --accent2: #ff4778; --accent3: #47c8ff;
+    --text: #f0f0f8; --muted: #6b6b8a;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg); color: var(--text);
-    font-family: 'Space Mono', monospace;
-    min-height: 100vh; overflow-x: hidden;
-  }
-  body::before {
-    content: ''; position: fixed; inset: 0;
-    background-image:
-      linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
-    background-size: 40px 40px; pointer-events: none; z-index: 0;
-  }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Mono', monospace; min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(232,255,71,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(232,255,71,0.03) 1px,transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
   .app { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
 
   header { margin-bottom: 48px; }
@@ -44,6 +27,22 @@
   .step-pill { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; letter-spacing:.1em; padding:5px 12px; border-radius:100px; border:1px solid var(--border); color:var(--muted); transition:all .3s; }
   .step-pill.active { border-color:var(--accent); color:var(--accent); background:rgba(232,255,71,.08); }
   .step-pill.done { border-color:var(--border); color:var(--border); text-decoration:line-through; }
+
+  /* RESUME BANNER */
+  .resume-banner { display:none; background:rgba(71,200,255,.08); border:1px solid rgba(71,200,255,.35); border-radius:14px; padding:16px 20px; margin-bottom:24px; }
+  .resume-banner.visible { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .resume-info { flex:1; min-width:0; }
+  .resume-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--accent3); margin-bottom:4px; }
+  .resume-detail { font-size:11px; color:var(--muted); line-height:1.6; }
+  .resume-detail strong { color:var(--text); }
+  .btn-resume { background:var(--accent3); color:var(--bg); border:none; border-radius:8px; padding:9px 16px; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap; transition:all .2s; }
+  .btn-resume:hover { background:#80e0ff; }
+  .btn-resume-dismiss { background:none; border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:9px 12px; font-family:'Space Mono',monospace; font-size:11px; cursor:pointer; white-space:nowrap; transition:all .2s; }
+  .btn-resume-dismiss:hover { border-color:var(--accent2); color:var(--accent2); }
+
+  /* SESSION PROGRESS BAR on timeline */
+  .timeline-done { position:absolute; top:0; left:0; height:100%; background:rgba(255,71,120,.18); border-radius:4px; pointer-events:none; }
+  .timeline-done-label { position:absolute; top:-22px; font-size:9px; color:var(--accent2); font-family:'Space Mono',monospace; white-space:nowrap; transform:translateX(-50%); }
 
   /* UPLOAD */
   .upload-zone { border:2px dashed var(--border); border-radius:16px; padding:56px 32px; text-align:center; cursor:pointer; transition:all .3s; background:var(--surface); position:relative; overflow:hidden; }
@@ -58,22 +57,32 @@
   /* PLAYER */
   .player-section { display:none; flex-direction:column; gap:20px; }
   .player-section.visible { display:flex; }
-  .file-info { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .file-info { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .file-name { font-size:12px; color:var(--accent); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .file-size { font-size:11px; color:var(--muted); }
+  .file-actions { display:flex; gap:8px; }
   .btn-reset { background:none; border:1px solid var(--accent2); color:var(--accent2); border-radius:8px; padding:6px 12px; font-family:'Space Mono',monospace; font-size:11px; cursor:pointer; white-space:nowrap; transition:all .2s; }
   .btn-reset:hover { background:rgba(255,71,120,.1); }
+
+  /* SESSION CHIP */
+  .session-chip { display:none; background:rgba(71,200,255,.1); border:1px solid rgba(71,200,255,.3); border-radius:8px; padding:6px 12px; font-size:10px; color:var(--accent3); white-space:nowrap; }
+  .session-chip.visible { display:block; }
 
   .video-wrapper { background:#000; border-radius:12px; overflow:hidden; border:1px solid var(--border); }
   video { width:100%; display:block; max-height:340px; object-fit:contain; background:#000; }
 
   /* TIMELINE */
   .timeline-wrapper { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
-  .timeline-label { font-size:10px; color:var(--muted); letter-spacing:.15em; text-transform:uppercase; margin-bottom:10px; }
+  .timeline-label { font-size:10px; color:var(--muted); letter-spacing:.15em; text-transform:uppercase; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
+  .timeline-remaining { color:var(--accent3); }
   .timeline-bar { height:8px; background:var(--surface); border-radius:4px; position:relative; cursor:pointer; overflow:visible; }
-  .timeline-progress { height:100%; background:linear-gradient(90deg,var(--accent3),var(--accent)); border-radius:4px; width:0%; transition:width .1s linear; pointer-events:none; }
-  .timeline-mark { position:absolute; top:-6px; width:3px; height:20px; background:var(--accent2); border-radius:2px; transform:translateX(-50%); pointer-events:none; }
+  .timeline-progress { height:100%; background:linear-gradient(90deg,var(--accent3),var(--accent)); border-radius:4px; width:0%; transition:width .1s linear; pointer-events:none; position:relative; z-index:2; }
+  .timeline-mark { position:absolute; top:-6px; width:3px; height:20px; background:var(--accent2); border-radius:2px; transform:translateX(-50%); pointer-events:none; z-index:3; }
   .timeline-mark::after { content:attr(data-index); position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:9px; color:var(--accent2); font-family:'Space Mono',monospace; }
+  /* Greyed-out "already done" region on timeline */
+  .timeline-past { position:absolute; top:0; left:0; height:100%; background:rgba(255,71,120,.15); border-radius:4px 0 0 4px; pointer-events:none; z-index:1; }
+  .timeline-past-marker { position:absolute; top:-6px; width:2px; height:20px; background:var(--accent2); border-radius:2px; pointer-events:none; z-index:4; opacity:.6; }
+  .timeline-past-marker::before { content:'▶ resume'; position:absolute; top:-18px; left:6px; font-size:9px; color:var(--accent2); font-family:'Space Mono',monospace; white-space:nowrap; }
   .time-display { display:flex; justify-content:space-between; margin-top:8px; font-size:11px; color:var(--muted); }
   .current-time-big { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:var(--accent); letter-spacing:-.02em; margin-top:4px; }
 
@@ -107,7 +116,7 @@
   .marks-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
   .mark-item { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 14px; display:flex; align-items:center; gap:10px; animation:slideIn .2s ease; }
   @keyframes slideIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-  .mark-index { font-family:'Syne',sans-serif; font-size:11px; font-weight:800; color:var(--accent2); min-width:24px; }
+  .mark-index { font-family:'Syne',sans-serif; font-size:11px; font-weight:800; color:var(--accent2); min-width:32px; }
   .mark-range { font-size:10px; color:var(--muted); min-width:90px; line-height:1.5; }
   .mark-range strong { color:var(--accent); font-size:11px; }
   .mark-label { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:7px 10px; font-family:'Space Mono',monospace; font-size:11px; color:var(--text); outline:none; transition:border-color .2s; min-width:0; }
@@ -142,33 +151,59 @@
   .btn-dl:hover { background:#f5ff80; }
 
   .divider { height:1px; background:var(--border); margin:24px 0 20px; }
-
   .status-bar { position:fixed; bottom:0; left:0; right:0; background:var(--surface); border-top:1px solid var(--border); padding:11px 24px; font-size:11px; color:var(--muted); z-index:100; display:flex; align-items:center; gap:8px; }
   .status-dot { width:6px; height:6px; border-radius:50%; background:var(--muted); flex-shrink:0; }
   .status-dot.active { background:var(--accent); box-shadow:0 0 8px var(--accent); animation:pulse 1.5s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-
   .toast { position:fixed; bottom:56px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--accent); color:var(--bg); font-family:'Space Mono',monospace; font-size:12px; font-weight:700; padding:10px 20px; border-radius:100px; opacity:0; transition:all .3s; pointer-events:none; white-space:nowrap; z-index:200; }
   .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
   .toast.undo { background:var(--accent3); }
-
   .spinner { display:inline-block; width:13px; height:13px; border:2px solid rgba(10,10,15,.3); border-top-color:var(--bg); border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; }
   @keyframes spin { to{transform:rotate(360deg)} }
+
+  /* SAVED SESSIONS PANEL */
+  .sessions-panel { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 20px; margin-bottom:28px; display:none; }
+  .sessions-panel.visible { display:block; }
+  .sessions-panel-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--accent3); margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }
+  .session-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+  .session-row:last-child { border-bottom:none; padding-bottom:0; }
+  .session-fname { font-size:11px; color:var(--text); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .session-meta { font-size:10px; color:var(--muted); white-space:nowrap; }
+  .btn-session-del { background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px; padding:2px 4px; transition:color .2s; }
+  .btn-session-del:hover { color:var(--accent2); }
 </style>
 </head>
 <body>
-
 <div class="app">
   <header>
     <div class="logo">♪ Lyrics Cutter</div>
     <h1>Mark & <span>Slice</span></h1>
-    <p class="subtitle">Upload video → Play → Press <kbd>M</kbd> at each lyric boundary → Export MP3 clips</p>
+    <p class="subtitle">Upload video → Mark clips → Export → <strong style="color:var(--accent3)">Progress saved automatically</strong> — resume next session from where you stopped</p>
   </header>
 
   <div class="step-row">
     <div class="step-pill active" id="step1">01 Upload</div>
     <div class="step-pill" id="step2">02 Mark</div>
     <div class="step-pill" id="step3">03 Export</div>
+  </div>
+
+  <!-- SAVED SESSIONS -->
+  <div class="sessions-panel" id="sessionsPanel">
+    <div class="sessions-panel-title">
+      <span>📂 Saved Sessions</span>
+      <span style="font-size:10px;color:var(--muted);font-weight:400">Upload the same video to resume</span>
+    </div>
+    <div id="sessionsList"></div>
+  </div>
+
+  <!-- RESUME BANNER (shown after upload if session found) -->
+  <div class="resume-banner" id="resumeBanner">
+    <div class="resume-info">
+      <div class="resume-title">⏱ Previous session found!</div>
+      <div class="resume-detail" id="resumeDetail">—</div>
+    </div>
+    <button class="btn-resume" id="btnResume">▶ Resume from here</button>
+    <button class="btn-resume-dismiss" id="btnResumeDismiss">Start fresh</button>
   </div>
 
   <div class="upload-zone" id="uploadZone">
@@ -181,11 +216,14 @@
 
   <div class="player-section" id="playerSection">
     <div class="file-info">
-      <div>
+      <div style="min-width:0;flex:1">
         <div class="file-name" id="fileName">—</div>
         <div class="file-size" id="fileSize">—</div>
       </div>
-      <button class="btn-reset" id="btnReset">✕ Reset</button>
+      <div class="file-actions">
+        <div class="session-chip" id="sessionChip">▶ Resumed</div>
+        <button class="btn-reset" id="btnReset">✕ Reset</button>
+      </div>
     </div>
 
     <div class="video-wrapper">
@@ -193,8 +231,13 @@
     </div>
 
     <div class="timeline-wrapper">
-      <div class="timeline-label">Timeline — click to seek</div>
+      <div class="timeline-label">
+        <span>Timeline — click to seek</span>
+        <span class="timeline-remaining" id="timelineRemaining"></span>
+      </div>
       <div class="timeline-bar" id="timelineBar">
+        <div class="timeline-past" id="timelinePast" style="width:0%"></div>
+        <div class="timeline-past-marker" id="timelinePastMarker" style="display:none"></div>
         <div class="timeline-progress" id="timelineProgress"></div>
       </div>
       <div class="time-display">
@@ -235,9 +278,10 @@
     <div class="divider"></div>
     <div class="process-card">
       <h3>Export MP3 Clips</h3>
-      <p id="exportDesc">Ready to export. Label your clips above before exporting.</p>
+      <p id="exportDesc">Ready to export.</p>
       <div class="encoder-notice">
-        🎵 Uses <strong>pure JS MP3 encoder</strong> (lamejs) — works from any origin, no server needed. First export loads the encoder (~200 KB).
+        🎵 Uses <strong>pure JS MP3 encoder</strong> (lamejs) — works from any origin, no server needed.
+        💾 Progress is <strong>auto-saved</strong> after each export — next session continues from clip #<span id="nextClipNum">1</span>.
       </div>
       <div class="process-actions">
         <button class="btn btn-process" id="btnProcess">⚡ Export as MP3</button>
@@ -260,43 +304,114 @@
 
 <script>
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let marks     = [];   // [{time, label}]  — these are CUT POINTS
-let undoStack = [];   // for undo
-let blobs     = [];
-let duration  = 0;
-let mediaFile = null;
+let marks      = [];
+let undoStack  = [];
+let blobs      = [];
+let duration   = 0;
+let mediaFile  = null;
+
+// Session state — loaded from localStorage
+let sessionResumeTime = 0;   // seconds: where previous session ended
+let sessionClipOffset = 0;   // how many clips were already exported before this session
+let sessionKey        = null; // localStorage key for this file
+
+// ─── STORAGE HELPERS ──────────────────────────────────────────────────────────
+const LS_PREFIX = 'lyricscutter_v1_';
+
+function makeKey(file) {
+  // Key = prefix + sanitised filename + approximate size bucket (avoids collision between different files with same name)
+  const sizeBucket = Math.round(file.size / 10000);
+  return LS_PREFIX + file.name.replace(/[^a-z0-9]/gi,'_') + '_' + sizeBucket;
+}
+
+function saveSession(key, data) {
+  try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {}
+}
+
+function loadSession(key) {
+  try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : null; } catch(e) { return null; }
+}
+
+function deleteSession(key) {
+  try { localStorage.removeItem(key); } catch(e) {}
+}
+
+function getAllSessions() {
+  const sessions = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(LS_PREFIX)) {
+        const d = loadSession(k);
+        if (d) sessions.push({ key: k, ...d });
+      }
+    }
+  } catch(e) {}
+  return sessions.sort((a,b) => (b.savedAt||0) - (a.savedAt||0));
+}
+
+// ─── AUTO-NAME HELPERS ────────────────────────────────────────────────────────
+function parsePrefix(label) {
+  const trimmed = label.trim();
+  const m = trimmed.match(/^(.*?)_(\d+)$/);
+  if (m) return { prefix: m[1], startNum: parseInt(m[2], 10) };
+  return trimmed ? { prefix: trimmed, startNum: 1 } : null;
+}
+
+function getClipName(sessionIndex) {
+  // sessionIndex = 0-based index WITHIN THIS SESSION
+  // globalIndex  = sessionClipOffset + sessionIndex
+  const globalIndex = sessionClipOffset + sessionIndex;
+  const firstMark = marks[0];
+  if (firstMark && firstMark.label.trim()) {
+    const parsed = parsePrefix(firstMark.label);
+    if (parsed) return `${parsed.prefix}_${parsed.startNum + globalIndex}`;
+  }
+  return `clip_${String(globalIndex + 1).padStart(2, '0')}`;
+}
 
 // ─── ELEMENTS ─────────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
-const uploadZone    = $('uploadZone');
-const fileInput     = $('fileInput');
-const playerSection = $('playerSection');
-const videoEl       = $('videoEl');
-const timelineBar   = $('timelineBar');
-const timelineProgress = $('timelineProgress');
-const currentTimeStr= $('currentTimeStr');
-const currentTimeBig= $('currentTimeBig');
-const totalTimeStr  = $('totalTimeStr');
-const btnPlay       = $('btnPlay');
-const btnMark       = $('btnMark');
-const btnUndo       = $('btnUndo');
-const btnReset      = $('btnReset');
-const marksSection  = $('marksSection');
-const marksList     = $('marksList');
-const marksCount    = $('marksCount');
-const clipsPreview  = $('clipsPreview');
-const btnClearAll   = $('btnClearAll');
-const processSection= $('processSection');
-const btnProcess    = $('btnProcess');
-const btnDownloadAll= $('btnDownloadAll');
-const progressWrap  = $('progressWrap');
-const progressFill  = $('progressFill');
-const progressLabel = $('progressLabel');
-const outputList    = $('outputList');
-const statusDot     = $('statusDot');
-const statusText    = $('statusText');
-const toast         = $('toast');
-const exportDesc    = $('exportDesc');
+const uploadZone      = $('uploadZone');
+const fileInput       = $('fileInput');
+const playerSection   = $('playerSection');
+const videoEl         = $('videoEl');
+const timelineBar     = $('timelineBar');
+const timelineProgress= $('timelineProgress');
+const timelinePast    = $('timelinePast');
+const timelinePastMarker = $('timelinePastMarker');
+const timelineRemaining  = $('timelineRemaining');
+const currentTimeStr  = $('currentTimeStr');
+const currentTimeBig  = $('currentTimeBig');
+const totalTimeStr    = $('totalTimeStr');
+const btnPlay         = $('btnPlay');
+const btnMark         = $('btnMark');
+const btnUndo         = $('btnUndo');
+const btnReset        = $('btnReset');
+const marksSection    = $('marksSection');
+const marksList       = $('marksList');
+const marksCount      = $('marksCount');
+const clipsPreview    = $('clipsPreview');
+const btnClearAll     = $('btnClearAll');
+const processSection  = $('processSection');
+const btnProcess      = $('btnProcess');
+const btnDownloadAll  = $('btnDownloadAll');
+const progressWrap    = $('progressWrap');
+const progressFill    = $('progressFill');
+const progressLabel   = $('progressLabel');
+const outputList      = $('outputList');
+const statusDot       = $('statusDot');
+const statusText      = $('statusText');
+const toast           = $('toast');
+const exportDesc      = $('exportDesc');
+const resumeBanner    = $('resumeBanner');
+const resumeDetail    = $('resumeDetail');
+const btnResume       = $('btnResume');
+const btnResumeDismiss= $('btnResumeDismiss');
+const sessionChip     = $('sessionChip');
+const sessionsPanel   = $('sessionsPanel');
+const sessionsList    = $('sessionsList');
+const nextClipNum     = $('nextClipNum');
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function fmtTime(s, ms = true) {
@@ -317,7 +432,7 @@ function showToast(msg, type='') {
   clearTimeout(_tt);
   toast.textContent = msg;
   toast.className = 'toast show'+(type?' '+type:'');
-  _tt = setTimeout(()=>{ toast.className='toast'; }, 2200);
+  _tt = setTimeout(()=>{ toast.className='toast'; }, 2400);
 }
 function setStep(n) {
   for(let i=1;i<=3;i++)
@@ -325,20 +440,42 @@ function setStep(n) {
 }
 
 // ─── BUILD SEGMENTS ───────────────────────────────────────────────────────────
-// Segments always start from 0:00
-// N marks → N+1 clips
 function buildSegments() {
-  // boundaries: 0, mark1, mark2, ..., markN, duration
-  const cuts = [0, ...marks.map(m=>m.time), duration];
+  const start0 = sessionResumeTime; // this session starts from resume point
+  const cuts = [start0, ...marks.map(m=>m.time), duration];
   return cuts.slice(0,-1).map((start, i) => ({
     start,
     end:   cuts[i+1],
-    // label comes from the mark ENDING this segment (mark index i, 0-based)
-    // segment 0 = before first mark → use first mark's label or default
-    label: marks[i] ? (marks[i].label.trim() || `clip_${String(i+1).padStart(2,'0')}`)
-                    : `clip_${String(i+1).padStart(2,'0')}`,
+    label: getClipName(i),
   }));
 }
+
+// ─── SESSIONS PANEL ───────────────────────────────────────────────────────────
+function renderSessionsPanel() {
+  const sessions = getAllSessions();
+  if (sessions.length === 0) {
+    sessionsPanel.classList.remove('visible');
+    return;
+  }
+  sessionsPanel.classList.add('visible');
+  sessionsList.innerHTML = '';
+  sessions.forEach(s => {
+    const row = document.createElement('div');
+    row.className = 'session-row';
+    const date = s.savedAt ? new Date(s.savedAt).toLocaleDateString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+    row.innerHTML = `
+      <span class="session-fname" title="${s.fileName}">${s.fileName}</span>
+      <span class="session-meta">clip #${s.nextClipOffset+1} · ${fmtTime(s.resumeTime,false)} · ${date}</span>
+      <button class="btn-session-del" title="Delete session" data-key="${s.key}">🗑</button>
+    `;
+    row.querySelector('.btn-session-del').addEventListener('click', e => {
+      deleteSession(e.currentTarget.dataset.key);
+      renderSessionsPanel();
+    });
+    sessionsList.appendChild(row);
+  });
+}
+renderSessionsPanel();
 
 // ─── UPLOAD ───────────────────────────────────────────────────────────────────
 uploadZone.addEventListener('click', ()=>fileInput.click());
@@ -351,7 +488,9 @@ uploadZone.addEventListener('drop', e=>{
 fileInput.addEventListener('change', ()=>{ if(fileInput.files[0]) loadFile(fileInput.files[0]); });
 
 function loadFile(file) {
-  mediaFile = file;
+  mediaFile   = file;
+  sessionKey  = makeKey(file);
+
   videoEl.src = URL.createObjectURL(file);
   videoEl.load();
   $('fileName').textContent = file.name;
@@ -359,29 +498,116 @@ function loadFile(file) {
   uploadZone.style.display = 'none';
   playerSection.classList.add('visible');
   setStep(2);
-  setStatus('Loaded — play and press M or tap MARK HERE', true);
+
+  // Check for saved session
+  const saved = loadSession(sessionKey);
+  if (saved && saved.resumeTime > 0) {
+    resumeDetail.innerHTML =
+      `File: <strong>${saved.fileName}</strong><br>` +
+      `Last stopped at <strong>${fmtTime(saved.resumeTime, false)}</strong> · ` +
+      `Next clip will be <strong>#${saved.nextClipOffset + 1}</strong> · ` +
+      `Remaining: <strong>${fmtTime(0, false)}</strong> (loads after video)`;
+    resumeBanner.classList.add('visible');
+    // Store for potential resume
+    resumeBanner.dataset.resumeTime    = saved.resumeTime;
+    resumeBanner.dataset.clipOffset    = saved.nextClipOffset;
+    resumeBanner.dataset.firstName     = saved.firstName || '';
+    setStatus('Previous session found — resume or start fresh', true);
+  } else {
+    resumeBanner.classList.remove('visible');
+    applyResume(0, 0, '');
+    setStatus('Loaded — play and press M to mark', true);
+  }
 }
 
 videoEl.addEventListener('loadedmetadata', ()=>{
   duration = videoEl.duration;
   totalTimeStr.textContent = fmtTime(duration, false);
+  updateTimelineUI();
+  // Update remaining time in resume banner if visible
+  if (resumeBanner.classList.contains('visible')) {
+    const rt = parseFloat(resumeBanner.dataset.resumeTime || 0);
+    const co = parseInt(resumeBanner.dataset.clipOffset || 0);
+    resumeDetail.innerHTML =
+      `File: <strong>${mediaFile.name}</strong><br>` +
+      `Last stopped at <strong>${fmtTime(rt, false)}</strong> · ` +
+      `Next clip #<strong>${co + 1}</strong> · ` +
+      `Remaining: <strong>${fmtTime(duration - rt, false)}</strong>`;
+  }
 });
+
+btnResume.addEventListener('click', () => {
+  const rt = parseFloat(resumeBanner.dataset.resumeTime || 0);
+  const co = parseInt(resumeBanner.dataset.clipOffset || 0);
+  const fn = resumeBanner.dataset.firstName || '';
+  applyResume(rt, co, fn);
+  resumeBanner.classList.remove('visible');
+  sessionChip.textContent = `▶ Resumed from ${fmtTime(rt, false)}`;
+  sessionChip.classList.add('visible');
+  videoEl.currentTime = rt;
+  setStatus(`Resumed — clip #${co+1} onwards · ${fmtTime(duration - rt, false)} remaining`, true);
+  showToast(`▶ Resumed from ${fmtTime(rt, false)}`);
+});
+
+btnResumeDismiss.addEventListener('click', () => {
+  resumeBanner.classList.remove('visible');
+  applyResume(0, 0, '');
+  setStatus('Starting fresh — play and press M to mark', true);
+});
+
+function applyResume(resumeTime, clipOffset, firstName) {
+  sessionResumeTime = resumeTime;
+  sessionClipOffset = clipOffset;
+  marks = [];
+  undoStack = [];
+  // Pre-fill first label if we have it
+  if (firstName && marks.length === 0) {
+    // Will be applied when first mark is added via getClipName
+  }
+  updateTimelineUI();
+  updateNextClipNum();
+}
+
+function updateNextClipNum() {
+  nextClipNum.textContent = sessionClipOffset + marks.length + 1;
+}
+
+function updateTimelineUI() {
+  if (!duration) return;
+  const pct = (sessionResumeTime / duration) * 100;
+  timelinePast.style.width = pct + '%';
+  if (sessionResumeTime > 0) {
+    timelinePastMarker.style.display = 'block';
+    timelinePastMarker.style.left = pct + '%';
+    timelineRemaining.textContent = `${fmtTime(duration - sessionResumeTime, false)} remaining`;
+  } else {
+    timelinePastMarker.style.display = 'none';
+    timelineRemaining.textContent = '';
+  }
+}
 
 // ─── RESET ────────────────────────────────────────────────────────────────────
 btnReset.addEventListener('click', ()=>{
   marks=[]; undoStack=[]; blobs=[];
+  sessionResumeTime=0; sessionClipOffset=0; sessionKey=null;
   videoEl.src=''; mediaFile=null; fileInput.value='';
   uploadZone.style.display='';
   playerSection.classList.remove('visible');
   marksSection.classList.remove('visible');
   processSection.classList.remove('visible');
+  resumeBanner.classList.remove('visible');
+  sessionChip.classList.remove('visible');
   marksList.innerHTML=''; outputList.innerHTML='';
   marksCount.textContent='0';
   timelineProgress.style.width='0%';
+  timelinePast.style.width='0%';
+  timelinePastMarker.style.display='none';
+  timelineRemaining.textContent='';
   btnDownloadAll.disabled=true; btnUndo.disabled=true;
   progressWrap.classList.remove('visible');
   progressLabel.textContent='';
   setStep(1); setStatus('Ready — upload a video to begin');
+  renderSessionsPanel();
 });
 
 // ─── PLAYBACK ─────────────────────────────────────────────────────────────────
@@ -411,7 +637,7 @@ btnMark.addEventListener('click', addMark);
 function addMark() {
   if(!mediaFile) return;
   const t = videoEl.currentTime;
-  // don't add duplicate mark at same time
+  if(t <= sessionResumeTime + 0.05) { showToast('Cannot mark before resume point!'); return; }
   if(marks.some(m=>Math.abs(m.time-t)<0.05)) { showToast('Already marked here!'); return; }
 
   btnMark.classList.add('flash');
@@ -423,6 +649,7 @@ function addMark() {
   undoStack.push(m);
   btnUndo.disabled = false;
   renderMarks();
+  updateNextClipNum();
   showToast(`⬥ Mark #${marks.length} at ${fmtTime(t)}`);
   setStatus(`${marks.length} mark(s) → ${marks.length+1} clips`);
 }
@@ -436,6 +663,7 @@ function undoMark() {
   if(idx!==-1) marks.splice(idx,1);
   btnUndo.disabled = undoStack.length===0;
   renderMarks();
+  updateNextClipNum();
   showToast(`↩ Undone mark at ${fmtTime(last.time)}`, 'undo');
   setStatus(marks.length>0?`${marks.length} mark(s) → ${marks.length+1} clips`:'No marks');
 }
@@ -453,73 +681,77 @@ function renderMarks() {
   marksList.innerHTML='';
   document.querySelectorAll('.timeline-mark').forEach(el=>el.remove());
 
-  const segs = buildSegments();  // N+1 clips
+  const segs = buildSegments();
 
-  // Update preview line
-  clipsPreview.textContent = `${segs.length} clips will be exported: 0:00 → ${marks.map(m=>fmtTime(m.time,false)).join(' → ')} → ${fmtTime(duration,false)}`;
+  clipsPreview.textContent = `${segs.length} clip(s) this session · global clip #${sessionClipOffset+1} → #${sessionClipOffset+segs.length}`;
+  exportDesc.textContent   = `${marks.length} mark(s) → ${segs.length} clip(s). Global numbering continues from #${sessionClipOffset+1}.`;
 
-  // Update export description
-  exportDesc.textContent = `${marks.length} mark(s) → ${segs.length} MP3 clips. Label each clip below before exporting.`;
-
-  // Timeline pins
   marks.forEach((m,i)=>{
     const tm = document.createElement('div');
     tm.className = 'timeline-mark';
     tm.style.left = duration?((m.time/duration)*100)+'%':'0%';
-    tm.dataset.index = i+1;
+    tm.dataset.index = sessionClipOffset + i + 1;
     tm.title = fmtTime(m.time);
     timelineBar.appendChild(tm);
   });
 
-  // Mark list — each row = the CUT POINT, shows the clip BEFORE it
-  marks.forEach((m,i)=>{
-    const seg = segs[i]; // clip that ends at this mark
+  segs.forEach((seg, i) => {
+    const isLast  = i === segs.length - 1;
+    const isFirst = i === 0;
+    const globalNum = sessionClipOffset + i + 1;
     const item = document.createElement('div');
-    item.className='mark-item';
-    item.innerHTML=`
-      <span class="mark-index">#${i+1}</span>
+    item.className = 'mark-item';
+    if (isLast) item.style.borderColor = 'rgba(232,255,71,0.2)';
+
+    const inputHtml = isFirst
+      ? `<input class="mark-label" type="text" placeholder="e.g. hcj_${globalNum}" value="${marks[0] ? marks[0].label : ''}" title="Set name for clip #${globalNum} — rest auto-number" style="border-color:var(--accent);">`
+      : `<input class="mark-label" type="text" value="${seg.label}" style="opacity:.55;" disabled title="Auto-named">`;
+
+    const deleteBtn = (!isLast && marks[i])
+      ? `<button class="btn-delete-mark" title="Delete mark">✕</button>`
+      : `<span style="min-width:24px"></span>`;
+
+    item.innerHTML = `
+      <span class="mark-index" style="${isLast?'color:var(--accent)':''}">#${globalNum}${isFirst?' <span style="font-size:9px;color:var(--accent);vertical-align:middle">✎</span>':''}</span>
       <div class="mark-range">
         <div><strong>${fmtTime(seg.start,false)}</strong> → <strong>${fmtTime(seg.end,false)}</strong></div>
-        <div style="font-size:9px;margin-top:2px">clip ${i+1} of ${segs.length}</div>
+        <div style="font-size:9px;margin-top:2px">${isLast?'last clip (to end)':`clip ${i+1} of ${segs.length} this session`}</div>
       </div>
-      <input class="mark-label" type="text" placeholder="Lyric label…" value="${m.label}">
+      ${inputHtml}
       <span class="mark-duration">${fmtTime(seg.end-seg.start,false)}</span>
-      <button class="btn-delete-mark" title="Delete mark">✕</button>
+      ${deleteBtn}
     `;
-    item.querySelector('.mark-range').addEventListener('click', ()=>{ videoEl.currentTime=m.time; });
-    item.querySelector('.mark-label').addEventListener('input', e=>{ m.label=e.target.value; renderMarks(); });
-    item.querySelector('.btn-delete-mark').addEventListener('click', ()=>{
-      const ui=undoStack.indexOf(m); if(ui!==-1) undoStack.splice(ui,1);
-      marks.splice(i,1);
-      btnUndo.disabled=undoStack.length===0;
-      renderMarks();
-    });
+
+    item.querySelector('.mark-range').addEventListener('click', ()=>{ videoEl.currentTime = seg.start; });
+
+    if (isFirst) {
+      item.querySelector('.mark-label').addEventListener('input', e => {
+        if (marks[0]) marks[0].label = e.target.value;
+        renderMarks();
+      });
+    }
+
+    if (!isLast && marks[i]) {
+      const m = marks[i];
+      const delBtn = item.querySelector('.btn-delete-mark');
+      if (delBtn) {
+        delBtn.addEventListener('click', ()=>{
+          const ui = undoStack.indexOf(m); if(ui!==-1) undoStack.splice(ui,1);
+          marks.splice(i,1);
+          btnUndo.disabled = undoStack.length===0;
+          renderMarks();
+          updateNextClipNum();
+        });
+      }
+    }
+
     marksList.appendChild(item);
   });
 
-  // Also show the LAST clip row (from last mark to end) as info
-  if(segs.length>0){
-    const last = segs[segs.length-1];
-    const info = document.createElement('div');
-    info.className='mark-item';
-    info.style.borderColor='rgba(232,255,71,0.2)';
-    info.innerHTML=`
-      <span class="mark-index" style="color:var(--accent)">#${segs.length}</span>
-      <div class="mark-range">
-        <div><strong>${fmtTime(last.start,false)}</strong> → <strong>${fmtTime(last.end,false)}</strong></div>
-        <div style="font-size:9px;margin-top:2px">last clip (to end)</div>
-      </div>
-      <input class="mark-label" type="text" placeholder="Lyric label…" value="${marks[marks.length-1]?'':''}" style="opacity:.5" disabled>
-      <span class="mark-duration">${fmtTime(last.end-last.start,false)}</span>
-      <span style="min-width:24px"></span>
-    `;
-    marksList.appendChild(info);
-  }
-
-  marksCount.textContent = marks.length;
-  marksSection.classList.toggle('visible', marks.length>0);
-  processSection.classList.toggle('visible', marks.length>0);
-  setStep(marks.length>0?3:2);
+  marksCount.textContent = segs.length;
+  marksSection.classList.toggle('visible', marks.length > 0);
+  processSection.classList.toggle('visible', marks.length > 0);
+  setStep(marks.length > 0 ? 3 : 2);
 }
 
 btnClearAll.addEventListener('click', ()=>{
@@ -528,37 +760,32 @@ btnClearAll.addEventListener('click', ()=>{
   renderMarks();
   outputList.innerHTML=''; blobs=[];
   btnDownloadAll.disabled=true;
+  updateNextClipNum();
   setStep(2); setStatus('All marks cleared');
 });
 
-// ─── LAME MP3 ENCODER (pure JS, no Worker, works from any origin) ─────────────
+// ─── LAME MP3 ENCODER ─────────────────────────────────────────────────────────
 let lameLoaded = false;
 function loadLame() {
   return new Promise((res,rej)=>{
     if(lameLoaded){ res(); return; }
     const s = document.createElement('script');
-    // lamejs from jsDelivr — pure JS, no SharedArrayBuffer needed
     s.src = 'https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js';
     s.onload = ()=>{ lameLoaded=true; res(); };
-    s.onerror = ()=>rej(new Error('Failed to load MP3 encoder. Check internet connection.'));
+    s.onerror = ()=>rej(new Error('Failed to load MP3 encoder.'));
     document.head.appendChild(s);
   });
 }
 
 function encodeToMp3(audioBuffer) {
-  const numCh    = audioBuffer.numberOfChannels;
+  const numCh = audioBuffer.numberOfChannels;
   const sampleRate = audioBuffer.sampleRate;
-  const samples  = audioBuffer.length;
-  const kbps     = 192;
-
-  const mp3enc = new lamejs.Mp3Encoder(numCh, sampleRate, kbps);
+  const samples = audioBuffer.length;
+  const mp3enc = new lamejs.Mp3Encoder(numCh, sampleRate, 192);
   const blockSize = 1152;
-  const mp3Data  = [];
-
+  const mp3Data = [];
   const leftF32  = audioBuffer.getChannelData(0);
   const rightF32 = numCh>1 ? audioBuffer.getChannelData(1) : leftF32;
-
-  // Convert Float32 → Int16
   function toInt16(f32) {
     const i16 = new Int16Array(f32.length);
     for(let i=0;i<f32.length;i++){
@@ -567,22 +794,16 @@ function encodeToMp3(audioBuffer) {
     }
     return i16;
   }
-
   const left16  = toInt16(leftF32);
   const right16 = toInt16(rightF32);
-
   for(let i=0;i<samples;i+=blockSize){
-    const lChunk = left16.subarray(i, i+blockSize);
-    const rChunk = right16.subarray(i, i+blockSize);
-    let encoded;
-    if(numCh===1) encoded = mp3enc.encodeBuffer(lChunk);
-    else          encoded = mp3enc.encodeBuffer(lChunk, rChunk);
-    if(encoded.length>0) mp3Data.push(new Int8Array(encoded));
+    const lc=left16.subarray(i,i+blockSize), rc=right16.subarray(i,i+blockSize);
+    const enc = numCh===1 ? mp3enc.encodeBuffer(lc) : mp3enc.encodeBuffer(lc,rc);
+    if(enc.length>0) mp3Data.push(new Int8Array(enc));
   }
-  const flushed = mp3enc.flush();
-  if(flushed.length>0) mp3Data.push(new Int8Array(flushed));
-
-  return new Blob(mp3Data, { type:'audio/mpeg' });
+  const fl = mp3enc.flush();
+  if(fl.length>0) mp3Data.push(new Int8Array(fl));
+  return new Blob(mp3Data, {type:'audio/mpeg'});
 }
 
 // ─── PROCESS ──────────────────────────────────────────────────────────────────
@@ -601,50 +822,41 @@ async function processClips() {
 
   try {
     await loadLame();
-
     progressLabel.textContent='Decoding audio…';
     progressFill.style.width='8%';
 
     const arrayBuffer = await mediaFile.arrayBuffer();
     const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
     const fullBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-
     const sampleRate  = fullBuffer.sampleRate;
     const numChannels = fullBuffer.numberOfChannels;
     const totalSamples= fullBuffer.length;
-
-    const segs = buildSegments();  // always N+1 clips
+    const segs = buildSegments();
 
     for(let i=0;i<segs.length;i++){
       const seg = segs[i];
-      const pct = 10 + ((i/segs.length)*85);
-      progressFill.style.width = pct+'%';
-      progressLabel.textContent = `Encoding clip ${i+1} / ${segs.length}: "${seg.label}"…`;
+      progressFill.style.width = (10 + (i/segs.length)*85) + '%';
+      progressLabel.textContent = `Encoding clip ${sessionClipOffset+i+1}: "${seg.label}"…`;
 
       const startSample = Math.floor(seg.start * sampleRate);
       const endSample   = Math.min(Math.floor(seg.end * sampleRate), totalSamples);
       const length      = endSample - startSample;
 
-      // Slice into offline buffer
-      const offCtx = new OfflineAudioContext(numChannels, length, sampleRate);
+      const offCtx   = new OfflineAudioContext(numChannels, length, sampleRate);
       const sliceBuf = offCtx.createBuffer(numChannels, length, sampleRate);
       for(let ch=0;ch<numChannels;ch++){
         sliceBuf.getChannelData(ch).set(fullBuffer.getChannelData(ch).subarray(startSample,endSample));
       }
       const src = offCtx.createBufferSource();
-      src.buffer = sliceBuf;
-      src.connect(offCtx.destination);
-      src.start();
+      src.buffer = sliceBuf; src.connect(offCtx.destination); src.start();
       const rendered = await offCtx.startRendering();
 
-      // Encode to MP3
-      const mp3Blob = encodeToMp3(rendered);
-      const url = URL.createObjectURL(mp3Blob);
+      const mp3Blob  = encodeToMp3(rendered);
+      const url      = URL.createObjectURL(mp3Blob);
+      const safeName = seg.label.replace(/[^a-z0-9_\-\s]/gi,'').replace(/\s+/g,'_') || `clip_${sessionClipOffset+i+1}`;
+      const filename = `${safeName}.mp3`;
 
-      const safeName = seg.label.replace(/[^a-z0-9_\-\s]/gi,'').replace(/\s+/g,'_') || `clip_${i+1}`;
-      const filename = `${String(i+1).padStart(2,'0')}_${safeName}.mp3`;
-
-      blobs.push({ name:filename, blob:mp3Blob, url });
+      blobs.push({name:filename, blob:mp3Blob, url});
 
       const item = document.createElement('div');
       item.className='output-item ready';
@@ -657,15 +869,44 @@ async function processClips() {
       `;
       item.querySelector('.btn-dl').addEventListener('click', ()=>triggerDownload(url,filename));
       outputList.appendChild(item);
-
       await new Promise(r=>setTimeout(r,5));
     }
 
     progressFill.style.width='100%';
-    progressLabel.textContent=`✓ ${segs.length} MP3 clips ready!`;
+    progressLabel.textContent=`✓ ${segs.length} MP3 clips ready! Progress saved.`;
     btnDownloadAll.disabled=false;
-    setStatus(`✓ Done! ${segs.length} clips exported.`);
-    showToast(`✓ ${segs.length} clips ready!`);
+
+    // ── SAVE PROGRESS ──────────────────────────────────────────────────────
+    // The new resume point = end time of last exported segment
+    const lastSeg  = segs[segs.length - 1];
+    const newResume = lastSeg.end < duration ? lastSeg.end : duration;
+    const newOffset = sessionClipOffset + segs.length;
+    const firstName = marks[0] ? marks[0].label : '';
+
+    if (sessionKey) {
+      saveSession(sessionKey, {
+        fileName:       mediaFile.name,
+        resumeTime:     newResume,
+        nextClipOffset: newOffset,
+        firstName:      firstName,
+        savedAt:        Date.now(),
+      });
+    }
+
+    // Update live state so user can keep marking in same session
+    sessionResumeTime = newResume;
+    sessionClipOffset = newOffset;
+    marks = [];
+    undoStack = [];
+    updateTimelineUI();
+    updateNextClipNum();
+    renderMarks();
+    sessionChip.textContent = `✓ Saved · next clip #${newOffset+1}`;
+    sessionChip.classList.add('visible');
+    renderSessionsPanel();
+
+    setStatus(`✓ Done! ${segs.length} clips exported. Resume point saved at ${fmtTime(newResume,false)}.`);
+    showToast(`✓ ${segs.length} clips saved · resume at ${fmtTime(newResume,false)}`);
 
   } catch(err){
     progressLabel.textContent='✗ '+err.message;
@@ -700,9 +941,7 @@ btnDownloadAll.addEventListener('click', async ()=>{
     const content=await zip.generateAsync({type:'blob'});
     triggerDownload(URL.createObjectURL(content),'lyrics_clips_mp3.zip');
     showToast('📦 ZIP downloaded!');
-  } catch(e){
-    showToast('ZIP failed — use individual downloads');
-  }
+  } catch(e){ showToast('ZIP failed — use individual downloads'); }
   btnDownloadAll.disabled=false;
   btnDownloadAll.innerHTML='⬇ Download All (ZIP)';
 });
