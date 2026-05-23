@@ -2,6 +2,7 @@
 let videoFile = null;
 let videoDuration = 0;
 let marks = [];
+let markHistory = [];   // stack of timestamps for undo
 let clips = [];
 let decodedAudioBuffer = null;
 
@@ -16,6 +17,7 @@ const timelineProgress= document.getElementById('timeline-progress');
 const marksList       = document.getElementById('marks-list');
 const clipsList       = document.getElementById('clips-list');
 const btnMark         = document.getElementById('btn-mark');
+const btnUndo         = document.getElementById('btn-undo');
 const btnPlay         = document.getElementById('btn-play');
 const btnClearMarks   = document.getElementById('btn-clear-marks');
 const btnProcess      = document.getElementById('btn-process');
@@ -92,7 +94,9 @@ function loadVideoFile(file) {
   videoFile = file;
   decodedAudioBuffer = null;
   marks = [];
+  markHistory = [];
   clips = [];
+  syncUndoBtn();
   renderMarks();
   renderClips();
 
@@ -141,8 +145,7 @@ btnPlay.addEventListener('click', () => {
 // ─── Timeline ────────────────────────────────────────────────────────────────
 function updateTimeline() {
   if (!videoDuration) return;
-  const pct = (video.currentTime / videoDuration) * 100;
-  timelineProgress.style.width = pct + '%';
+  timelineProgress.style.width = ((video.currentTime / videoDuration) * 100) + '%';
   renderMarkerLines();
 }
 
@@ -172,25 +175,47 @@ function renderMarkerLines() {
 }
 
 // ─── Marking ─────────────────────────────────────────────────────────────────
+function syncUndoBtn() {
+  btnUndo.disabled = markHistory.length === 0;
+}
+
 btnMark.addEventListener('click', () => {
   if (!videoFile) return;
   const t = parseFloat(video.currentTime.toFixed(3));
   if (marks.some(m => Math.abs(m - t) < 0.05)) { toast('Already marked near this time', 'info'); return; }
   marks.push(t);
   marks.sort((a, b) => a - b);
+  markHistory.push(t);     // push to undo stack AFTER adding
+  syncUndoBtn();
   renderMarks();
   rebuildClips();
   toast(`Mark ${marks.indexOf(t) + 1} at ${fmt(t, 2)}`, 'success');
 });
 
+btnUndo.addEventListener('click', undoLastMark);
+
+function undoLastMark() {
+  if (markHistory.length === 0) return;
+  const last = markHistory.pop();
+  const idx = marks.indexOf(last);
+  if (idx !== -1) marks.splice(idx, 1);
+  syncUndoBtn();
+  renderMarks();
+  rebuildClips();
+  toast(`Undone mark at ${fmt(last, 2)}`, 'info');
+}
+
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT') return;
   if (e.code === 'Space') { e.preventDefault(); btnMark.click(); }
   if (e.code === 'KeyP')  { if (video.paused) video.play(); else video.pause(); }
+  if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ') { e.preventDefault(); undoLastMark(); }
 });
 
 btnClearMarks.addEventListener('click', () => {
   marks = [];
+  markHistory = [];
+  syncUndoBtn();
   renderMarks();
   rebuildClips();
   toast('All marks cleared', 'info');
@@ -211,13 +236,21 @@ function renderMarks() {
 
 window.seekTo = t => { video.currentTime = t; };
 window.deleteMark = i => {
+  const removed = marks[i];
   marks.splice(i, 1);
+  // Remove from undo history too so it can't be "undone" back
+  const hi = markHistory.lastIndexOf(removed);
+  if (hi !== -1) markHistory.splice(hi, 1);
+  syncUndoBtn();
   renderMarks();
   rebuildClips();
 };
 
 // ─── Clips ────────────────────────────────────────────────────────────────────
 function rebuildClips() {
+  // Preserve existing names & locked status by matching on position index
+  const prevNames = {};
+  clips.forEach(c => { prevNames[c.index] = { name: c.name, locked: c.locked }; });
   clips.forEach(c => { if (c.url) URL.revokeObjectURL(c.url); });
 
   if (!videoDuration || marks.length === 0) {
@@ -233,7 +266,17 @@ function rebuildClips() {
     const start = boundaries[i];
     const end   = boundaries[i + 1];
     if (end - start < 0.05) continue;
-    clips.push({ id: uid(), index: i + 1, start, end, name: String(i + 1), blob: null, url: null, selected: true });
+    const prev = prevNames[i + 1];
+    clips.push({
+      id:       uid(),
+      index:    i + 1,
+      start, end,
+      name:     prev ? prev.name : String(i + 1),
+      locked:   prev ? prev.locked : false,
+      blob:     null,
+      url:      null,
+      selected: true,
+    });
   }
 
   renderClips();
@@ -266,14 +309,16 @@ function renderClips() {
         ` : ''}
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
-        <div class="filename-input-wrap">
+        <div class="filename-input-wrap" title="${c.locked ? 'Manually named' : 'Auto-numbered'}">
           <span class="filename-prefix">hcj_</span>
           <input class="filename-input" type="text"
             value="${escHtml(c.name)}"
-            placeholder="1"
+            placeholder="${c.index}"
+            id="name-${c.id}"
             onchange="renameClip('${c.id}', this.value)"
             title="N in hcj_N.mp3" />
           <span class="filename-suffix">.mp3</span>
+          ${c.locked ? '<span class="lock-icon" title="Manually set · click to unlock" onclick="unlockClip(\''+c.id+'\')">🔒</span>' : ''}
         </div>
         <button class="btn btn-danger btn-sm" onclick="deleteClip('${c.id}')" title="Remove clip">✕</button>
       </div>
@@ -292,9 +337,34 @@ window.toggleSelect = (id, checked) => {
   updateDownloadBtn();
 };
 
+// Auto-number subsequent unlocked clips when a clip is renamed
 window.renameClip = (id, val) => {
+  const idx = clips.findIndex(x => x.id === id);
+  if (idx === -1) return;
+  const trimmed = val.trim() || String(clips[idx].index);
+  clips[idx].name   = trimmed;
+  clips[idx].locked = true;
+
+  // If the entered value is a number, cascade to subsequent unlocked clips
+  const num = parseInt(trimmed, 10);
+  if (!isNaN(num) && String(num) === trimmed) {
+    for (let j = idx + 1; j < clips.length; j++) {
+      if (!clips[j].locked) {
+        clips[j].name = String(num + (j - idx));
+        // Update the input in-place without full re-render
+        const inp = document.getElementById('name-' + clips[j].id);
+        if (inp) inp.value = clips[j].name;
+      }
+    }
+  }
+  // Re-render only to update lock icons
+  renderClips();
+};
+
+// Unlock a clip so auto-numbering can affect it again
+window.unlockClip = id => {
   const c = clips.find(x => x.id === id);
-  if (c) c.name = val.trim() || String(c.index);
+  if (c) { c.locked = false; renderClips(); }
 };
 
 window.deleteClip = id => {
@@ -389,7 +459,6 @@ function encodeClipToMp3(audioBuffer, start, end, onProgress) {
   return new Blob([merged], { type: 'audio/mpeg' });
 }
 
-// Allow UI to breathe between heavy chunks
 function yieldToUI() {
   return new Promise(resolve => setTimeout(resolve, 0));
 }

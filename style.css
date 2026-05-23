@@ -236,6 +236,18 @@ video {
 .btn-warn { background: var(--warn); color: #000; }
 .btn-warn:hover:not(:disabled) { opacity: .85; }
 
+.lock-icon {
+  padding: 4px 7px;
+  font-size: .75rem;
+  cursor: pointer;
+  border-left: 1px solid var(--border);
+  color: var(--warn);
+  background: transparent;
+  transition: opacity .15s;
+  user-select: none;
+}
+.lock-icon:hover { opacity: .7; }
+
 .btn-sm { padding: 5px 11px; font-size: .78rem; }
 
 /* ─── MARKS LIST ─── */
