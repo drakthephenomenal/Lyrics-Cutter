@@ -20,399 +20,140 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
-    background: var(--bg);
-    color: var(--text);
+    background: var(--bg); color: var(--text);
     font-family: 'Space Mono', monospace;
-    min-height: 100vh;
-    overflow-x: hidden;
+    min-height: 100vh; overflow-x: hidden;
   }
-
   body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
+    content: ''; position: fixed; inset: 0;
     background-image:
       linear-gradient(rgba(232,255,71,0.03) 1px, transparent 1px),
       linear-gradient(90deg, rgba(232,255,71,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
+    background-size: 40px 40px; pointer-events: none; z-index: 0;
   }
-
-  .app {
-    position: relative;
-    z-index: 1;
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 40px 24px 80px;
-  }
+  .app { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
 
   header { margin-bottom: 48px; }
-  .logo {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.25em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-  h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(32px, 6vw, 56px);
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    margin-bottom: 10px;
-  }
+  .logo { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; letter-spacing:.25em; color:var(--accent); text-transform:uppercase; margin-bottom:12px; }
+  h1 { font-family:'Syne',sans-serif; font-size:clamp(32px,6vw,56px); font-weight:800; line-height:1; letter-spacing:-.02em; margin-bottom:10px; }
   h1 span { color: var(--accent2); }
-  .subtitle { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .subtitle { color:var(--muted); font-size:13px; line-height:1.6; }
 
-  .step-row { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
-  .step-pill {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    padding: 5px 12px;
-    border-radius: 100px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    transition: all 0.3s;
-  }
-  .step-pill.active { border-color: var(--accent); color: var(--accent); background: rgba(232,255,71,0.08); }
-  .step-pill.done { border-color: var(--border); color: var(--border); text-decoration: line-through; }
+  .step-row { display:flex; gap:8px; margin-bottom:32px; flex-wrap:wrap; }
+  .step-pill { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; letter-spacing:.1em; padding:5px 12px; border-radius:100px; border:1px solid var(--border); color:var(--muted); transition:all .3s; }
+  .step-pill.active { border-color:var(--accent); color:var(--accent); background:rgba(232,255,71,.08); }
+  .step-pill.done { border-color:var(--border); color:var(--border); text-decoration:line-through; }
 
   /* UPLOAD */
-  .upload-zone {
-    border: 2px dashed var(--border);
-    border-radius: 16px;
-    padding: 56px 32px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    background: var(--surface);
-    position: relative;
-    overflow: hidden;
-  }
-  .upload-zone::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, rgba(232,255,71,0.04) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .upload-zone:hover, .upload-zone.drag-over { border-color: var(--accent); background: rgba(232,255,71,0.04); }
-  .upload-zone:hover::before, .upload-zone.drag-over::before { opacity: 1; }
-  .upload-icon { font-size: 48px; margin-bottom: 16px; display: block; }
-  .upload-zone h2 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-  .upload-zone p { color: var(--muted); font-size: 12px; }
-  .upload-zone input { display: none; }
+  .upload-zone { border:2px dashed var(--border); border-radius:16px; padding:56px 32px; text-align:center; cursor:pointer; transition:all .3s; background:var(--surface); position:relative; overflow:hidden; }
+  .upload-zone::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at center,rgba(232,255,71,.04) 0%,transparent 70%); opacity:0; transition:opacity .3s; }
+  .upload-zone:hover,.upload-zone.drag-over { border-color:var(--accent); background:rgba(232,255,71,.04); }
+  .upload-zone:hover::before,.upload-zone.drag-over::before { opacity:1; }
+  .upload-icon { font-size:48px; margin-bottom:16px; display:block; }
+  .upload-zone h2 { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; margin-bottom:8px; }
+  .upload-zone p { color:var(--muted); font-size:12px; }
+  .upload-zone input { display:none; }
 
   /* PLAYER */
-  .player-section { display: none; flex-direction: column; gap: 20px; }
-  .player-section.visible { display: flex; }
+  .player-section { display:none; flex-direction:column; gap:20px; }
+  .player-section.visible { display:flex; }
+  .file-info { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .file-name { font-size:12px; color:var(--accent); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .file-size { font-size:11px; color:var(--muted); }
+  .btn-reset { background:none; border:1px solid var(--accent2); color:var(--accent2); border-radius:8px; padding:6px 12px; font-family:'Space Mono',monospace; font-size:11px; cursor:pointer; white-space:nowrap; transition:all .2s; }
+  .btn-reset:hover { background:rgba(255,71,120,.1); }
 
-  .file-info {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .file-name { font-size: 12px; color: var(--accent); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .file-size { font-size: 11px; color: var(--muted); }
-  .btn-reset {
-    background: none;
-    border: 1px solid var(--accent2);
-    color: var(--accent2);
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-  .btn-reset:hover { background: rgba(255,71,120,0.1); }
-
-  .video-wrapper {
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-  video { width: 100%; display: block; max-height: 340px; object-fit: contain; background: #000; }
+  .video-wrapper { background:#000; border-radius:12px; overflow:hidden; border:1px solid var(--border); }
+  video { width:100%; display:block; max-height:340px; object-fit:contain; background:#000; }
 
   /* TIMELINE */
-  .timeline-wrapper {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 18px;
-  }
-  .timeline-label { font-size: 10px; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 10px; }
-  .timeline-bar {
-    height: 8px;
-    background: var(--surface);
-    border-radius: 4px;
-    position: relative;
-    cursor: pointer;
-    overflow: visible;
-  }
-  .timeline-progress {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent3), var(--accent));
-    border-radius: 4px;
-    width: 0%;
-    transition: width 0.1s linear;
-    pointer-events: none;
-  }
-  .timeline-mark {
-    position: absolute;
-    top: -6px;
-    width: 3px;
-    height: 20px;
-    background: var(--accent2);
-    border-radius: 2px;
-    transform: translateX(-50%);
-    pointer-events: none;
-  }
-  .timeline-mark::after {
-    content: attr(data-index);
-    position: absolute;
-    top: -18px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 9px;
-    color: var(--accent2);
-    font-family: 'Space Mono', monospace;
-  }
-  .time-display { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--muted); }
-  .current-time-big {
-    font-family: 'Syne', sans-serif;
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--accent);
-    letter-spacing: -0.02em;
-    margin-top: 4px;
-  }
+  .timeline-wrapper { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
+  .timeline-label { font-size:10px; color:var(--muted); letter-spacing:.15em; text-transform:uppercase; margin-bottom:10px; }
+  .timeline-bar { height:8px; background:var(--surface); border-radius:4px; position:relative; cursor:pointer; overflow:visible; }
+  .timeline-progress { height:100%; background:linear-gradient(90deg,var(--accent3),var(--accent)); border-radius:4px; width:0%; transition:width .1s linear; pointer-events:none; }
+  .timeline-mark { position:absolute; top:-6px; width:3px; height:20px; background:var(--accent2); border-radius:2px; transform:translateX(-50%); pointer-events:none; }
+  .timeline-mark::after { content:attr(data-index); position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:9px; color:var(--accent2); font-family:'Space Mono',monospace; }
+  .time-display { display:flex; justify-content:space-between; margin-top:8px; font-size:11px; color:var(--muted); }
+  .current-time-big { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:var(--accent); letter-spacing:-.02em; margin-top:4px; }
 
   /* CONTROLS */
-  .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .btn {
-    font-family: 'Space Mono', monospace;
-    border: none;
-    border-radius: 10px;
-    padding: 12px 18px;
-    font-size: 12px;
-    cursor: pointer;
-    font-weight: 700;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    white-space: nowrap;
-  }
-  .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-
-  .btn-play { background: var(--text); color: var(--bg); min-width: 100px; justify-content: center; }
-  .btn-play:hover:not(:disabled) { background: var(--accent); }
-
-  .btn-mark {
-    background: var(--accent2);
-    color: #fff;
-    flex: 1;
-    justify-content: center;
-    font-size: 13px;
-    letter-spacing: 0.04em;
-    position: relative;
-  }
-  .btn-mark:hover:not(:disabled) { background: #ff6191; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255,71,120,0.4); }
-  .btn-mark:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
-  .btn-mark.flash { background: var(--accent); color: var(--bg); }
-
-  /* UNDO button */
-  .btn-undo {
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
-    padding: 12px 16px;
-    font-size: 13px;
-  }
-  .btn-undo:hover:not(:disabled) { border-color: var(--accent3); color: var(--accent3); background: rgba(71,200,255,0.07); }
-
-  .kbd-hints { font-size: 10px; color: var(--muted); letter-spacing: 0.08em; }
-  kbd { background: var(--border); border-radius: 4px; padding: 2px 6px; font-size: 10px; color: var(--text); }
+  .controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .btn { font-family:'Space Mono',monospace; border:none; border-radius:10px; padding:12px 18px; font-size:12px; cursor:pointer; font-weight:700; transition:all .2s; display:flex; align-items:center; gap:7px; white-space:nowrap; }
+  .btn:disabled { opacity:.35; cursor:not-allowed; transform:none!important; box-shadow:none!important; }
+  .btn-play { background:var(--text); color:var(--bg); min-width:100px; justify-content:center; }
+  .btn-play:hover:not(:disabled) { background:var(--accent); }
+  .btn-mark { background:var(--accent2); color:#fff; flex:1; justify-content:center; font-size:13px; letter-spacing:.04em; }
+  .btn-mark:hover:not(:disabled) { background:#ff6191; transform:translateY(-1px); box-shadow:0 4px 20px rgba(255,71,120,.4); }
+  .btn-mark:active:not(:disabled) { transform:translateY(0); box-shadow:none; }
+  .btn-mark.flash { background:var(--accent); color:var(--bg); }
+  .btn-undo { background:var(--surface); color:var(--text); border:1px solid var(--border); padding:12px 16px; font-size:13px; }
+  .btn-undo:hover:not(:disabled) { border-color:var(--accent3); color:var(--accent3); background:rgba(71,200,255,.07); }
+  .kbd-hints { font-size:10px; color:var(--muted); letter-spacing:.08em; }
+  kbd { background:var(--border); border-radius:4px; padding:2px 6px; font-size:10px; color:var(--text); }
 
   /* MARKS */
-  .marks-section { display: none; }
-  .marks-section.visible { display: block; }
-  .marks-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
-  .marks-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
-  .marks-count { background: var(--accent2); color: #fff; border-radius: 100px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
-  .btn-clear-all {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    border-radius: 8px;
-    padding: 5px 12px;
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-clear-all:hover { border-color: var(--accent2); color: var(--accent2); }
-
-  .marks-list { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; padding-right: 4px; }
-  .marks-list::-webkit-scrollbar { width: 4px; }
-  .marks-list::-webkit-scrollbar-track { background: var(--surface); }
-  .marks-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  .mark-item {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: slideIn 0.2s ease;
-  }
-  @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-  .mark-index { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 800; color: var(--accent2); min-width: 24px; }
-  .mark-time { font-size: 12px; font-weight: 700; color: var(--accent); min-width: 76px; cursor: pointer; }
-  .mark-time:hover { text-decoration: underline; }
-  .mark-label {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 7px 10px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s;
-    min-width: 0;
-  }
-  .mark-label:focus { border-color: var(--accent); }
-  .mark-label::placeholder { color: var(--muted); }
-  .mark-duration { font-size: 10px; color: var(--muted); min-width: 44px; text-align: right; }
-  .btn-delete-mark { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 2px 4px; transition: color 0.2s; line-height: 1; }
-  .btn-delete-mark:hover { color: var(--accent2); }
+  .marks-section { display:none; }
+  .marks-section.visible { display:block; }
+  .marks-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
+  .marks-title { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; }
+  .marks-count { background:var(--accent2); color:#fff; border-radius:100px; padding:3px 10px; font-size:11px; font-weight:700; }
+  .clips-preview { font-size:11px; color:var(--accent3); background:rgba(71,200,255,.07); border:1px solid rgba(71,200,255,.2); border-radius:8px; padding:8px 12px; margin-bottom:12px; }
+  .btn-clear-all { background:none; border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:5px 12px; font-family:'Space Mono',monospace; font-size:10px; cursor:pointer; transition:all .2s; }
+  .btn-clear-all:hover { border-color:var(--accent2); color:var(--accent2); }
+  .marks-list { display:flex; flex-direction:column; gap:8px; max-height:320px; overflow-y:auto; padding-right:4px; }
+  .marks-list::-webkit-scrollbar { width:4px; }
+  .marks-list::-webkit-scrollbar-track { background:var(--surface); }
+  .marks-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .mark-item { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 14px; display:flex; align-items:center; gap:10px; animation:slideIn .2s ease; }
+  @keyframes slideIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+  .mark-index { font-family:'Syne',sans-serif; font-size:11px; font-weight:800; color:var(--accent2); min-width:24px; }
+  .mark-range { font-size:10px; color:var(--muted); min-width:90px; line-height:1.5; }
+  .mark-range strong { color:var(--accent); font-size:11px; }
+  .mark-label { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:7px 10px; font-family:'Space Mono',monospace; font-size:11px; color:var(--text); outline:none; transition:border-color .2s; min-width:0; }
+  .mark-label:focus { border-color:var(--accent); }
+  .mark-label::placeholder { color:var(--muted); }
+  .mark-duration { font-size:10px; color:var(--muted); min-width:40px; text-align:right; }
+  .btn-delete-mark { background:none; border:none; color:var(--muted); cursor:pointer; font-size:15px; padding:2px 4px; transition:color .2s; line-height:1; }
+  .btn-delete-mark:hover { color:var(--accent2); }
 
   /* PROCESS */
-  .process-section { display: none; }
-  .process-section.visible { display: block; }
-  .process-card { background: var(--card); border: 1px solid var(--accent); border-radius: 16px; padding: 28px 24px; }
-  .process-card h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-  .process-card p { font-size: 11px; color: var(--muted); margin-bottom: 20px; line-height: 1.7; }
+  .process-section { display:none; }
+  .process-section.visible { display:block; }
+  .process-card { background:var(--card); border:1px solid var(--accent); border-radius:16px; padding:28px 24px; }
+  .process-card h3 { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin-bottom:6px; }
+  .process-card p { font-size:11px; color:var(--muted); margin-bottom:20px; line-height:1.7; }
+  .encoder-notice { background:rgba(71,200,255,.08); border:1px solid rgba(71,200,255,.25); border-radius:10px; padding:12px 14px; font-size:11px; color:var(--accent3); margin-bottom:18px; line-height:1.6; }
+  .process-actions { display:flex; gap:10px; flex-wrap:wrap; }
+  .btn-process { background:var(--accent); color:var(--bg); font-size:13px; padding:14px 24px; }
+  .btn-process:hover:not(:disabled) { background:#f5ff80; transform:translateY(-1px); box-shadow:0 4px 24px rgba(232,255,71,.3); }
+  .btn-download-all { background:var(--accent3); color:var(--bg); font-size:12px; padding:14px 20px; }
+  .btn-download-all:hover:not(:disabled) { background:#80e0ff; }
+  .progress-bar-wrap { background:var(--surface); border-radius:8px; height:8px; margin:16px 0 8px; overflow:hidden; display:none; }
+  .progress-bar-wrap.visible { display:block; }
+  .progress-bar-fill { height:100%; background:linear-gradient(90deg,var(--accent3),var(--accent)); border-radius:8px; transition:width .3s; width:0%; }
+  .progress-label { font-size:11px; color:var(--muted); min-height:18px; }
+  .output-list { display:flex; flex-direction:column; gap:8px; margin-top:16px; }
+  .output-item { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:12px; animation:slideIn .2s ease; }
+  .output-item.ready { border-color:rgba(232,255,71,.3); }
+  .output-name { font-size:11px; color:var(--text); flex:1; word-break:break-all; }
+  .output-time { font-size:10px; color:var(--muted); white-space:nowrap; }
+  .btn-dl { background:var(--accent); color:var(--bg); border:none; border-radius:8px; padding:7px 14px; font-family:'Space Mono',monospace; font-size:11px; font-weight:700; cursor:pointer; transition:all .2s; white-space:nowrap; }
+  .btn-dl:hover { background:#f5ff80; }
 
-  /* FFmpeg notice */
-  .ffmpeg-notice {
-    background: rgba(71,200,255,0.08);
-    border: 1px solid rgba(71,200,255,0.25);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 11px;
-    color: var(--accent3);
-    margin-bottom: 18px;
-    line-height: 1.6;
-  }
-  .ffmpeg-notice strong { color: var(--accent3); }
+  .divider { height:1px; background:var(--border); margin:24px 0 20px; }
 
-  .process-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-  .btn-process { background: var(--accent); color: var(--bg); font-size: 13px; padding: 14px 24px; }
-  .btn-process:hover:not(:disabled) { background: #f5ff80; transform: translateY(-1px); box-shadow: 0 4px 24px rgba(232,255,71,0.3); }
-  .btn-download-all { background: var(--accent3); color: var(--bg); font-size: 12px; padding: 14px 20px; }
-  .btn-download-all:hover:not(:disabled) { background: #80e0ff; }
+  .status-bar { position:fixed; bottom:0; left:0; right:0; background:var(--surface); border-top:1px solid var(--border); padding:11px 24px; font-size:11px; color:var(--muted); z-index:100; display:flex; align-items:center; gap:8px; }
+  .status-dot { width:6px; height:6px; border-radius:50%; background:var(--muted); flex-shrink:0; }
+  .status-dot.active { background:var(--accent); box-shadow:0 0 8px var(--accent); animation:pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-  .progress-bar-wrap { background: var(--surface); border-radius: 8px; height: 8px; margin: 16px 0 8px; overflow: hidden; display: none; }
-  .progress-bar-wrap.visible { display: block; }
-  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent3), var(--accent)); border-radius: 8px; transition: width 0.4s; width: 0%; }
-  .progress-label { font-size: 11px; color: var(--muted); min-height: 18px; }
+  .toast { position:fixed; bottom:56px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--accent); color:var(--bg); font-family:'Space Mono',monospace; font-size:12px; font-weight:700; padding:10px 20px; border-radius:100px; opacity:0; transition:all .3s; pointer-events:none; white-space:nowrap; z-index:200; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.undo { background:var(--accent3); }
 
-  .output-list { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
-  .output-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    animation: slideIn 0.2s ease;
-  }
-  .output-item.ready { border-color: rgba(232,255,71,0.3); }
-  .output-name { font-size: 11px; color: var(--text); flex: 1; word-break: break-all; }
-  .output-time { font-size: 10px; color: var(--muted); white-space: nowrap; }
-  .btn-dl {
-    background: var(--accent);
-    color: var(--bg);
-    border: none;
-    border-radius: 8px;
-    padding: 7px 14px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-  .btn-dl:hover { background: #f5ff80; }
-
-  .divider { height: 1px; background: var(--border); margin: 24px 0 20px; }
-
-  /* STATUS BAR */
-  .status-bar {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    padding: 11px 24px;
-    font-size: 11px;
-    color: var(--muted);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
-  .status-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 56px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--accent);
-    color: var(--bg);
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 10px 20px;
-    border-radius: 100px;
-    opacity: 0;
-    transition: all 0.3s;
-    pointer-events: none;
-    white-space: nowrap;
-    z-index: 200;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast.undo-toast { background: var(--accent3); color: var(--bg); }
-
-  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(10,10,15,0.3); border-top-color: var(--bg); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner { display:inline-block; width:13px; height:13px; border:2px solid rgba(10,10,15,.3); border-top-color:var(--bg); border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; }
+  @keyframes spin { to{transform:rotate(360deg)} }
 </style>
 </head>
 <body>
@@ -421,7 +162,7 @@
   <header>
     <div class="logo">♪ Lyrics Cutter</div>
     <h1>Mark & <span>Slice</span></h1>
-    <p class="subtitle">Upload your song video → Play it → Press <kbd>M</kbd> to mark each 2-line lyric → Export as MP3</p>
+    <p class="subtitle">Upload video → Play → Press <kbd>M</kbd> at each lyric boundary → Export MP3 clips</p>
   </header>
 
   <div class="step-row">
@@ -430,16 +171,14 @@
     <div class="step-pill" id="step3">03 Export</div>
   </div>
 
-  <!-- UPLOAD -->
   <div class="upload-zone" id="uploadZone">
     <span class="upload-icon">🎬</span>
     <h2>Drop your video here</h2>
     <p>MP4, MKV, AVI, WebM, MOV — any video or audio file</p>
-    <p style="margin-top:8px; color: var(--accent);">Click to browse</p>
+    <p style="margin-top:8px;color:var(--accent)">Click to browse</p>
     <input type="file" id="fileInput" accept="video/*,audio/*">
   </div>
 
-  <!-- PLAYER -->
   <div class="player-section" id="playerSection">
     <div class="file-info">
       <div>
@@ -468,10 +207,12 @@
     <div class="controls">
       <button class="btn btn-play" id="btnPlay">▶ Play</button>
       <button class="btn btn-mark" id="btnMark">⬥ MARK HERE</button>
-      <button class="btn btn-undo" id="btnUndo" disabled title="Undo last mark (Ctrl+Z)">↩ Undo</button>
+      <button class="btn btn-undo" id="btnUndo" disabled>↩ Undo</button>
     </div>
     <div class="kbd-hints">
-      <kbd>Space</kbd> Play/Pause &nbsp; <kbd>M</kbd> Mark &nbsp; <kbd>Ctrl</kbd>+<kbd>Z</kbd> Undo last mark
+      <kbd>Space</kbd> Play/Pause &nbsp;
+      <kbd>M</kbd> Mark &nbsp;
+      <kbd>Ctrl</kbd>+<kbd>Z</kbd> Undo
     </div>
   </div>
 
@@ -485,6 +226,7 @@
       </div>
       <button class="btn-clear-all" id="btnClearAll">Clear all</button>
     </div>
+    <div class="clips-preview" id="clipsPreview"></div>
     <div class="marks-list" id="marksList"></div>
   </div>
 
@@ -493,22 +235,18 @@
     <div class="divider"></div>
     <div class="process-card">
       <h3>Export MP3 Clips</h3>
-      <p>Each clip = one mark to the next. Last clip ends at video's end. Label your clips above before exporting.</p>
-
-      <div class="ffmpeg-notice" id="ffmpegNotice">
-        ⚙️ <strong>First run:</strong> FFmpeg.wasm (~32 MB) will be downloaded from CDN — this happens once per browser session. Subsequent exports are instant.
+      <p id="exportDesc">Ready to export. Label your clips above before exporting.</p>
+      <div class="encoder-notice">
+        🎵 Uses <strong>pure JS MP3 encoder</strong> (lamejs) — works from any origin, no server needed. First export loads the encoder (~200 KB).
       </div>
-
       <div class="process-actions">
         <button class="btn btn-process" id="btnProcess">⚡ Export as MP3</button>
         <button class="btn btn-download-all" id="btnDownloadAll" disabled>⬇ Download All (ZIP)</button>
       </div>
-
       <div class="progress-bar-wrap" id="progressWrap">
         <div class="progress-bar-fill" id="progressFill"></div>
       </div>
       <div class="progress-label" id="progressLabel"></div>
-
       <div class="output-list" id="outputList"></div>
     </div>
   </div>
@@ -518,421 +256,456 @@
   <div class="status-dot" id="statusDot"></div>
   <span id="statusText">Ready — upload a video to begin</span>
 </div>
-
 <div class="toast" id="toast"></div>
-
-<!-- FFmpeg.wasm v0.12 (stable, no SharedArrayBuffer needed) -->
-<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.6/dist/umd/ffmpeg.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
 
 <script>
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let marks      = [];   // [{time, label}]
-let undoStack  = [];   // stack of removed mark objects for undo
-let blobs      = [];   // [{name, blob, url}]
-let duration   = 0;
-let mediaFile  = null;
-let ffmpegInst = null;
-let ffmpegReady = false;
+let marks     = [];   // [{time, label}]  — these are CUT POINTS
+let undoStack = [];   // for undo
+let blobs     = [];
+let duration  = 0;
+let mediaFile = null;
 
 // ─── ELEMENTS ─────────────────────────────────────────────────────────────────
-const uploadZone      = document.getElementById('uploadZone');
-const fileInput       = document.getElementById('fileInput');
-const playerSection   = document.getElementById('playerSection');
-const videoEl         = document.getElementById('videoEl');
-const timelineBar     = document.getElementById('timelineBar');
-const timelineProgress= document.getElementById('timelineProgress');
-const currentTimeStr  = document.getElementById('currentTimeStr');
-const currentTimeBig  = document.getElementById('currentTimeBig');
-const totalTimeStr    = document.getElementById('totalTimeStr');
-const btnPlay         = document.getElementById('btnPlay');
-const btnMark         = document.getElementById('btnMark');
-const btnUndo         = document.getElementById('btnUndo');
-const btnReset        = document.getElementById('btnReset');
-const marksSection    = document.getElementById('marksSection');
-const marksList       = document.getElementById('marksList');
-const marksCount      = document.getElementById('marksCount');
-const btnClearAll     = document.getElementById('btnClearAll');
-const processSection  = document.getElementById('processSection');
-const btnProcess      = document.getElementById('btnProcess');
-const btnDownloadAll  = document.getElementById('btnDownloadAll');
-const progressWrap    = document.getElementById('progressWrap');
-const progressFill    = document.getElementById('progressFill');
-const progressLabel   = document.getElementById('progressLabel');
-const outputList      = document.getElementById('outputList');
-const statusDot       = document.getElementById('statusDot');
-const statusText      = document.getElementById('statusText');
-const toast           = document.getElementById('toast');
-const fileName        = document.getElementById('fileName');
-const fileSize        = document.getElementById('fileSize');
-const ffmpegNotice    = document.getElementById('ffmpegNotice');
+const $ = id => document.getElementById(id);
+const uploadZone    = $('uploadZone');
+const fileInput     = $('fileInput');
+const playerSection = $('playerSection');
+const videoEl       = $('videoEl');
+const timelineBar   = $('timelineBar');
+const timelineProgress = $('timelineProgress');
+const currentTimeStr= $('currentTimeStr');
+const currentTimeBig= $('currentTimeBig');
+const totalTimeStr  = $('totalTimeStr');
+const btnPlay       = $('btnPlay');
+const btnMark       = $('btnMark');
+const btnUndo       = $('btnUndo');
+const btnReset      = $('btnReset');
+const marksSection  = $('marksSection');
+const marksList     = $('marksList');
+const marksCount    = $('marksCount');
+const clipsPreview  = $('clipsPreview');
+const btnClearAll   = $('btnClearAll');
+const processSection= $('processSection');
+const btnProcess    = $('btnProcess');
+const btnDownloadAll= $('btnDownloadAll');
+const progressWrap  = $('progressWrap');
+const progressFill  = $('progressFill');
+const progressLabel = $('progressLabel');
+const outputList    = $('outputList');
+const statusDot     = $('statusDot');
+const statusText    = $('statusText');
+const toast         = $('toast');
+const exportDesc    = $('exportDesc');
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function fmtTime(s, ms = true) {
   const m = Math.floor(s / 60);
   const sec = Math.floor(s % 60);
   const msec = Math.round((s % 1) * 1000);
-  if (ms) return `${m}:${String(sec).padStart(2,'0')}.${String(msec).padStart(3,'0')}`;
-  return `${m}:${String(sec).padStart(2,'0')}`;
+  return ms
+    ? `${m}:${String(sec).padStart(2,'0')}.${String(msec).padStart(3,'0')}`
+    : `${m}:${String(sec).padStart(2,'0')}`;
 }
-function fmtSize(b) { return b > 1e6 ? (b/1e6).toFixed(1)+' MB' : (b/1e3).toFixed(0)+' KB'; }
-function setStatus(msg, active = false) {
+function fmtSize(b) { return b>1e6?(b/1e6).toFixed(1)+' MB':(b/1e3).toFixed(0)+' KB'; }
+function setStatus(msg, active=false) {
   statusText.textContent = msg;
-  statusDot.className = 'status-dot' + (active ? ' active' : '');
+  statusDot.className = 'status-dot'+(active?' active':'');
 }
-let toastTimer;
-function showToast(msg, cls = '') {
-  clearTimeout(toastTimer);
+let _tt;
+function showToast(msg, type='') {
+  clearTimeout(_tt);
   toast.textContent = msg;
-  toast.className = 'toast show' + (cls ? ' '+cls : '');
-  toastTimer = setTimeout(() => { toast.className = 'toast'; }, 2200);
+  toast.className = 'toast show'+(type?' '+type:'');
+  _tt = setTimeout(()=>{ toast.className='toast'; }, 2200);
 }
 function setStep(n) {
-  for (let i = 1; i <= 3; i++) {
-    document.getElementById('step'+i).className = 'step-pill' + (i===n?' active':i<n?' done':'');
-  }
+  for(let i=1;i<=3;i++)
+    $('step'+i).className='step-pill'+(i===n?' active':i<n?' done':'');
+}
+
+// ─── BUILD SEGMENTS ───────────────────────────────────────────────────────────
+// Segments always start from 0:00
+// N marks → N+1 clips
+function buildSegments() {
+  // boundaries: 0, mark1, mark2, ..., markN, duration
+  const cuts = [0, ...marks.map(m=>m.time), duration];
+  return cuts.slice(0,-1).map((start, i) => ({
+    start,
+    end:   cuts[i+1],
+    // label comes from the mark ENDING this segment (mark index i, 0-based)
+    // segment 0 = before first mark → use first mark's label or default
+    label: marks[i] ? (marks[i].label.trim() || `clip_${String(i+1).padStart(2,'0')}`)
+                    : `clip_${String(i+1).padStart(2,'0')}`,
+  }));
 }
 
 // ─── UPLOAD ───────────────────────────────────────────────────────────────────
-uploadZone.addEventListener('click', () => fileInput.click());
-uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
-uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
-uploadZone.addEventListener('drop', e => {
+uploadZone.addEventListener('click', ()=>fileInput.click());
+uploadZone.addEventListener('dragover', e=>{e.preventDefault();uploadZone.classList.add('drag-over');});
+uploadZone.addEventListener('dragleave', ()=>uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e=>{
   e.preventDefault(); uploadZone.classList.remove('drag-over');
-  if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+  if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
 });
-fileInput.addEventListener('change', () => { if (fileInput.files[0]) loadFile(fileInput.files[0]); });
+fileInput.addEventListener('change', ()=>{ if(fileInput.files[0]) loadFile(fileInput.files[0]); });
 
 function loadFile(file) {
   mediaFile = file;
   videoEl.src = URL.createObjectURL(file);
   videoEl.load();
-  fileName.textContent = file.name;
-  fileSize.textContent = fmtSize(file.size);
+  $('fileName').textContent = file.name;
+  $('fileSize').textContent = fmtSize(file.size);
   uploadZone.style.display = 'none';
   playerSection.classList.add('visible');
   setStep(2);
-  setStatus('Loaded — play and press M or MARK HERE', true);
+  setStatus('Loaded — play and press M or tap MARK HERE', true);
 }
 
-videoEl.addEventListener('loadedmetadata', () => {
+videoEl.addEventListener('loadedmetadata', ()=>{
   duration = videoEl.duration;
   totalTimeStr.textContent = fmtTime(duration, false);
 });
 
 // ─── RESET ────────────────────────────────────────────────────────────────────
-btnReset.addEventListener('click', () => {
-  marks = []; undoStack = []; blobs = [];
-  videoEl.src = ''; mediaFile = null; fileInput.value = '';
-  uploadZone.style.display = '';
+btnReset.addEventListener('click', ()=>{
+  marks=[]; undoStack=[]; blobs=[];
+  videoEl.src=''; mediaFile=null; fileInput.value='';
+  uploadZone.style.display='';
   playerSection.classList.remove('visible');
   marksSection.classList.remove('visible');
   processSection.classList.remove('visible');
-  marksList.innerHTML = ''; outputList.innerHTML = '';
-  marksCount.textContent = '0';
-  timelineProgress.style.width = '0%';
-  btnDownloadAll.disabled = true; btnUndo.disabled = true;
+  marksList.innerHTML=''; outputList.innerHTML='';
+  marksCount.textContent='0';
+  timelineProgress.style.width='0%';
+  btnDownloadAll.disabled=true; btnUndo.disabled=true;
   progressWrap.classList.remove('visible');
-  progressLabel.textContent = '';
+  progressLabel.textContent='';
   setStep(1); setStatus('Ready — upload a video to begin');
 });
 
 // ─── PLAYBACK ─────────────────────────────────────────────────────────────────
 btnPlay.addEventListener('click', togglePlay);
 function togglePlay() {
-  if (videoEl.paused) { videoEl.play(); btnPlay.textContent = '⏸ Pause'; }
-  else { videoEl.pause(); btnPlay.textContent = '▶ Play'; }
+  if(videoEl.paused){ videoEl.play(); btnPlay.textContent='⏸ Pause'; }
+  else { videoEl.pause(); btnPlay.textContent='▶ Play'; }
 }
-videoEl.addEventListener('timeupdate', () => {
+videoEl.addEventListener('timeupdate', ()=>{
   const t = videoEl.currentTime;
-  const pct = duration ? (t/duration)*100 : 0;
-  timelineProgress.style.width = pct + '%';
+  const pct = duration?(t/duration)*100:0;
+  timelineProgress.style.width = pct+'%';
   currentTimeStr.textContent = fmtTime(t);
   currentTimeBig.textContent = fmtTime(t);
 });
-videoEl.addEventListener('play',  () => { btnPlay.textContent = '⏸ Pause'; statusDot.classList.add('active'); });
-videoEl.addEventListener('pause', () => { btnPlay.textContent = '▶ Play';  statusDot.classList.remove('active'); });
-videoEl.addEventListener('ended', () => { btnPlay.textContent = '▶ Play'; });
+videoEl.addEventListener('play',  ()=>{ btnPlay.textContent='⏸ Pause'; statusDot.classList.add('active'); });
+videoEl.addEventListener('pause', ()=>{ btnPlay.textContent='▶ Play';  statusDot.classList.remove('active'); });
+videoEl.addEventListener('ended', ()=>{ btnPlay.textContent='▶ Play'; });
 
-timelineBar.addEventListener('click', e => {
+timelineBar.addEventListener('click', e=>{
   const rect = timelineBar.getBoundingClientRect();
-  videoEl.currentTime = ((e.clientX - rect.left) / rect.width) * duration;
+  videoEl.currentTime = ((e.clientX-rect.left)/rect.width)*duration;
 });
 
 // ─── MARK ─────────────────────────────────────────────────────────────────────
 btnMark.addEventListener('click', addMark);
-
 function addMark() {
-  if (!mediaFile) return;
+  if(!mediaFile) return;
   const t = videoEl.currentTime;
+  // don't add duplicate mark at same time
+  if(marks.some(m=>Math.abs(m.time-t)<0.05)) { showToast('Already marked here!'); return; }
+
   btnMark.classList.add('flash');
-  setTimeout(() => btnMark.classList.remove('flash'), 200);
-  const newMark = { time: t, label: '' };
-  marks.push(newMark);
-  marks.sort((a,b) => a.time - b.time);
-  undoStack.push(newMark);      // remember for undo
+  setTimeout(()=>btnMark.classList.remove('flash'), 200);
+
+  const m = { time:t, label:'' };
+  marks.push(m);
+  marks.sort((a,b)=>a.time-b.time);
+  undoStack.push(m);
   btnUndo.disabled = false;
   renderMarks();
-  showToast(`⬥ Mark at ${fmtTime(t)}`);
-  setStatus(`${marks.length} mark(s) — keep marking or Export`);
+  showToast(`⬥ Mark #${marks.length} at ${fmtTime(t)}`);
+  setStatus(`${marks.length} mark(s) → ${marks.length+1} clips`);
 }
 
 // ─── UNDO ─────────────────────────────────────────────────────────────────────
-btnUndo.addEventListener('click', undoLastMark);
-
-function undoLastMark() {
-  if (undoStack.length === 0) return;
+btnUndo.addEventListener('click', undoMark);
+function undoMark() {
+  if(!undoStack.length) return;
   const last = undoStack.pop();
-  // Remove by reference time
-  const idx = marks.findIndex(m => m === last);
-  if (idx !== -1) marks.splice(idx, 1);
-  btnUndo.disabled = undoStack.length === 0;
+  const idx = marks.indexOf(last);
+  if(idx!==-1) marks.splice(idx,1);
+  btnUndo.disabled = undoStack.length===0;
   renderMarks();
-  showToast(`↩ Undone mark at ${fmtTime(last.time)}`, 'undo-toast');
-  setStatus(marks.length > 0 ? `${marks.length} mark(s) remaining` : 'All marks cleared by undo');
+  showToast(`↩ Undone mark at ${fmtTime(last.time)}`, 'undo');
+  setStatus(marks.length>0?`${marks.length} mark(s) → ${marks.length+1} clips`:'No marks');
 }
 
 // ─── KEYBOARD ─────────────────────────────────────────────────────────────────
-document.addEventListener('keydown', e => {
-  if (['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
-  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
-  if (e.code === 'KeyM' && !e.ctrlKey && !e.metaKey) addMark();
-  if (e.code === 'KeyZ' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); undoLastMark(); }
+document.addEventListener('keydown', e=>{
+  if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+  if(e.code==='Space'){ e.preventDefault(); togglePlay(); }
+  if(e.code==='KeyM' && !e.ctrlKey && !e.metaKey) addMark();
+  if(e.code==='KeyZ' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); undoMark(); }
 });
 
 // ─── RENDER MARKS ─────────────────────────────────────────────────────────────
 function renderMarks() {
-  marksList.innerHTML = '';
-  document.querySelectorAll('.timeline-mark').forEach(el => el.remove());
+  marksList.innerHTML='';
+  document.querySelectorAll('.timeline-mark').forEach(el=>el.remove());
 
-  marks.forEach((m, i) => {
-    // Timeline pin
+  const segs = buildSegments();  // N+1 clips
+
+  // Update preview line
+  clipsPreview.textContent = `${segs.length} clips will be exported: 0:00 → ${marks.map(m=>fmtTime(m.time,false)).join(' → ')} → ${fmtTime(duration,false)}`;
+
+  // Update export description
+  exportDesc.textContent = `${marks.length} mark(s) → ${segs.length} MP3 clips. Label each clip below before exporting.`;
+
+  // Timeline pins
+  marks.forEach((m,i)=>{
     const tm = document.createElement('div');
     tm.className = 'timeline-mark';
-    tm.style.left = duration ? ((m.time/duration)*100)+'%' : '0%';
+    tm.style.left = duration?((m.time/duration)*100)+'%':'0%';
     tm.dataset.index = i+1;
     tm.title = fmtTime(m.time);
     timelineBar.appendChild(tm);
+  });
 
-    // List item — segment goes from previous boundary to this mark
-    const prevTime = i === 0 ? 0 : marks[i-1].time;
-    const segDur   = m.time - prevTime;
+  // Mark list — each row = the CUT POINT, shows the clip BEFORE it
+  marks.forEach((m,i)=>{
+    const seg = segs[i]; // clip that ends at this mark
     const item = document.createElement('div');
-    item.className = 'mark-item';
-    item.innerHTML = `
+    item.className='mark-item';
+    item.innerHTML=`
       <span class="mark-index">#${i+1}</span>
-      <span class="mark-time" title="Seek here">${fmtTime(m.time)}</span>
+      <div class="mark-range">
+        <div><strong>${fmtTime(seg.start,false)}</strong> → <strong>${fmtTime(seg.end,false)}</strong></div>
+        <div style="font-size:9px;margin-top:2px">clip ${i+1} of ${segs.length}</div>
+      </div>
       <input class="mark-label" type="text" placeholder="Lyric label…" value="${m.label}">
-      <span class="mark-duration" title="Segment: ${fmtTime(prevTime,false)} → ${fmtTime(m.time,false)}">${fmtTime(segDur,false)}</span>
-      <button class="btn-delete-mark" title="Delete this mark">✕</button>
+      <span class="mark-duration">${fmtTime(seg.end-seg.start,false)}</span>
+      <button class="btn-delete-mark" title="Delete mark">✕</button>
     `;
-    item.querySelector('.mark-time').addEventListener('click', () => { videoEl.currentTime = m.time; });
-    item.querySelector('.mark-label').addEventListener('input', e => { marks[i].label = e.target.value; });
-    item.querySelector('.btn-delete-mark').addEventListener('click', () => {
-      // Also remove from undoStack if present
-      const ui = undoStack.indexOf(m);
-      if (ui !== -1) undoStack.splice(ui, 1);
-      marks.splice(i, 1);
-      btnUndo.disabled = undoStack.length === 0;
+    item.querySelector('.mark-range').addEventListener('click', ()=>{ videoEl.currentTime=m.time; });
+    item.querySelector('.mark-label').addEventListener('input', e=>{ m.label=e.target.value; renderMarks(); });
+    item.querySelector('.btn-delete-mark').addEventListener('click', ()=>{
+      const ui=undoStack.indexOf(m); if(ui!==-1) undoStack.splice(ui,1);
+      marks.splice(i,1);
+      btnUndo.disabled=undoStack.length===0;
       renderMarks();
     });
     marksList.appendChild(item);
   });
 
+  // Also show the LAST clip row (from last mark to end) as info
+  if(segs.length>0){
+    const last = segs[segs.length-1];
+    const info = document.createElement('div');
+    info.className='mark-item';
+    info.style.borderColor='rgba(232,255,71,0.2)';
+    info.innerHTML=`
+      <span class="mark-index" style="color:var(--accent)">#${segs.length}</span>
+      <div class="mark-range">
+        <div><strong>${fmtTime(last.start,false)}</strong> → <strong>${fmtTime(last.end,false)}</strong></div>
+        <div style="font-size:9px;margin-top:2px">last clip (to end)</div>
+      </div>
+      <input class="mark-label" type="text" placeholder="Lyric label…" value="${marks[marks.length-1]?'':''}" style="opacity:.5" disabled>
+      <span class="mark-duration">${fmtTime(last.end-last.start,false)}</span>
+      <span style="min-width:24px"></span>
+    `;
+    marksList.appendChild(info);
+  }
+
   marksCount.textContent = marks.length;
-  marksSection.classList.toggle('visible', marks.length > 0);
-  processSection.classList.toggle('visible', marks.length > 0);
-  if (marks.length > 0) setStep(3);
-  else setStep(2);
+  marksSection.classList.toggle('visible', marks.length>0);
+  processSection.classList.toggle('visible', marks.length>0);
+  setStep(marks.length>0?3:2);
 }
 
-btnClearAll.addEventListener('click', () => {
-  marks = []; undoStack = [];
-  btnUndo.disabled = true;
+btnClearAll.addEventListener('click', ()=>{
+  marks=[]; undoStack=[];
+  btnUndo.disabled=true;
   renderMarks();
-  outputList.innerHTML = ''; blobs = [];
-  btnDownloadAll.disabled = true;
+  outputList.innerHTML=''; blobs=[];
+  btnDownloadAll.disabled=true;
   setStep(2); setStatus('All marks cleared');
 });
 
-// ─── FFMPEG INIT ──────────────────────────────────────────────────────────────
-async function getFFmpeg() {
-  if (ffmpegInst && ffmpegReady) return ffmpegInst;
-  const { FFmpeg } = FFmpegWASM;
-  const { fetchFile, toBlobURL } = FFmpegUtil;
+// ─── LAME MP3 ENCODER (pure JS, no Worker, works from any origin) ─────────────
+let lameLoaded = false;
+function loadLame() {
+  return new Promise((res,rej)=>{
+    if(lameLoaded){ res(); return; }
+    const s = document.createElement('script');
+    // lamejs from jsDelivr — pure JS, no SharedArrayBuffer needed
+    s.src = 'https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js';
+    s.onload = ()=>{ lameLoaded=true; res(); };
+    s.onerror = ()=>rej(new Error('Failed to load MP3 encoder. Check internet connection.'));
+    document.head.appendChild(s);
+  });
+}
 
-  setStatus('Loading FFmpeg.wasm… (first time only, ~32 MB)', true);
-  progressWrap.classList.add('visible');
-  progressFill.style.width = '0%';
-  progressLabel.textContent = 'Downloading FFmpeg core…';
+function encodeToMp3(audioBuffer) {
+  const numCh    = audioBuffer.numberOfChannels;
+  const sampleRate = audioBuffer.sampleRate;
+  const samples  = audioBuffer.length;
+  const kbps     = 192;
 
-  const ff = new FFmpeg();
-  ff.on('log', ({ message }) => {
-    // parse time= from ffmpeg logs for progress
-    const m = message.match(/time=(\d+):(\d+):([\d.]+)/);
-    if (m) {
-      const secs = parseInt(m[1])*3600 + parseInt(m[2])*60 + parseFloat(m[3]);
-      // we'll handle per-clip progress externally
+  const mp3enc = new lamejs.Mp3Encoder(numCh, sampleRate, kbps);
+  const blockSize = 1152;
+  const mp3Data  = [];
+
+  const leftF32  = audioBuffer.getChannelData(0);
+  const rightF32 = numCh>1 ? audioBuffer.getChannelData(1) : leftF32;
+
+  // Convert Float32 → Int16
+  function toInt16(f32) {
+    const i16 = new Int16Array(f32.length);
+    for(let i=0;i<f32.length;i++){
+      const s = Math.max(-1,Math.min(1,f32[i]));
+      i16[i] = s<0 ? s*0x8000 : s*0x7FFF;
     }
-  });
+    return i16;
+  }
 
-  const baseURL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd';
-  await ff.load({
-    coreURL:   await toBlobURL(`${baseURL}/ffmpeg-core.js`,   'text/javascript'),
-    wasmURL:   await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-  });
+  const left16  = toInt16(leftF32);
+  const right16 = toInt16(rightF32);
 
-  ffmpegInst  = ff;
-  ffmpegReady = true;
-  ffmpegNotice.textContent = '✓ FFmpeg ready — exports will be fast from now on.';
-  ffmpegNotice.style.borderColor = 'rgba(232,255,71,0.3)';
-  ffmpegNotice.style.color = 'var(--accent)';
-  ffmpegNotice.style.background = 'rgba(232,255,71,0.05)';
-  setStatus('FFmpeg loaded ✓');
-  return ff;
+  for(let i=0;i<samples;i+=blockSize){
+    const lChunk = left16.subarray(i, i+blockSize);
+    const rChunk = right16.subarray(i, i+blockSize);
+    let encoded;
+    if(numCh===1) encoded = mp3enc.encodeBuffer(lChunk);
+    else          encoded = mp3enc.encodeBuffer(lChunk, rChunk);
+    if(encoded.length>0) mp3Data.push(new Int8Array(encoded));
+  }
+  const flushed = mp3enc.flush();
+  if(flushed.length>0) mp3Data.push(new Int8Array(flushed));
+
+  return new Blob(mp3Data, { type:'audio/mpeg' });
 }
 
 // ─── PROCESS ──────────────────────────────────────────────────────────────────
 btnProcess.addEventListener('click', processClips);
 
 async function processClips() {
-  if (!mediaFile || marks.length === 0) return;
-  btnProcess.disabled = true;
-  btnDownloadAll.disabled = true;
-  outputList.innerHTML = '';
-  blobs = [];
+  if(!mediaFile || marks.length===0) return;
+  btnProcess.disabled=true;
+  btnDownloadAll.disabled=true;
+  outputList.innerHTML='';
+  blobs=[];
   progressWrap.classList.add('visible');
-  progressFill.style.width = '0%';
-  progressLabel.textContent = 'Starting…';
-  setStatus('Preparing export…', true);
+  progressFill.style.width='0%';
+  progressLabel.textContent='Loading MP3 encoder…';
+  setStatus('Preparing…', true);
 
   try {
-    const ff = await getFFmpeg();
-    const { fetchFile } = FFmpegUtil;
+    await loadLame();
 
-    // Write input file into FFmpeg virtual FS
-    progressLabel.textContent = 'Loading file into FFmpeg…';
-    progressFill.style.width = '8%';
-    const ext = mediaFile.name.split('.').pop().toLowerCase() || 'mp4';
-    const inputName = `input.${ext}`;
-    ff.writeFile(inputName, await fetchFile(mediaFile));
+    progressLabel.textContent='Decoding audio…';
+    progressFill.style.width='8%';
 
-    progressFill.style.width = '12%';
+    const arrayBuffer = await mediaFile.arrayBuffer();
+    const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const fullBuffer = await audioCtx.decodeAudioData(arrayBuffer);
 
-    // Build boundary list: always start from 0:00, then each mark, then end
-    const boundaries = [
-      { time: 0, label: '' },
-      ...marks,
-    ];
-    const segments = boundaries.map((b, i) => ({
-      start: b.time,
-      end:   boundaries[i+1] ? boundaries[i+1].time : duration,
-      label: b.label.trim() || `clip_${String(i+1).padStart(2,'0')}`,
-    }));
+    const sampleRate  = fullBuffer.sampleRate;
+    const numChannels = fullBuffer.numberOfChannels;
+    const totalSamples= fullBuffer.length;
 
-    for (let i = 0; i < segments.length; i++) {
-      const seg = segments[i];
-      const pct = 12 + ((i / segments.length) * 83);
-      progressFill.style.width = pct + '%';
-      progressLabel.textContent = `Encoding clip ${i+1} / ${segments.length}: "${seg.label}"…`;
+    const segs = buildSegments();  // always N+1 clips
+
+    for(let i=0;i<segs.length;i++){
+      const seg = segs[i];
+      const pct = 10 + ((i/segs.length)*85);
+      progressFill.style.width = pct+'%';
+      progressLabel.textContent = `Encoding clip ${i+1} / ${segs.length}: "${seg.label}"…`;
+
+      const startSample = Math.floor(seg.start * sampleRate);
+      const endSample   = Math.min(Math.floor(seg.end * sampleRate), totalSamples);
+      const length      = endSample - startSample;
+
+      // Slice into offline buffer
+      const offCtx = new OfflineAudioContext(numChannels, length, sampleRate);
+      const sliceBuf = offCtx.createBuffer(numChannels, length, sampleRate);
+      for(let ch=0;ch<numChannels;ch++){
+        sliceBuf.getChannelData(ch).set(fullBuffer.getChannelData(ch).subarray(startSample,endSample));
+      }
+      const src = offCtx.createBufferSource();
+      src.buffer = sliceBuf;
+      src.connect(offCtx.destination);
+      src.start();
+      const rendered = await offCtx.startRendering();
+
+      // Encode to MP3
+      const mp3Blob = encodeToMp3(rendered);
+      const url = URL.createObjectURL(mp3Blob);
 
       const safeName = seg.label.replace(/[^a-z0-9_\-\s]/gi,'').replace(/\s+/g,'_') || `clip_${i+1}`;
-      const outName  = `${String(i+1).padStart(2,'0')}_${safeName}.mp3`;
+      const filename = `${String(i+1).padStart(2,'0')}_${safeName}.mp3`;
 
-      const startSec = seg.start.toFixed(3);
-      const durSec   = (seg.end - seg.start).toFixed(3);
+      blobs.push({ name:filename, blob:mp3Blob, url });
 
-      // -ss before -i = fast seek; -t = duration; -q:a 2 = high quality VBR MP3
-      await ff.exec([
-        '-ss', startSec,
-        '-i',  inputName,
-        '-t',  durSec,
-        '-vn',                  // no video
-        '-acodec', 'libmp3lame',
-        '-q:a', '2',            // VBR quality 0–9, 2 ≈ 190 kbps
-        '-y',                   // overwrite
-        outName
-      ]);
-
-      const data = await ff.readFile(outName);
-      const blob = new Blob([data.buffer], { type: 'audio/mpeg' });
-      const url  = URL.createObjectURL(blob);
-      blobs.push({ name: outName, blob, url });
-
-      // Clean up output file
-      try { await ff.deleteFile(outName); } catch(e) {}
-
-      // Output row
       const item = document.createElement('div');
-      item.className = 'output-item ready';
-      item.innerHTML = `
+      item.className='output-item ready';
+      item.innerHTML=`
         <div style="min-width:0">
-          <div class="output-name">🎵 ${outName}</div>
+          <div class="output-name">🎵 ${filename}</div>
           <div class="output-time">${fmtTime(seg.start,false)} → ${fmtTime(seg.end,false)}</div>
         </div>
         <button class="btn-dl">⬇ MP3</button>
       `;
-      item.querySelector('.btn-dl').addEventListener('click', () => triggerDownload(url, outName));
+      item.querySelector('.btn-dl').addEventListener('click', ()=>triggerDownload(url,filename));
       outputList.appendChild(item);
 
-      await new Promise(r => setTimeout(r, 5));
+      await new Promise(r=>setTimeout(r,5));
     }
 
-    // Clean up input
-    try { await ff.deleteFile(inputName); } catch(e) {}
+    progressFill.style.width='100%';
+    progressLabel.textContent=`✓ ${segs.length} MP3 clips ready!`;
+    btnDownloadAll.disabled=false;
+    setStatus(`✓ Done! ${segs.length} clips exported.`);
+    showToast(`✓ ${segs.length} clips ready!`);
 
-    progressFill.style.width = '100%';
-    progressLabel.textContent = `✓ ${segments.length} MP3 clips ready!`;
-    btnDownloadAll.disabled = false;
-    setStatus(`✓ Done! ${segments.length} MP3 clips ready.`);
-    showToast(`✓ ${segments.length} clips exported!`);
-
-  } catch (err) {
-    progressLabel.textContent = '✗ Error: ' + err.message;
-    progressFill.style.width = '0%';
-    setStatus('Export error: ' + err.message);
+  } catch(err){
+    progressLabel.textContent='✗ '+err.message;
+    progressFill.style.width='0%';
+    setStatus('Error: '+err.message);
     console.error(err);
   }
-
-  btnProcess.disabled = false;
+  btnProcess.disabled=false;
 }
 
 // ─── DOWNLOAD ─────────────────────────────────────────────────────────────────
-function triggerDownload(url, name) {
-  const a = document.createElement('a');
-  a.href = url; a.download = name;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
+function triggerDownload(url, name){
+  const a=document.createElement('a');
+  a.href=url; a.download=name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
-btnDownloadAll.addEventListener('click', async () => {
-  if (!blobs.length) return;
-  btnDownloadAll.disabled = true;
-  btnDownloadAll.innerHTML = '<span class="spinner"></span> Building ZIP…';
-
+btnDownloadAll.addEventListener('click', async ()=>{
+  if(!blobs.length) return;
+  btnDownloadAll.disabled=true;
+  btnDownloadAll.innerHTML='<span class="spinner"></span> Building ZIP…';
   try {
-    if (typeof JSZip === 'undefined') await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
-    const zip = new JSZip();
-    blobs.forEach(b => zip.file(b.name, b.blob));
-    const content = await zip.generateAsync({ type: 'blob' });
-    triggerDownload(URL.createObjectURL(content), 'lyrics_clips_mp3.zip');
+    if(typeof JSZip==='undefined'){
+      await new Promise((res,rej)=>{
+        const s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        s.onload=res; s.onerror=rej; document.head.appendChild(s);
+      });
+    }
+    const zip=new JSZip();
+    blobs.forEach(b=>zip.file(b.name,b.blob));
+    const content=await zip.generateAsync({type:'blob'});
+    triggerDownload(URL.createObjectURL(content),'lyrics_clips_mp3.zip');
     showToast('📦 ZIP downloaded!');
-  } catch (e) {
+  } catch(e){
     showToast('ZIP failed — use individual downloads');
-    console.error(e);
   }
-
-  btnDownloadAll.disabled = false;
-  btnDownloadAll.innerHTML = '⬇ Download All (ZIP)';
+  btnDownloadAll.disabled=false;
+  btnDownloadAll.innerHTML='⬇ Download All (ZIP)';
 });
-
-function loadScript(src) {
-  return new Promise((res, rej) => {
-    const s = document.createElement('script');
-    s.src = src; s.onload = res; s.onerror = rej;
-    document.head.appendChild(s);
-  });
-}
 </script>
 </body>
 </html>
