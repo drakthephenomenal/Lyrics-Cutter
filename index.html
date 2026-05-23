@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HCJ Audio Cutter</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="coi-serviceworker.js"></script>
+</head>
+<body>
+
+<header>
+  <h1>HCJ <span>Audio Cutter</span></h1>
+  <span class="badge">PWA</span>
+</header>
+
+<div class="app">
+
+  <!-- ─── LEFT PANEL ─── -->
+  <div class="left-panel">
+
+    <!-- Drop Zone -->
+    <div class="drop-zone" id="drop-zone">
+      <div class="icon">🎬</div>
+      <p><strong>Drop a video file here</strong><br>or click to browse</p>
+      <p style="margin-top:8px;font-size:.75rem;">MP4, MKV, MOV, AVI, WebM — up to 2 GB</p>
+      <input type="file" id="file-input" accept="video/*" />
+    </div>
+
+    <!-- Video Player (hidden until file loaded) -->
+    <div class="video-wrapper" id="video-wrapper" style="display:none">
+      <video id="video" controls preload="metadata"></video>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline-section" id="timeline-section" style="display:none">
+      <h3>Timeline</h3>
+      <div class="timeline-bar" id="timeline-bar">
+        <div class="timeline-progress" id="timeline-progress"></div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button class="btn btn-accent" id="btn-mark">
+          ✦ Mark
+        </button>
+        <button class="btn btn-outline btn-sm" id="btn-play">▶ Play</button>
+        <button class="btn btn-outline btn-sm" id="btn-clear-marks">✕ Clear Marks</button>
+        <span class="time-display" id="time-display">0:00.0 / 0:00</span>
+      </div>
+
+      <!-- Marks -->
+      <div style="margin-top:10px">
+        <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:6px;">
+          Marks (click to seek · × to delete)
+        </div>
+        <div class="marks-list" id="marks-list">
+          <span style="font-size:.78rem;color:var(--text-muted);font-style:italic;">No marks yet — play the video and click Mark</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ─── RIGHT PANEL ─── -->
+  <div class="right-panel">
+    <div class="right-panel-header">
+      <h2>🎵 Clips</h2>
+      <div class="right-panel-actions">
+        <button class="btn btn-accent btn-sm" id="btn-process" disabled>
+          ⚙ Extract MP3
+        </button>
+        <button class="btn btn-outline btn-sm" id="btn-download-all" disabled>
+          ⬇ Download Selected
+        </button>
+        <button class="btn btn-outline btn-sm" id="btn-select-all">
+          ☑ All
+        </button>
+      </div>
+    </div>
+
+    <div class="clips-list" id="clips-list">
+      <div class="empty-state">
+        <div class="icon">✂️</div>
+        <div>Load a video and add marks<br>to create clips</div>
+      </div>
+    </div>
+
+    <div class="status-bar" id="status-bar">
+      <span id="status-text">Ready</span>
+      <div class="progress-bar-wrap" id="progress-wrap">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- FFmpeg Loading Overlay -->
+<div class="ffmpeg-loading" id="ffmpeg-loading">
+  <div class="spinner"></div>
+  <div id="ffmpeg-load-text">Loading FFmpeg (first time ~5MB)…</div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
