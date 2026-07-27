@@ -9,6 +9,9 @@ let decodedAudioBuffer = null;
 // ─── DOM refs ─────────────────────────────────────────────────────────────────
 const dropZone        = document.getElementById('drop-zone');
 const fileInput       = document.getElementById('file-input');
+const importZone      = document.getElementById('import-zone');
+const importInput     = document.getElementById('import-input');
+const prefixInput     = document.getElementById('prefix-input');
 const videoWrapper    = document.getElementById('video-wrapper');
 const video           = document.getElementById('video');
 const timelineSection = document.getElementById('timeline-section');
@@ -57,6 +60,11 @@ function escHtml(s) {
 }
 
 function uid() { return Math.random().toString(36).slice(2, 9); }
+
+function prefix() {
+  const v = (prefixInput.value || '').trim().replace(/[^a-zA-Z0-9_]/g, '');
+  return v || 'hcj';
+}
 
 function toast(msg, type = 'info', duration = 3500) {
   const el = document.createElement('div');
@@ -121,6 +129,73 @@ dropZone.addEventListener('drop', e => {
   e.preventDefault();
   dropZone.classList.remove('dragover');
   loadVideoFile(e.dataTransfer.files[0]);
+});
+
+// ─── Import already-cut clips (one file per verse) ────────────────────────────
+// Reads each file's own duration and appends it as a whole-file clip — no
+// marking needed, since the file IS the verse already.
+function loadFileDuration(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const el = document.createElement(file.type.startsWith('audio/') ? 'audio' : 'video');
+    el.preload = 'metadata';
+    el.src = url;
+    el.onloadedmetadata = () => { resolve(el.duration); URL.revokeObjectURL(url); };
+    el.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not read ' + file.name)); };
+  });
+}
+
+async function addImportedClips(fileList) {
+  const files = Array.from(fileList).filter(f =>
+    f.type.startsWith('video/') || f.type.startsWith('audio/'));
+  if (files.length === 0) { toast('No video/audio files found', 'error'); return; }
+
+  // Natural sort so "verse 2" sorts before "verse 10"
+  files.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+
+  let nextIndex = clips.length ? Math.max(...clips.map(c => c.index)) + 1 : 1;
+  let failed = 0;
+
+  for (const f of files) {
+    let dur = 0;
+    try {
+      dur = await loadFileDuration(f);
+    } catch (e) {
+      failed++;
+      continue;
+    }
+    clips.push({
+      id: uid(),
+      index: nextIndex,
+      start: 0,
+      end: dur,
+      file: f,
+      name: String(nextIndex),
+      locked: false,
+      blob: null,
+      url: null,
+      selected: true,
+    });
+    nextIndex++;
+  }
+
+  timelineSection.style.display = 'none'; // marks don't apply to imported clips
+  renderClips();
+  btnProcess.disabled = clips.length === 0;
+  const added = files.length - failed;
+  setStatus(`${added} clip${added !== 1 ? 's' : ''} imported — click "Extract MP3" to convert`);
+  toast(`Imported ${added} clip${added !== 1 ? 's' : ''}${failed ? `, ${failed} failed` : ''}`,
+    failed ? 'info' : 'success');
+}
+
+importZone.addEventListener('click', () => importInput.click());
+importInput.addEventListener('change', e => addImportedClips(e.target.files));
+importZone.addEventListener('dragover', e => { e.preventDefault(); importZone.classList.add('dragover'); });
+importZone.addEventListener('dragleave', () => importZone.classList.remove('dragover'));
+importZone.addEventListener('drop', e => {
+  e.preventDefault();
+  importZone.classList.remove('dragover');
+  addImportedClips(e.dataTransfer.files);
 });
 
 // ─── Video controls ───────────────────────────────────────────────────────────
@@ -248,26 +323,30 @@ window.deleteMark = i => {
 
 // ─── Clips ────────────────────────────────────────────────────────────────────
 function rebuildClips() {
+  // Imported (whole-file) clips aren't derived from marks — keep them as-is.
+  const imported = clips.filter(c => c.file);
+  const markBased = clips.filter(c => !c.file);
+
   // Preserve existing names & locked status by matching on position index
   const prevNames = {};
-  clips.forEach(c => { prevNames[c.index] = { name: c.name, locked: c.locked }; });
-  clips.forEach(c => { if (c.url) URL.revokeObjectURL(c.url); });
+  markBased.forEach(c => { prevNames[c.index] = { name: c.name, locked: c.locked }; });
+  markBased.forEach(c => { if (c.url) URL.revokeObjectURL(c.url); });
 
   if (!videoDuration || marks.length === 0) {
-    clips = [];
+    clips = imported;
     renderClips();
-    btnProcess.disabled = true;
+    btnProcess.disabled = clips.length === 0;
     return;
   }
 
   const boundaries = [0, ...marks, videoDuration];
-  clips = [];
+  const rebuilt = [];
   for (let i = 0; i < boundaries.length - 1; i++) {
     const start = boundaries[i];
     const end   = boundaries[i + 1];
     if (end - start < 0.05) continue;
     const prev = prevNames[i + 1];
-    clips.push({
+    rebuilt.push({
       id:       uid(),
       index:    i + 1,
       start, end,
@@ -279,6 +358,7 @@ function rebuildClips() {
     });
   }
 
+  clips = [...rebuilt, ...imported];
   renderClips();
   btnProcess.disabled = clips.length === 0;
   setStatus(`${clips.length} clip${clips.length !== 1 ? 's' : ''} ready — click "Extract MP3" to process`);
@@ -301,7 +381,7 @@ function renderClips() {
         <input type="checkbox" id="chk-${c.id}" ${c.selected ? 'checked' : ''}
           onchange="toggleSelect('${c.id}', this.checked)" />
         <span class="clip-label">
-          Clip ${c.index} &nbsp;·&nbsp; ${fmt(c.start, 2)} → ${fmt(c.end, 2)} &nbsp;·&nbsp; ${fmtDur(c.end - c.start)}
+          ${c.file ? '📥 ' : ''}Clip ${c.index} &nbsp;·&nbsp; ${c.file ? escHtml(c.file.name) : `${fmt(c.start, 2)} → ${fmt(c.end, 2)}`} &nbsp;·&nbsp; ${fmtDur(c.end - c.start)}
         </span>
         ${c.url ? `
           <button class="btn btn-success btn-sm" onclick="downloadClip('${c.id}')" title="Download">⬇</button>
@@ -310,13 +390,13 @@ function renderClips() {
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <div class="filename-input-wrap" title="${c.locked ? 'Manually named' : 'Auto-numbered'}">
-          <span class="filename-prefix">hcj_</span>
+          <span class="filename-prefix">${prefix()}_</span>
           <input class="filename-input" type="text"
             value="${escHtml(c.name)}"
             placeholder="${c.index}"
             id="name-${c.id}"
             onchange="renameClip('${c.id}', this.value)"
-            title="N in hcj_N.mp3" />
+            title="N in ${prefix()}_N.mp3" />
           <span class="filename-suffix">.mp3</span>
           ${c.locked ? '<span class="lock-icon" title="Manually set · click to unlock" onclick="unlockClip(\''+c.id+'\')">🔒</span>' : ''}
         </div>
@@ -376,7 +456,7 @@ window.deleteClip = id => {
 window.downloadClip = id => {
   const c = clips.find(x => x.id === id);
   if (!c?.url) { toast('Extract MP3 first', 'info'); return; }
-  triggerDownload(c.url, `hcj_${c.name}.mp3`);
+  triggerDownload(c.url, `${prefix()}_${c.name}.mp3`);
 };
 
 window.previewClip = id => {
@@ -400,6 +480,8 @@ btnSelectAll.addEventListener('click', () => {
   renderClips();
 });
 
+prefixInput.addEventListener('input', () => renderClips());
+
 // ─── MP3 Encoding via Web Audio API + lamejs ──────────────────────────────────
 async function decodeAudio() {
   if (decodedAudioBuffer) return decodedAudioBuffer;
@@ -410,6 +492,22 @@ async function decodeAudio() {
   decodedAudioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
   audioCtx.close();
   return decodedAudioBuffer;
+}
+
+// Resolves the AudioBuffer to encode a clip from — the shared main-video
+// buffer for mark-based clips, or the clip's own file for imported clips
+// (decoded once and cached on the clip).
+async function getBufferForClip(c) {
+  if (c.file) {
+    if (c._buf) return c._buf;
+    showOverlay(`Decoding ${c.file.name}…`);
+    const arrayBuffer = await c.file.arrayBuffer();
+    const ctx = new AudioContext();
+    c._buf = await ctx.decodeAudioData(arrayBuffer);
+    ctx.close();
+    return c._buf;
+  }
+  return decodeAudio();
 }
 
 function encodeClipToMp3(audioBuffer, start, end, onProgress) {
@@ -464,7 +562,7 @@ function yieldToUI() {
 }
 
 btnProcess.addEventListener('click', async () => {
-  if (!videoFile) return;
+  if (!videoFile && !clips.some(c => c.file)) return;
 
   const toProcess = clips.filter(c => c.selected);
   if (toProcess.length === 0) { toast('No clips selected', 'info'); return; }
@@ -473,15 +571,17 @@ btnProcess.addEventListener('click', async () => {
   btnDownloadAll.disabled = true;
 
   try {
-    const audioBuffer = await decodeAudio();
-    hideOverlay();
-
     for (let i = 0; i < toProcess.length; i++) {
       const c = toProcess[i];
-      setStatus(`Encoding clip ${i + 1}/${toProcess.length}: hcj_${c.name}.mp3…`, i / toProcess.length);
+      setStatus(`Encoding clip ${i + 1}/${toProcess.length}: ${prefix()}_${c.name}.mp3…`, i / toProcess.length);
       await yieldToUI();
 
-      const blob = encodeClipToMp3(audioBuffer, c.start, c.end, p => {
+      const audioBuffer = await getBufferForClip(c);
+      hideOverlay();
+      const start = c.file ? 0 : c.start;
+      const end   = c.file ? audioBuffer.duration : c.end;
+
+      const blob = encodeClipToMp3(audioBuffer, start, end, p => {
         const overall = (i + p) / toProcess.length;
         setStatus(`Encoding clip ${i + 1}/${toProcess.length}: ${Math.round(p * 100)}%…`, overall);
       });
@@ -511,7 +611,7 @@ btnDownloadAll.addEventListener('click', async () => {
   if (ready.length === 0) { toast('No extracted clips selected', 'info'); return; }
 
   if (ready.length === 1) {
-    triggerDownload(ready[0].url, `hcj_${ready[0].name}.mp3`);
+    triggerDownload(ready[0].url, `${prefix()}_${ready[0].name}.mp3`);
     return;
   }
 
@@ -520,14 +620,14 @@ btnDownloadAll.addEventListener('click', async () => {
   try {
     const { default: JSZip } = await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm');
     const zip = new JSZip();
-    for (const c of ready) zip.file(`hcj_${c.name}.mp3`, c.blob);
+    for (const c of ready) zip.file(`${prefix()}_${c.name}.mp3`, c.blob);
 
     const blob = await zip.generateAsync({ type: 'blob' }, meta => {
       setStatus(`Building ZIP… ${Math.round(meta.percent)}%`, meta.percent / 100);
     });
 
     const url = URL.createObjectURL(blob);
-    triggerDownload(url, 'hcj_clips.zip');
+    triggerDownload(url, `${prefix()}_clips.zip`);
     setTimeout(() => URL.revokeObjectURL(url), 5000);
     setStatus(`✓ ZIP downloaded (${ready.length} files)`);
     toast(`ZIP with ${ready.length} clips downloaded`, 'success');
