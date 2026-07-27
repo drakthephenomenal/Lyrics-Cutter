@@ -61,6 +61,23 @@ function escHtml(s) {
 
 function uid() { return Math.random().toString(36).slice(2, 9); }
 
+const VIDEO_EXT = /\.(mp4|mkv|mov|avi|webm|m4v|3gp|ts)$/i;
+const AUDIO_EXT  = /\.(mp3|m4a|wav|aac|ogg|flac|wma)$/i;
+
+// Some phone/instagram-saved files report an empty or generic MIME type
+// (e.g. "application/octet-stream") instead of "video/mp4" — fall back to
+// the file extension so those aren't silently rejected.
+function isVideoFile(file) {
+  return file.type.startsWith('video/') || (!file.type && VIDEO_EXT.test(file.name));
+}
+function isAudioFile(file) {
+  return file.type.startsWith('audio/') || (!file.type && AUDIO_EXT.test(file.name));
+}
+function isMediaFile(file) {
+  return isVideoFile(file) || isAudioFile(file) ||
+    (file.type === 'application/octet-stream' && (VIDEO_EXT.test(file.name) || AUDIO_EXT.test(file.name)));
+}
+
 function prefix() {
   const v = (prefixInput.value || '').trim().replace(/[^a-zA-Z0-9_]/g, '');
   return v || 'hcj';
@@ -95,7 +112,7 @@ function hideOverlay() {
 
 // ─── File Loading ─────────────────────────────────────────────────────────────
 function loadVideoFile(file) {
-  if (!file || !file.type.startsWith('video/')) {
+  if (!file || !(isVideoFile(file) || (file.type === 'application/octet-stream' && VIDEO_EXT.test(file.name)))) {
     toast('Please select a valid video file', 'error');
     return;
   }
@@ -137,7 +154,7 @@ dropZone.addEventListener('drop', e => {
 function loadFileDuration(file) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
-    const el = document.createElement(file.type.startsWith('audio/') ? 'audio' : 'video');
+    const el = document.createElement(isAudioFile(file) ? 'audio' : 'video');
     el.preload = 'metadata';
     el.src = url;
     el.onloadedmetadata = () => { resolve(el.duration); URL.revokeObjectURL(url); };
@@ -146,8 +163,7 @@ function loadFileDuration(file) {
 }
 
 async function addImportedClips(fileList) {
-  const files = Array.from(fileList).filter(f =>
-    f.type.startsWith('video/') || f.type.startsWith('audio/'));
+  const files = Array.from(fileList).filter(isMediaFile);
   if (files.length === 0) { toast('No video/audio files found', 'error'); return; }
 
   // Natural sort so "verse 2" sorts before "verse 10"
