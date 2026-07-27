@@ -78,6 +78,25 @@ function isMediaFile(file) {
     (file.type === 'application/octet-stream' && (VIDEO_EXT.test(file.name) || AUDIO_EXT.test(file.name)));
 }
 
+// ─── Pad (verse) number detection from filename ────────────────────────────────
+const DEVANAGARI_DIGITS = '०१२३४५६७८९';
+function devanagariToLatin(str) {
+  return str.replace(/[०-९]/g, d => String(DEVANAGARI_DIGITS.indexOf(d)));
+}
+
+// Reads a verse number straight out of a filename like:
+// "श्री हित चौरासी जी ❤️ पद ४.श्री हित हरिवंश ... .mp4" → 4
+// Looks for a number right after "पद" (Devanagari or Latin digits) first,
+// falling back to the first standalone number anywhere in the name.
+function extractPadNumber(filename) {
+  const nameOnly = filename.replace(/\.[a-zA-Z0-9]{2,4}$/, ''); // drop extension (avoids matching the "4" in ".mp4")
+  let m = nameOnly.match(/पद[^0-9०-९]{0,12}([0-9०-९]+)/);
+  if (!m) m = nameOnly.match(/([0-9०-९]+)/);
+  if (!m) return null;
+  const num = parseInt(devanagariToLatin(m[1]), 10);
+  return isNaN(num) ? null : num;
+}
+
 function prefix() {
   const v = (prefixInput.value || '').trim().replace(/[^a-zA-Z0-9_]/g, '');
   return v || 'hcj';
@@ -166,13 +185,24 @@ async function addImportedClips(fileList) {
   const files = Array.from(fileList).filter(isMediaFile);
   if (files.length === 0) { toast('No video/audio files found', 'error'); return; }
 
-  // Natural sort so "verse 2" sorts before "verse 10"
-  files.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+  // Detect each file's pad (verse) number from its name up front, so both
+  // the sort order and the auto-generated name can use it.
+  const withPad = files.map(f => ({ file: f, pad: extractPadNumber(f.name) }));
+
+  // Sort: files with a detected pad number go first, in numeric order;
+  // anything undetected falls back to natural filename order at the end.
+  withPad.sort((a, b) => {
+    if (a.pad != null && b.pad != null) return a.pad - b.pad;
+    if (a.pad != null) return -1;
+    if (b.pad != null) return 1;
+    return a.file.name.localeCompare(b.file.name, undefined, { numeric: true });
+  });
 
   let nextIndex = clips.length ? Math.max(...clips.map(c => c.index)) + 1 : 1;
   let failed = 0;
+  let detected = 0;
 
-  for (const f of files) {
+  for (const { file: f, pad } of withPad) {
     let dur = 0;
     try {
       dur = await loadFileDuration(f);
@@ -180,27 +210,31 @@ async function addImportedClips(fileList) {
       failed++;
       continue;
     }
+    if (pad != null) detected++;
     clips.push({
       id: uid(),
-      index: nextIndex,
+      index: pad != null ? pad : nextIndex,
       start: 0,
       end: dur,
       file: f,
-      name: String(nextIndex),
-      locked: false,
+      name: pad != null ? String(pad) : String(nextIndex),
+      // Lock detected pad numbers so the auto-cascade renumbering (used when
+      // you manually rename a clip) doesn't overwrite a name read from file.
+      locked: pad != null,
+      padDetected: pad != null,
       blob: null,
       url: null,
       selected: true,
     });
-    nextIndex++;
+    if (pad == null) nextIndex++;
   }
 
   timelineSection.style.display = 'none'; // marks don't apply to imported clips
   renderClips();
   btnProcess.disabled = clips.length === 0;
   const added = files.length - failed;
-  setStatus(`${added} clip${added !== 1 ? 's' : ''} imported — click "Extract MP3" to convert`);
-  toast(`Imported ${added} clip${added !== 1 ? 's' : ''}${failed ? `, ${failed} failed` : ''}`,
+  setStatus(`${added} clip${added !== 1 ? 's' : ''} imported (${detected} pad number${detected !== 1 ? 's' : ''} auto-detected) — click "Extract MP3" to convert`);
+  toast(`Imported ${added} clip${added !== 1 ? 's' : ''}${detected ? `, ${detected} pad number${detected !== 1 ? 's' : ''} detected` : ''}${failed ? `, ${failed} failed` : ''}`,
     failed ? 'info' : 'success');
 }
 
@@ -405,7 +439,7 @@ function renderClips() {
         ` : ''}
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
-        <div class="filename-input-wrap" title="${c.locked ? 'Manually named' : 'Auto-numbered'}">
+        <div class="filename-input-wrap" title="${c.padDetected ? 'Pad number detected from filename' : c.locked ? 'Manually named' : 'Auto-numbered'}">
           <span class="filename-prefix">${prefix()}_</span>
           <input class="filename-input" type="text"
             value="${escHtml(c.name)}"
@@ -414,7 +448,7 @@ function renderClips() {
             onchange="renameClip('${c.id}', this.value)"
             title="N in ${prefix()}_N.mp3" />
           <span class="filename-suffix">.mp3</span>
-          ${c.locked ? '<span class="lock-icon" title="Manually set · click to unlock" onclick="unlockClip(\''+c.id+'\')">🔒</span>' : ''}
+          ${c.padDetected ? '<span class="lock-icon" title="Pad number detected from filename · click to edit manually" onclick="unlockClip(\''+c.id+'\')">🔢</span>' : c.locked ? '<span class="lock-icon" title="Manually set · click to unlock" onclick="unlockClip(\''+c.id+'\')">🔒</span>' : ''}
         </div>
         <button class="btn btn-danger btn-sm" onclick="deleteClip('${c.id}')" title="Remove clip">✕</button>
       </div>
@@ -440,6 +474,7 @@ window.renameClip = (id, val) => {
   const trimmed = val.trim() || String(clips[idx].index);
   clips[idx].name   = trimmed;
   clips[idx].locked = true;
+  clips[idx].padDetected = false; // user edited it, so it's a manual lock now
 
   // If the entered value is a number, cascade to subsequent unlocked clips
   const num = parseInt(trimmed, 10);
@@ -460,7 +495,7 @@ window.renameClip = (id, val) => {
 // Unlock a clip so auto-numbering can affect it again
 window.unlockClip = id => {
   const c = clips.find(x => x.id === id);
-  if (c) { c.locked = false; renderClips(); }
+  if (c) { c.locked = false; c.padDetected = false; renderClips(); }
 };
 
 window.deleteClip = id => {
