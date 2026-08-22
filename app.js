@@ -1,6 +1,6 @@
 // ─── State ───────────────────────────────────────────────────────────────────
-let videoFile = null;
-let videoDuration = 0;
+let mainFile = null;    // the loaded video OR audio file (marking system applies to this)
+let videoDuration = 0;  // duration of mainFile, whichever kind it is
 let marks = [];
 let markHistory = [];   // stack of timestamps for undo
 let clips = [];
@@ -14,6 +14,9 @@ const importInput     = document.getElementById('import-input');
 const prefixInput     = document.getElementById('prefix-input');
 const videoWrapper    = document.getElementById('video-wrapper');
 const video           = document.getElementById('video');
+const audioShell      = document.getElementById('audio-player-shell');
+const audioPlayer     = document.getElementById('audio-player');
+let   mediaEl         = video; // whichever of video/audioPlayer is currently active
 const timelineSection = document.getElementById('timeline-section');
 const timelineBar     = document.getElementById('timeline-bar');
 const timelineProgress= document.getElementById('timeline-progress');
@@ -130,12 +133,18 @@ function hideOverlay() {
 }
 
 // ─── File Loading ─────────────────────────────────────────────────────────────
+// Handles both video files and audio-only files (mp3/wav/m4a/etc). Whichever
+// kind is loaded, the same mark/timeline/cut system below operates on it —
+// `mediaEl` just points at the <video> or <audio> element that's actually
+// playing it.
 function loadVideoFile(file) {
-  if (!file || !(isVideoFile(file) || (file.type === 'application/octet-stream' && VIDEO_EXT.test(file.name)))) {
-    toast('Please select a valid video file', 'error');
+  if (!file || !isMediaFile(file)) {
+    toast('Please select a valid video or audio file', 'error');
     return;
   }
-  videoFile = file;
+  const audioOnly = isAudioFile(file) && !isVideoFile(file);
+
+  mainFile = file;
   decodedAudioBuffer = null;
   marks = [];
   markHistory = [];
@@ -145,8 +154,22 @@ function loadVideoFile(file) {
   renderClips();
 
   const url = URL.createObjectURL(file);
-  video.src = url;
-  video.load();
+
+  if (audioOnly) {
+    mediaEl = audioPlayer;
+    video.removeAttribute('src');
+    video.style.display = 'none';
+    audioShell.style.display = 'flex';
+    audioPlayer.src = url;
+    audioPlayer.load();
+  } else {
+    mediaEl = video;
+    audioPlayer.removeAttribute('src');
+    audioShell.style.display = 'none';
+    video.style.display = '';
+    video.src = url;
+    video.load();
+  }
 
   dropZone.style.display = 'none';
   videoWrapper.style.display = 'flex';
@@ -154,7 +177,7 @@ function loadVideoFile(file) {
   btnProcess.disabled = true;
 
   toast(`Loaded: ${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)`, 'success');
-  setStatus('Video loaded — play and click Mark to add timestamps');
+  setStatus(`${audioOnly ? 'Audio' : 'Video'} loaded — play and click Mark to add timestamps`);
 }
 
 dropZone.addEventListener('click', () => fileInput.click());
@@ -248,36 +271,46 @@ importZone.addEventListener('drop', e => {
   addImportedClips(e.dataTransfer.files);
 });
 
-// ─── Video controls ───────────────────────────────────────────────────────────
-video.addEventListener('loadedmetadata', () => {
-  videoDuration = video.duration;
-  timeDisplay.textContent = `0:00.0 / ${fmt(videoDuration)}`;
-});
+// ─── Media controls (shared by both <video> and <audio>) ─────────────────────
+// Both elements get the same listeners; each handler checks that it's firing
+// on whichever one is currently active (`mediaEl`) before touching shared state,
+// so loading a new file — possibly of the other kind — can't leave stale
+// listeners on an element nobody's looking at.
+function bindMediaEvents(el) {
+  el.addEventListener('loadedmetadata', () => {
+    if (el !== mediaEl) return;
+    videoDuration = el.duration;
+    timeDisplay.textContent = `0:00.0 / ${fmt(videoDuration)}`;
+  });
 
-video.addEventListener('timeupdate', () => {
-  updateTimeline();
-  timeDisplay.textContent = `${fmt(video.currentTime, 1)} / ${fmt(videoDuration)}`;
-});
+  el.addEventListener('timeupdate', () => {
+    if (el !== mediaEl) return;
+    updateTimeline();
+    timeDisplay.textContent = `${fmt(el.currentTime, 1)} / ${fmt(videoDuration)}`;
+  });
 
-video.addEventListener('play',  () => { btnPlay.textContent = '⏸ Pause'; });
-video.addEventListener('pause', () => { btnPlay.textContent = '▶ Play'; });
-video.addEventListener('ended', () => { btnPlay.textContent = '▶ Play'; });
+  el.addEventListener('play',  () => { if (el === mediaEl) btnPlay.textContent = '⏸ Pause'; });
+  el.addEventListener('pause', () => { if (el === mediaEl) btnPlay.textContent = '▶ Play'; });
+  el.addEventListener('ended', () => { if (el === mediaEl) btnPlay.textContent = '▶ Play'; });
+}
+bindMediaEvents(video);
+bindMediaEvents(audioPlayer);
 
 btnPlay.addEventListener('click', () => {
-  if (video.paused) video.play(); else video.pause();
+  if (mediaEl.paused) mediaEl.play(); else mediaEl.pause();
 });
 
 // ─── Timeline ────────────────────────────────────────────────────────────────
 function updateTimeline() {
   if (!videoDuration) return;
-  timelineProgress.style.width = ((video.currentTime / videoDuration) * 100) + '%';
+  timelineProgress.style.width = ((mediaEl.currentTime / videoDuration) * 100) + '%';
   renderMarkerLines();
 }
 
 timelineBar.addEventListener('click', e => {
   if (!videoDuration) return;
   const rect = timelineBar.getBoundingClientRect();
-  video.currentTime = ((e.clientX - rect.left) / rect.width) * videoDuration;
+  mediaEl.currentTime = ((e.clientX - rect.left) / rect.width) * videoDuration;
 });
 
 function renderMarkerLines() {
@@ -285,7 +318,7 @@ function renderMarkerLines() {
 
   const cursor = document.createElement('div');
   cursor.className = 'timeline-cursor';
-  cursor.style.left = ((video.currentTime / videoDuration) * 100) + '%';
+  cursor.style.left = ((mediaEl.currentTime / videoDuration) * 100) + '%';
   timelineBar.appendChild(cursor);
 
   marks.forEach((t, i) => {
@@ -294,7 +327,7 @@ function renderMarkerLines() {
     m.dataset.index = i + 1;
     m.style.left = ((t / videoDuration) * 100) + '%';
     m.title = `Mark ${i + 1}: ${fmt(t, 2)}`;
-    m.addEventListener('click', e => { e.stopPropagation(); video.currentTime = t; });
+    m.addEventListener('click', e => { e.stopPropagation(); mediaEl.currentTime = t; });
     timelineBar.appendChild(m);
   });
 }
@@ -305,8 +338,8 @@ function syncUndoBtn() {
 }
 
 btnMark.addEventListener('click', () => {
-  if (!videoFile) return;
-  const t = parseFloat(video.currentTime.toFixed(3));
+  if (!mainFile) return;
+  const t = parseFloat(mediaEl.currentTime.toFixed(3));
   if (marks.some(m => Math.abs(m - t) < 0.05)) { toast('Already marked near this time', 'info'); return; }
   marks.push(t);
   marks.sort((a, b) => a - b);
@@ -333,7 +366,7 @@ function undoLastMark() {
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT') return;
   if (e.code === 'Space') { e.preventDefault(); btnMark.click(); }
-  if (e.code === 'KeyP')  { if (video.paused) video.play(); else video.pause(); }
+  if (e.code === 'KeyP')  { if (mediaEl.paused) mediaEl.play(); else mediaEl.pause(); }
   if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ') { e.preventDefault(); undoLastMark(); }
 });
 
@@ -359,7 +392,7 @@ function renderMarks() {
   `).join('');
 }
 
-window.seekTo = t => { video.currentTime = t; };
+window.seekTo = t => { mediaEl.currentTime = t; };
 window.deleteMark = i => {
   const removed = marks[i];
   marks.splice(i, 1);
@@ -536,9 +569,9 @@ prefixInput.addEventListener('input', () => renderClips());
 // ─── MP3 Encoding via Web Audio API + lamejs ──────────────────────────────────
 async function decodeAudio() {
   if (decodedAudioBuffer) return decodedAudioBuffer;
-  showOverlay('Decoding audio from video… (this may take a moment for large files)');
+  showOverlay('Decoding audio… (this may take a moment for large files)');
   setStatus('Decoding audio…', 0.1);
-  const arrayBuffer = await videoFile.arrayBuffer();
+  const arrayBuffer = await mainFile.arrayBuffer();
   const audioCtx = new AudioContext();
   decodedAudioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
   audioCtx.close();
@@ -613,7 +646,7 @@ function yieldToUI() {
 }
 
 btnProcess.addEventListener('click', async () => {
-  if (!videoFile && !clips.some(c => c.file)) return;
+  if (!mainFile && !clips.some(c => c.file)) return;
 
   const toProcess = clips.filter(c => c.selected);
   if (toProcess.length === 0) { toast('No clips selected', 'info'); return; }

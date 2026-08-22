@@ -22,10 +22,10 @@
 
     <!-- Drop Zone -->
     <div class="drop-zone" id="drop-zone">
-      <div class="icon">🎬</div>
-      <p><strong>Drop a video file here</strong><br>or click to browse</p>
-      <p style="margin-top:8px;font-size:.75rem;">MP4, MKV, MOV, AVI, WebM — up to 2 GB</p>
-      <input type="file" id="file-input" accept="video/*" />
+      <div class="icon">🎬🎵</div>
+      <p><strong>Drop a video or audio file here</strong><br>or click to browse</p>
+      <p style="margin-top:8px;font-size:.75rem;">MP4, MKV, MOV, AVI, WebM, MP3, WAV, M4A, AAC, OGG, FLAC — up to 2 GB</p>
+      <input type="file" id="file-input" accept="video/*,audio/*" />
     </div>
 
     <!-- Import already-cut clips (one file per verse) -->
@@ -42,9 +42,14 @@
       <input type="text" id="prefix-input" value="hcj" style="flex:1;min-width:0;padding:6px 8px;border-radius:6px;border:1px solid var(--border,#3a3a3a);background:var(--bg-2,#1a1a1a);color:var(--text,#eee);font-size:.85rem;" />
     </div>
 
-    <!-- Video Player (hidden until file loaded) -->
+    <!-- Media Player (hidden until file loaded) — video element for video files,
+         audio element (with a waveform-style icon backdrop) for audio-only files -->
     <div class="video-wrapper" id="video-wrapper" style="display:none">
       <video id="video" controls preload="metadata"></video>
+      <div class="audio-player-shell" id="audio-player-shell" style="display:none">
+        <div class="audio-icon">🎵</div>
+        <audio id="audio-player" controls preload="metadata"></audio>
+      </div>
     </div>
 
     <!-- Timeline -->
