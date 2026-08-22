@@ -132,6 +132,18 @@ function hideOverlay() {
   procLoading.classList.remove('show');
 }
 
+// Surface otherwise-silent failures as an on-screen toast — there's no
+// console to check on a phone/tablet, so this is the only way to see what
+// went wrong when something breaks in the field.
+window.addEventListener('error', e => {
+  toast('Error: ' + (e.message || 'Unknown script error'), 'error', 8000);
+});
+window.addEventListener('unhandledrejection', e => {
+  const reason = e.reason;
+  const msg = reason && reason.message ? reason.message : String(reason);
+  toast('Error: ' + msg, 'error', 8000);
+});
+
 // ─── File Loading ─────────────────────────────────────────────────────────────
 // Handles both video files and audio-only files (mp3/wav/m4a/etc). Whichever
 // kind is loaded, the same mark/timeline/cut system below operates on it —
@@ -567,14 +579,29 @@ btnSelectAll.addEventListener('click', () => {
 prefixInput.addEventListener('input', () => renderClips());
 
 // ─── MP3 Encoding via Web Audio API + lamejs ──────────────────────────────────
+// A single shared AudioContext, reused across every decode. This matters on
+// iOS Safari — especially when the app is installed as a home-screen PWA —
+// where an AudioContext only inherits the "started by a user tap" permission
+// if it's created synchronously inside the click handler, before any `await`.
+// Creating a fresh context later (after an await) leaves it silently suspended,
+// so decodeAudioData never resolves with real audio. We create/resume this one
+// context right at the top of the Extract click handler, then reuse it.
+let sharedAudioCtx = null;
+function getAudioCtx() {
+  if (!sharedAudioCtx || sharedAudioCtx.state === 'closed') {
+    const Ctor = window.AudioContext || window.webkitAudioContext;
+    sharedAudioCtx = new Ctor();
+  }
+  return sharedAudioCtx;
+}
+
 async function decodeAudio() {
   if (decodedAudioBuffer) return decodedAudioBuffer;
   showOverlay('Decoding audio… (this may take a moment for large files)');
   setStatus('Decoding audio…', 0.1);
   const arrayBuffer = await mainFile.arrayBuffer();
-  const audioCtx = new AudioContext();
+  const audioCtx = getAudioCtx();
   decodedAudioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-  audioCtx.close();
   return decodedAudioBuffer;
 }
 
@@ -586,9 +613,8 @@ async function getBufferForClip(c) {
     if (c._buf) return c._buf;
     showOverlay(`Decoding ${c.file.name}…`);
     const arrayBuffer = await c.file.arrayBuffer();
-    const ctx = new AudioContext();
+    const ctx = getAudioCtx();
     c._buf = await ctx.decodeAudioData(arrayBuffer);
-    ctx.close();
     return c._buf;
   }
   return decodeAudio();
@@ -654,6 +680,14 @@ btnProcess.addEventListener('click', async () => {
   btnProcess.disabled = true;
   btnDownloadAll.disabled = true;
 
+  // Create/resume the AudioContext synchronously, right here at the top of the
+  // click handler and before any `await` — see note above getAudioCtx(). This
+  // is what makes Extract work on iOS home-screen PWAs.
+  const audioCtx = getAudioCtx();
+  if (audioCtx.state === 'suspended') {
+    try { await audioCtx.resume(); } catch (e) { console.error('AudioContext resume failed', e); }
+  }
+
   try {
     for (let i = 0; i < toProcess.length; i++) {
       const c = toProcess[i];
@@ -680,8 +714,9 @@ btnProcess.addEventListener('click', async () => {
     toast(`Done! ${toProcess.length} MP3 file${toProcess.length !== 1 ? 's' : ''} ready`, 'success');
   } catch (err) {
     hideOverlay();
-    setStatus('Error: ' + err.message);
-    toast('Failed: ' + err.message, 'error', 7000);
+    const detail = (err && err.name ? `${err.name}: ` : '') + (err && err.message ? err.message : String(err));
+    setStatus('Error: ' + detail);
+    toast('Failed: ' + detail, 'error', 8000);
     console.error(err);
   } finally {
     btnProcess.disabled = false;
