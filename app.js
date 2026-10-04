@@ -116,8 +116,8 @@ function extractPadNumber(filename) {
 }
 
 function prefix() {
-  const v = (prefixInput.value || '').trim().replace(/[^a-zA-Z0-9_]/g, '');
-  return v || 'hcj';
+  const v = (prefixInput.value || '').trim().replace(/[\\\/:*?"<>|\s]+/g, '');
+  return v || 'audio';
 }
 
 function toast(msg, type = 'info', duration = 3500) {
@@ -839,7 +839,14 @@ btnSelectAll.addEventListener('click', () => {
   renderClips();
 });
 
-prefixInput.addEventListener('input', () => renderClips());
+const PREFIX_KEY = 'audio_cutter_prefix_v1';
+try { const saved = localStorage.getItem(PREFIX_KEY); if (saved) prefixInput.value = saved; } catch (e) {}
+function onPrefixChange() {
+  try { localStorage.setItem(PREFIX_KEY, prefixInput.value); } catch (e) {}
+  renderClips();
+}
+prefixInput.addEventListener('input', onPrefixChange);
+prefixInput.addEventListener('change', onPrefixChange);
 
 // ─── MP3 Encoding via Web Audio API + lamejs ──────────────────────────────────
 // A single shared AudioContext, reused across every decode. This matters on

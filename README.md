@@ -6,7 +6,7 @@ A browser-based PWA that lets you play a video, mark timestamps, and export audi
 
 - Mark timestamps while a video plays (or press **Space**)
 - Auto-creates clips from your marks
-- Rename each clip with the `hcj_N.mp3` naming scheme
+- Rename each clip with the `audio_N.mp3` naming scheme
 - Extract clips as MP3 using FFmpeg (runs in-browser, no server)
 - Download individually or as a ZIP
 - **Lyrics tab**: paste lyrics, follow the verse being cut (highlighted, auto-advances on each Mark); switch to the **Clips** tab any time
@@ -25,7 +25,7 @@ A browser-based PWA that lets you play a video, mark timestamps, and export audi
 
 1. Open the app and drop or browse for a video file (MP4, MKV, MOV, etc.)
 2. Click **Play** and then click **Mark** (or press **Space**) at each cut point
-3. A list of clips appears on the right — rename each with the number you want (e.g. `1` → `hcj_1.mp3`)
+3. A list of clips appears on the right — rename each with the number you want (e.g. `1` → `audio_1.mp3`)
 4. Click **Extract MP3** to process selected clips
 5. Click **⬇** next to a clip or **Download Selected** to save (multiple = ZIP)
 
