@@ -9,6 +9,7 @@ A browser-based PWA that lets you play a video, mark timestamps, and export audi
 - Rename each clip with the `hcj_N.mp3` naming scheme
 - Extract clips as MP3 using FFmpeg (runs in-browser, no server)
 - Download individually or as a ZIP
+- **Lyrics tab**: paste lyrics, follow the verse being cut (highlighted, auto-advances on each Mark); switch to the **Clips** tab any time
 - Export your mark timestamps as a `.txt` or `.csv` file (marks + clip start/end times)
 
 ## How to host on GitHub Pages

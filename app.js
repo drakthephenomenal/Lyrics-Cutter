@@ -31,6 +31,19 @@ const btnDownloadAll  = document.getElementById('btn-download-all');
 const btnSelectAll    = document.getElementById('btn-select-all');
 const btnExportTxt    = document.getElementById('btn-export-txt');
 const btnExportCsv    = document.getElementById('btn-export-csv');
+const tabButtons      = document.querySelectorAll('.tab');
+const paneLyrics      = document.getElementById('pane-lyrics');
+const paneClips       = document.getElementById('pane-clips');
+const clipBadge       = document.getElementById('clip-badge');
+const lyricsProgress  = document.getElementById('lyrics-progress');
+const lyricsEditor    = document.getElementById('lyrics-editor');
+const lyricsInput     = document.getElementById('lyrics-input');
+const lyricsModeSel   = document.getElementById('lyrics-mode');
+const lyricsList      = document.getElementById('lyrics-list');
+const btnLyricsEdit   = document.getElementById('btn-lyrics-edit');
+const btnLyricsSave   = document.getElementById('btn-lyrics-save');
+const btnFontUp       = document.getElementById('btn-font-up');
+const btnFontDown     = document.getElementById('btn-font-down');
 const timeDisplay     = document.getElementById('time-display');
 const statusText      = document.getElementById('status-text');
 const progressWrap    = document.getElementById('progress-wrap');
@@ -46,7 +59,7 @@ function fmt(s, decimals = 0) {
   const m = Math.floor((s % 3600) / 60);
   const sec = s % 60;
   const secStr = decimals > 0
-    ? sec.toFixed(decimals).padStart(4 + decimals, '0')
+    ? sec.toFixed(decimals).padStart(3 + decimals, '0')
     : String(Math.floor(sec)).padStart(2, '0');
   return h > 0
     ? `${h}:${String(m).padStart(2,'0')}:${secStr}`
@@ -163,6 +176,7 @@ function loadVideoFile(file) {
   marks = [];
   markHistory = [];
   clips = [];
+  verseOffset = 0;
   syncUndoBtn();
   renderMarks();
   renderClips();
@@ -268,6 +282,7 @@ async function addImportedClips(fileList) {
 
   timelineSection.style.display = 'none'; // marks don't apply to imported clips
   renderClips();
+  switchTab('clips');
   btnProcess.disabled = clips.length === 0;
   const added = files.length - failed;
   setStatus(`${added} clip${added !== 1 ? 's' : ''} imported (${detected} pad number${detected !== 1 ? 's' : ''} auto-detected) — click "Extract MP3" to convert`);
@@ -378,7 +393,7 @@ function undoLastMark() {
 }
 
 document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT') return;
+  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
   if (e.code === 'Space') { e.preventDefault(); btnMark.click(); }
   if (e.code === 'KeyP')  { if (mediaEl.paused) mediaEl.play(); else mediaEl.pause(); }
   if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ') { e.preventDefault(); undoLastMark(); }
@@ -387,6 +402,7 @@ document.addEventListener('keydown', e => {
 btnClearMarks.addEventListener('click', () => {
   marks = [];
   markHistory = [];
+  verseOffset = 0;
   syncUndoBtn();
   renderMarks();
   rebuildClips();
@@ -395,6 +411,7 @@ btnClearMarks.addEventListener('click', () => {
 
 function renderMarks() {
   btnExportTxt.disabled = btnExportCsv.disabled = marks.length === 0;
+  renderLyrics();
   if (marks.length === 0) {
     marksList.innerHTML = '<span style="font-size:.78rem;color:var(--text-muted);font-style:italic;">No marks yet — play the video and click Mark</span>';
     return;
@@ -472,6 +489,8 @@ function exportMarksTxt() {
     const clip = clips.find(c => !c.file && c.index === r.n);
     const name = `${prefix()}_${clip ? clip.name : r.n}.mp3`;
     lines.push(`${String(r.n).padStart(2,' ')}.  ${stamp(r.start)} -> ${stamp(r.end)}   [${(r.end - r.start).toFixed(3)} s]   ${name}`);
+    const ly = verseForClip(r.n);
+    if (ly) lines.push('      ' + ly.replace(/\s*\n\s*/g, ' / '));
   });
   lines.push('');
   saveTextFile(lines.join('\r\n'), `${exportBaseName()}_marks.txt`, 'text/plain');
@@ -481,7 +500,7 @@ function exportMarksTxt() {
 function exportMarksCsv() {
   if (!marks.length) { toast('No marks to export', 'info'); return; }
   const q = v => `"${String(v).replace(/"/g, '""')}"`;
-  const rows = [['clip', 'filename', 'start', 'end', 'start_seconds', 'end_seconds', 'duration_seconds']];
+  const rows = [['clip', 'filename', 'start', 'end', 'start_seconds', 'end_seconds', 'duration_seconds', 'lyrics']];
   markRanges().forEach(r => {
     const clip = clips.find(c => !c.file && c.index === r.n);
     rows.push([
@@ -489,6 +508,7 @@ function exportMarksCsv() {
       `${prefix()}_${clip ? clip.name : r.n}.mp3`,
       stamp(r.start), stamp(r.end),
       r.start.toFixed(3), r.end.toFixed(3), (r.end - r.start).toFixed(3),
+      verseForClip(r.n).replace(/\s*\n\s*/g, ' / '),
     ]);
   });
   saveTextFile(rows.map(r => r.map(q).join(',')).join('\r\n'), `${exportBaseName()}_marks.csv`, 'text/csv');
@@ -497,6 +517,164 @@ function exportMarksCsv() {
 
 btnExportTxt.addEventListener('click', exportMarksTxt);
 btnExportCsv.addEventListener('click', exportMarksCsv);
+
+// ─── Lyrics panel + tabs ─────────────────────────────────────────────────────
+// Verses map to clips: clip N = N-th segment between marks, so verse 1 ends at
+// Mark 1. `verseOffset` shifts that mapping (tap a later verse to skip an intro).
+const LYRICS_KEY = 'hcj_lyrics_v1';
+let lyricsRaw     = '';
+let lyricsModeVal = 'blank';
+let lyricsSize    = 1.05;
+let verses        = [];
+let verseOffset   = 0;
+let lyricsEditing = true;
+let lastCurVerse  = -1;
+
+function parseLyrics(raw, mode) {
+  const text = String(raw || '').replace(/\r\n?/g, '\n').trim();
+  if (!text) return [];
+  const parts = mode === 'line' ? text.split('\n') : text.split(/\n\s*\n+/);
+  return parts.map(p => p.trim()).filter(Boolean);
+}
+
+function saveLyricsPrefs() {
+  try {
+    localStorage.setItem(LYRICS_KEY, JSON.stringify({ raw: lyricsRaw, mode: lyricsModeVal, size: lyricsSize }));
+  } catch (e) { /* storage unavailable — fine, just not remembered */ }
+}
+
+function loadLyricsPrefs() {
+  try {
+    const s = JSON.parse(localStorage.getItem(LYRICS_KEY) || 'null');
+    if (s) {
+      lyricsRaw = s.raw || '';
+      lyricsModeVal = s.mode === 'line' ? 'line' : 'blank';
+      lyricsSize = Math.min(2.2, Math.max(0.8, Number(s.size) || 1.05));
+    }
+  } catch (e) { /* ignore corrupt data */ }
+}
+
+function currentVerseIdx() { return Math.max(0, marks.length + verseOffset); }
+
+function verseForClip(n) { return verses[n - 1 + verseOffset] || ''; }
+
+function verseState(i) {
+  const clipN = i - verseOffset + 1;
+  if (clipN < 1) return 'skipped';
+  if (clipN <= marks.length) return 'done';
+  if (clipN === marks.length + 1) return 'current';
+  return 'pending';
+}
+
+function scrollToCurrentVerse() {
+  if (paneLyrics.hidden || lyricsList.hidden || verses.length === 0) return;
+  const idx = Math.min(currentVerseIdx(), verses.length - 1);
+  const el = document.getElementById('verse-' + idx);
+  if (!el) return;
+  lyricsList.scrollTo({ top: Math.max(0, el.offsetTop - lyricsList.clientHeight * 0.2), behavior: 'smooth' });
+}
+
+function renderLyrics(forceScroll = false) {
+  lyricsList.style.setProperty('--lyrics-size', lyricsSize);
+  const showEditor = lyricsEditing || verses.length === 0;
+  lyricsEditor.hidden = !showEditor;
+  lyricsList.hidden = showEditor;
+  btnLyricsEdit.hidden = verses.length === 0;
+  btnLyricsEdit.textContent = showEditor ? '✕ Cancel' : '✎ Edit';
+
+  if (verses.length === 0) {
+    lyricsProgress.textContent = 'Paste lyrics to follow along';
+    lyricsList.innerHTML = '';
+    return;
+  }
+
+  const cur = currentVerseIdx();
+  lyricsProgress.textContent = cur >= verses.length
+    ? `All ${verses.length} verses marked ✓`
+    : `Verse ${cur + 1} of ${verses.length}`;
+
+  const ranges = {};
+  markRanges().forEach(r => { ranges[r.n] = r; });
+
+  lyricsList.innerHTML = verses.map((text, i) => {
+    const st = verseState(i);
+    const n = i - verseOffset + 1;
+    let label = '';
+    if (st === 'done') {
+      const r = ranges[n];
+      label = r ? `✓ ${fmt(r.start, 1)} → ${fmt(r.end, 1)}` : '✓';
+    } else if (st === 'current') {
+      label = i === verses.length - 1 ? '● cutting now · last verse (ends at end of file)' : '● cutting now · Mark at its end';
+    } else if (st === 'skipped') {
+      label = 'skipped';
+    }
+    return `<div class="verse ${st}" id="verse-${i}" onclick="verseTap(${i})">
+      <div class="verse-head"><span>Verse ${i + 1}</span><span class="verse-status">${label}</span></div>
+      <div class="verse-text">${escHtml(text)}</div>
+    </div>`;
+  }).join('');
+
+  if (!showEditor && (forceScroll || cur !== lastCurVerse)) scrollToCurrentVerse();
+  lastCurVerse = cur;
+}
+
+window.verseTap = i => {
+  const st = verseState(i);
+  if (st === 'done') {
+    // jump back to that verse's clip to re-listen
+    const r = markRanges().find(x => x.n === i - verseOffset + 1);
+    if (r) { mediaEl.currentTime = r.start; mediaEl.play().catch(() => {}); }
+  } else if (st !== 'current') {
+    // make this the verse being cut now (e.g. skip an intro or instrumental)
+    verseOffset = i - marks.length;
+    renderLyrics(true);
+    renderClips();
+    toast(`Now cutting verse ${i + 1}`, 'info', 1800);
+  }
+};
+
+function switchTab(name) {
+  const lyricsOn = name === 'lyrics';
+  paneLyrics.hidden = !lyricsOn;
+  paneClips.hidden = lyricsOn;
+  tabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  if (lyricsOn) renderLyrics(true);
+}
+tabButtons.forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+
+btnLyricsEdit.addEventListener('click', () => {
+  lyricsEditing = !lyricsEditing;
+  if (lyricsEditing) { lyricsInput.value = lyricsRaw; lyricsModeSel.value = lyricsModeVal; }
+  renderLyrics();
+  if (lyricsEditing) lyricsInput.focus();
+});
+
+btnLyricsSave.addEventListener('click', () => {
+  lyricsRaw = lyricsInput.value;
+  lyricsModeVal = lyricsModeSel.value;
+  verses = parseLyrics(lyricsRaw, lyricsModeVal);
+  verseOffset = 0;
+  lyricsEditing = false;
+  saveLyricsPrefs();
+  renderLyrics(true);
+  renderClips();
+  toast(verses.length ? `${verses.length} verse${verses.length !== 1 ? 's' : ''} loaded` : 'No lyrics entered', verses.length ? 'success' : 'info');
+});
+
+function changeLyricsSize(delta) {
+  lyricsSize = Math.min(2.2, Math.max(0.8, Math.round((lyricsSize + delta) * 100) / 100));
+  saveLyricsPrefs();
+  renderLyrics();
+}
+btnFontUp.addEventListener('click',   () => changeLyricsSize(0.1));
+btnFontDown.addEventListener('click', () => changeLyricsSize(-0.1));
+
+loadLyricsPrefs();
+lyricsInput.value = lyricsRaw;
+lyricsModeSel.value = lyricsModeVal;
+verses = parseLyrics(lyricsRaw, lyricsModeVal);
+lyricsEditing = verses.length === 0;
+renderLyrics();
 
 // ─── Clips ────────────────────────────────────────────────────────────────────
 function rebuildClips() {
@@ -538,10 +716,12 @@ function rebuildClips() {
   clips = [...rebuilt, ...imported];
   renderClips();
   btnProcess.disabled = clips.length === 0;
-  setStatus(`${clips.length} clip${clips.length !== 1 ? 's' : ''} ready — click "Extract MP3" to process`);
+  setStatus(`${clips.length} clip${clips.length !== 1 ? 's' : ''} ready — open the Clips tab and click "Extract MP3"`);
 }
 
 function renderClips() {
+  clipBadge.textContent = clips.length;
+  clipBadge.hidden = clips.length === 0;
   if (clips.length === 0) {
     clipsList.innerHTML = `
       <div class="empty-state">
@@ -565,6 +745,7 @@ function renderClips() {
           <button class="btn btn-outline btn-sm" onclick="previewClip('${c.id}')" title="Preview">▶</button>
         ` : ''}
       </div>
+      ${!c.file && verseForClip(c.index) ? `<div class="clip-lyric">${escHtml(verseForClip(c.index))}</div>` : ''}
       <div style="display:flex;align-items:center;gap:8px;">
         <div class="filename-input-wrap" title="${c.padDetected ? 'Pad number detected from filename' : c.locked ? 'Manually named' : 'Auto-numbered'}">
           <span class="filename-prefix">${prefix()}_</span>
@@ -792,6 +973,7 @@ btnProcess.addEventListener('click', async () => {
     }
 
     renderClips();
+    switchTab('clips');
     setStatus(`✓ ${toProcess.length} clip${toProcess.length !== 1 ? 's' : ''} extracted`);
     toast(`Done! ${toProcess.length} MP3 file${toProcess.length !== 1 ? 's' : ''} ready`, 'success');
   } catch (err) {

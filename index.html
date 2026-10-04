@@ -91,19 +91,52 @@
 
   <!-- ─── RIGHT PANEL ─── -->
   <div class="right-panel">
-    <div class="right-panel-header">
-      <h2>🎵 Clips</h2>
-      <div class="right-panel-actions">
-        <button class="btn btn-accent btn-sm" id="btn-process" disabled>⚙ Extract MP3</button>
-        <button class="btn btn-outline btn-sm" id="btn-download-all" disabled>⬇ Download</button>
-        <button class="btn btn-outline btn-sm" id="btn-select-all">☑ All</button>
-      </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" id="tab-lyrics" data-tab="lyrics" role="tab">📜 Lyrics</button>
+      <button class="tab" id="tab-clips" data-tab="clips" role="tab">🎵 Clips <span class="tab-badge" id="clip-badge" hidden>0</span></button>
     </div>
 
-    <div class="clips-list" id="clips-list">
-      <div class="empty-state">
-        <div class="icon">✂️</div>
-        <div>Load a video and add marks<br>to create clips</div>
+    <!-- Lyrics pane (shown while cutting) -->
+    <div class="tab-pane" id="pane-lyrics">
+      <div class="lyrics-toolbar">
+        <span class="lyrics-progress" id="lyrics-progress">Paste lyrics to follow along</span>
+        <span class="lyrics-tools">
+          <button class="btn btn-outline btn-sm" id="btn-font-down" title="Smaller text">A−</button>
+          <button class="btn btn-outline btn-sm" id="btn-font-up" title="Larger text">A+</button>
+          <button class="btn btn-outline btn-sm" id="btn-lyrics-edit" hidden>✎ Edit</button>
+        </span>
+      </div>
+
+      <div class="lyrics-editor" id="lyrics-editor">
+        <textarea id="lyrics-input" placeholder="Paste the lyrics here…&#10;&#10;Leave a blank line between verses."></textarea>
+        <div class="lyrics-editor-row">
+          <select id="lyrics-mode">
+            <option value="blank">Blank line = new verse</option>
+            <option value="line">Each line = one verse</option>
+          </select>
+          <button class="btn btn-accent btn-sm" id="btn-lyrics-save">✓ Done</button>
+        </div>
+      </div>
+
+      <div class="lyrics-list" id="lyrics-list"></div>
+    </div>
+
+    <!-- Clips pane -->
+    <div class="tab-pane" id="pane-clips" hidden>
+      <div class="right-panel-header">
+        <div class="right-panel-actions">
+          <button class="btn btn-accent btn-sm" id="btn-process" disabled>⚙ Extract MP3</button>
+          <button class="btn btn-outline btn-sm" id="btn-download-all" disabled>⬇ Download</button>
+          <button class="btn btn-outline btn-sm" id="btn-select-all">☑ All</button>
+        </div>
+      </div>
+
+      <div class="clips-list" id="clips-list">
+        <div class="empty-state">
+          <div class="icon">✂️</div>
+          <div>Load a video and add marks<br>to create clips</div>
+        </div>
       </div>
     </div>
 
