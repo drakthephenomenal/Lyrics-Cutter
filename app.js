@@ -29,6 +29,8 @@ const btnClearMarks   = document.getElementById('btn-clear-marks');
 const btnProcess      = document.getElementById('btn-process');
 const btnDownloadAll  = document.getElementById('btn-download-all');
 const btnSelectAll    = document.getElementById('btn-select-all');
+const btnExportTxt    = document.getElementById('btn-export-txt');
+const btnExportCsv    = document.getElementById('btn-export-csv');
 const timeDisplay     = document.getElementById('time-display');
 const statusText      = document.getElementById('status-text');
 const progressWrap    = document.getElementById('progress-wrap');
@@ -392,6 +394,7 @@ btnClearMarks.addEventListener('click', () => {
 });
 
 function renderMarks() {
+  btnExportTxt.disabled = btnExportCsv.disabled = marks.length === 0;
   if (marks.length === 0) {
     marksList.innerHTML = '<span style="font-size:.78rem;color:var(--text-muted);font-style:italic;">No marks yet — play the video and click Mark</span>';
     return;
@@ -415,6 +418,85 @@ window.deleteMark = i => {
   renderMarks();
   rebuildClips();
 };
+
+// ─── Export marks (timestamps) ────────────────────────────────────────────────
+// Precise HH:MM:SS.mmm — the format FFmpeg, subtitle tools and most editors accept.
+function stamp(s) {
+  const h   = Math.floor(s / 3600);
+  const m   = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${sec.toFixed(3).padStart(6,'0')}`;
+}
+
+function saveTextFile(text, filename, mime) {
+  // BOM so Excel/Notepad read Devanagari or other non-Latin filenames correctly
+  const blob = new Blob(['\ufeff' + text], { type: mime + ';charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+function exportBaseName() {
+  const base = mainFile ? mainFile.name.replace(/\.[^.]+$/, '') : 'marks';
+  return base.replace(/[\\/:*?"<>|]+/g, '_').trim().slice(0, 80) || 'marks';
+}
+
+// Clip ranges derived from the current marks (same boundaries rebuildClips uses)
+function markRanges() {
+  const b = [0, ...marks, videoDuration];
+  const out = [];
+  for (let i = 0; i < b.length - 1; i++) {
+    if (b[i + 1] - b[i] < 0.05) continue;
+    out.push({ n: i + 1, start: b[i], end: b[i + 1] });
+  }
+  return out;
+}
+
+function exportMarksTxt() {
+  if (!marks.length) { toast('No marks to export', 'info'); return; }
+  const lines = [];
+  lines.push(`Source: ${mainFile ? mainFile.name : '-'}`);
+  lines.push(`Duration: ${stamp(videoDuration)} (${videoDuration.toFixed(3)} s)`);
+  lines.push(`Marks: ${marks.length}`);
+  lines.push('');
+  lines.push('MARKS');
+  marks.forEach((t, i) => lines.push(`${String(i + 1).padStart(2,' ')}.  ${stamp(t)}   (${t.toFixed(3)} s)`));
+  lines.push('');
+  lines.push('CLIPS (start -> end)');
+  markRanges().forEach(r => {
+    const clip = clips.find(c => !c.file && c.index === r.n);
+    const name = `${prefix()}_${clip ? clip.name : r.n}.mp3`;
+    lines.push(`${String(r.n).padStart(2,' ')}.  ${stamp(r.start)} -> ${stamp(r.end)}   [${(r.end - r.start).toFixed(3)} s]   ${name}`);
+  });
+  lines.push('');
+  saveTextFile(lines.join('\r\n'), `${exportBaseName()}_marks.txt`, 'text/plain');
+  toast(`Exported ${marks.length} mark${marks.length !== 1 ? 's' : ''} (.txt)`, 'success');
+}
+
+function exportMarksCsv() {
+  if (!marks.length) { toast('No marks to export', 'info'); return; }
+  const q = v => `"${String(v).replace(/"/g, '""')}"`;
+  const rows = [['clip', 'filename', 'start', 'end', 'start_seconds', 'end_seconds', 'duration_seconds']];
+  markRanges().forEach(r => {
+    const clip = clips.find(c => !c.file && c.index === r.n);
+    rows.push([
+      r.n,
+      `${prefix()}_${clip ? clip.name : r.n}.mp3`,
+      stamp(r.start), stamp(r.end),
+      r.start.toFixed(3), r.end.toFixed(3), (r.end - r.start).toFixed(3),
+    ]);
+  });
+  saveTextFile(rows.map(r => r.map(q).join(',')).join('\r\n'), `${exportBaseName()}_marks.csv`, 'text/csv');
+  toast(`Exported ${marks.length} mark${marks.length !== 1 ? 's' : ''} (.csv)`, 'success');
+}
+
+btnExportTxt.addEventListener('click', exportMarksTxt);
+btnExportCsv.addEventListener('click', exportMarksCsv);
 
 // ─── Clips ────────────────────────────────────────────────────────────────────
 function rebuildClips() {

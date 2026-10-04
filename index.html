@@ -74,8 +74,12 @@
 
       <!-- Marks -->
       <div style="margin-top:10px">
-        <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:6px;">
-          Marks (click to seek · × to delete)
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+          <span style="font-size:.75rem;color:var(--text-muted);">Marks (click to seek · × to delete)</span>
+          <span style="display:flex;gap:6px;">
+            <button class="btn btn-outline btn-sm" id="btn-export-txt" disabled title="Download mark timestamps as a text file">⬇ Marks .txt</button>
+            <button class="btn btn-outline btn-sm" id="btn-export-csv" disabled title="Download mark timestamps as a CSV file">⬇ .csv</button>
+          </span>
         </div>
         <div class="marks-list" id="marks-list">
           <span style="font-size:.78rem;color:var(--text-muted);font-style:italic;">No marks yet — play the video and click Mark</span>
